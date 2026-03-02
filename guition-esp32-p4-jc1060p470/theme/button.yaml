@@ -7,11 +7,32 @@ substitutions:
   button_width: 200px
   padding: 14px
   radius: 8px
+  nav_active_color: "0xFF8C00"
+  nav_inactive_color: "0x808080"
+  nav_bg_color: "0x1A1A1A"
 
 lvgl:
   style_definitions:
     - id: control
       bg_color: $button_control_color
+
+    - id: nav_button
+      bg_color: $nav_bg_color
+      bg_opa: COVER
+      radius: 0
+      pad_all: 4
+      shadow_width: 0
+      border_width: 0
+      text_color: $nav_inactive_color
+
+    - id: nav_button_active
+      bg_color: $nav_bg_color
+      bg_opa: COVER
+      radius: 0
+      pad_all: 4
+      shadow_width: 0
+      border_width: 0
+      text_color: $nav_active_color
 
   theme:
     button:

@@ -7,39 +7,73 @@ font:
     size: 48
     bpp: 8
     glyphs: [
-      "\U000F0335",  # mdi-lightbulb
-      "\U000F042B",  # mdi-printer-3d
-      "\U000F0D43",  # mdi-air-filter
-      "\U000F1051",  # mdi-led-strip-variant
-      "\U000F03D7",  # mdi-package-variant-closed
+      "\U000F1253",  # mdi-lightbulb-group
+      "\U000F0914",  # mdi-track-light
+      "\U000F08DD",  # mdi-floor-lamp
+      "\U000F095F",  # mdi-desk-lamp
       "\U000F07D6",  # mdi-led-strip
-      "\U000F00AC",  # mdi-blinds-closed
+      "\U000F06B5",  # mdi-lamp
+      "\U000F04B9",  # mdi-sofa
+      "\U000F07BC",  # mdi-television-classic
+      "\U000F05A8",  # mdi-white-balance-sunny
+      "\U000F0425",  # mdi-power
       "\U000F1011",  # mdi-blinds-open
-      "\U000F1A4C",  # mdi-lightbulb-night
-      "\U000F1087",  # mdi-router-network
-      "\U000F036B",  # mdi-message-video
-      "\U000F0614",  # mdi-application-outline
-      "\U000F089E",  # mdi-battery
-      "\U000F07DE",  # mdi-filament
-      "\U000F0317",  # mdi-lan
+      "\U000F00AC",  # mdi-blinds-closed
+      "\U000F081D",  # mdi-fan-off
+      "\U000F1B04",  # mdi-fan-speed-1
+      "\U000F1B05",  # mdi-fan-speed-2
+      "\U000F1B06",  # mdi-fan-speed-3
+      "\U000F0502",  # mdi-television
+      "\U000F0035",  # mdi-apple
+      "\U000F0414",  # mdi-sony-playstation
+      "\U000F04C3",  # mdi-speaker
+      "\U000F075D",  # mdi-volume-plus
+      "\U000F075E",  # mdi-volume-minus
+      "\U000F075F",  # mdi-volume-mute
+      ]
+
+  # Smaller icon font for bottom navigation bar
+  - file: 'https://github.com/Templarian/MaterialDesign-Webfont/raw/v7.4.47/fonts/materialdesignicons-webfont.ttf'
+    id: nav_icon_font
+    size: 28
+    bpp: 8
+    glyphs: [
+      "\U000F0335",  # mdi-lightbulb
+      "\U000F1011",  # mdi-blinds-open
+      "\U000F0502",  # mdi-television
       ]
 
 # Map icons to names
 substitutions:
-  lightbulb:      "\U000F0335"
-  printer:        "\U000F042B"
-  aircon:         "\U000F0D43"
-  ledstrip:       "\U000F1051"
-  led_strip_variant: "\U000F1051"
-  package:        "\U000F03D7"
-  lights:         "\U000F07D6"
-  blinds_closed:  "\U000F00AC"
-  blinds_open:    "\U000F1011"
-  nightlight:     "\U000F1A4C"
-  network:        "\U000F1087"
-  videocall:      "\U000F036B"
-  application:    "\U000F0614"
-  battery:        "\U000F089E"
-  filament:       "\U000F07DE"
-  lan:            "\U000F0317"
-
+  # Lights page
+  lightbulb_group:    "\U000F1253"
+  track_light:        "\U000F0914"
+  floor_lamp:         "\U000F08DD"
+  desk_lamp:          "\U000F095F"
+  led_strip:          "\U000F07D6"
+  lamp:               "\U000F06B5"
+  # Scenes
+  sofa:               "\U000F04B9"
+  television_classic: "\U000F07BC"
+  sunny:              "\U000F05A8"
+  power:              "\U000F0425"
+  # Blinds
+  blinds_open:        "\U000F1011"
+  blinds_closed:      "\U000F00AC"
+  # Fan
+  fan_off:            "\U000F081D"
+  fan_speed_1:        "\U000F1B04"
+  fan_speed_2:        "\U000F1B05"
+  fan_speed_3:        "\U000F1B06"
+  # Entertainment
+  television:         "\U000F0502"
+  apple:              "\U000F0035"
+  playstation:        "\U000F0414"
+  speaker:            "\U000F04C3"
+  volume_plus:        "\U000F075D"
+  volume_minus:       "\U000F075E"
+  volume_mute:        "\U000F075F"
+  # Navigation bar
+  nav_lightbulb:      "\U000F0335"
+  nav_blinds:         "\U000F1011"
+  nav_tv:             "\U000F0502"
