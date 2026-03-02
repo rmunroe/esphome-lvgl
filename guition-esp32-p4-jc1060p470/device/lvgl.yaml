@@ -1,11 +1,11 @@
 lvgl:
   displays: my_display
   byte_order: little_endian
-  
+
   top_layer:
     widgets:
-    
-      # Temperature
+
+      # Temperature (outdoor / indoor)
       - label:
           text: "-° / -°"
           id: temperatures
@@ -25,10 +25,105 @@ lvgl:
           y: 8
           text_align: center
           text_color: 0xFFFFFF
-          
+
+      # ===========================
+      # BOTTOM NAVIGATION BAR
+      # ===========================
+      - obj:
+          align: bottom_left
+          width: 100%
+          height: 56
+          bg_color: 0x1A1A1A
+          bg_opa: COVER
+          border_width: 0
+          pad_all: 0
+          layout:
+            type: flex
+            flex_flow: row
+          widgets:
+
+            # Nav: Lights
+            - button:
+                id: nav_lights_button
+                width: 341
+                height: 52
+                styles: nav_button_active
+                checkable: false
+                widgets:
+                  - label:
+                      text_font: nav_icon_font
+                      align: center
+                      text: $nav_lightbulb
+                on_click:
+                  - lvgl.page.show: lights_page
+                  - lvgl.widget.update:
+                      id: nav_lights_button
+                      styles: nav_button_active
+                  - lvgl.widget.update:
+                      id: nav_blinds_button
+                      styles: nav_button
+                  - lvgl.widget.update:
+                      id: nav_entertainment_button
+                      styles: nav_button
+
+            # Nav: Blinds & Fan
+            - button:
+                id: nav_blinds_button
+                width: 341
+                height: 52
+                styles: nav_button
+                checkable: false
+                widgets:
+                  - label:
+                      text_font: nav_icon_font
+                      align: center
+                      text: $nav_blinds
+                on_click:
+                  - lvgl.page.show: blinds_fan_page
+                  - lvgl.widget.update:
+                      id: nav_lights_button
+                      styles: nav_button
+                  - lvgl.widget.update:
+                      id: nav_blinds_button
+                      styles: nav_button_active
+                  - lvgl.widget.update:
+                      id: nav_entertainment_button
+                      styles: nav_button
+
+            # Nav: Entertainment
+            - button:
+                id: nav_entertainment_button
+                width: 342
+                height: 52
+                styles: nav_button
+                checkable: false
+                widgets:
+                  - label:
+                      text_font: nav_icon_font
+                      align: center
+                      text: $nav_tv
+                on_click:
+                  - lvgl.page.show: entertainment_page
+                  - lvgl.widget.update:
+                      id: nav_lights_button
+                      styles: nav_button
+                  - lvgl.widget.update:
+                      id: nav_blinds_button
+                      styles: nav_button
+                  - lvgl.widget.update:
+                      id: nav_entertainment_button
+                      styles: nav_button_active
+
+  # ===========================
+  # PAGES
+  # ===========================
   pages:
-    - id: main_page
-      layout: 
+
+    # ===========================
+    # PAGE 1: LIGHTS & SCENES
+    # ===========================
+    - id: lights_page
+      layout:
         type: flex
         flex_flow: column_wrap
         pad_row: 10
@@ -37,110 +132,244 @@ lvgl:
       bg_color: Black
       bg_opa: cover
       pad_top: 42
-      pad_bottom: 5
+      pad_bottom: 60
       pad_left: 5
       pad_right: 5
-      
+
       widgets:
-      
-        # Office Features Scene
-        - button: 
+
+        # All Lights
+        - button:
             height: $button_height
             width: $button_width
             checkable: true
-            id: office_scene_features_button
+            id: lr_all_lights_button
             styles: control
             widgets:
               - label:
                   text_font: $icon_font
                   align: top_left
-                  id: scene_features_icon                
-                  text: $ledstrip
+                  text: $lightbulb_group
               - label:
                   align: bottom_left
-                  id: scene_features_label
-                  text: "Features"
-            on_press:
+                  text: "All Lights"
+            on_click:
               - homeassistant.service:
-                  service: switch.toggle
+                  service: light.toggle
                   data:
-                    entity_id: switch.office_features_stateful_scene
+                    entity_id: light.living_room
 
-        # Office Calls Scene
-        - button: 
+        # Track Lights
+        - button:
             height: $button_height
             width: $button_width
             checkable: true
-            id: office_scene_calls_button
+            id: lr_tracks_button
             styles: control
             widgets:
               - label:
                   text_font: $icon_font
                   align: top_left
-                  id: office_scene_calls_icon                
-                  text: $videocall
+                  text: $track_light
               - label:
                   align: bottom_left
-                  id: office_scene_calls_label
-                  text: "Calls"
-            on_press:
+                  text: "Tracks"
+            on_click:
               - homeassistant.service:
-                  service: switch.toggle
+                  service: light.toggle
                   data:
-                    entity_id: switch.office_calls_stateful_scene
+                    entity_id: light.living_room_track_lights
 
-        # Office Evening Scene
-        - button: 
+        # Floor Lamp
+        - button:
             height: $button_height
             width: $button_width
             checkable: true
-            id: office_scene_evening_button
+            id: lr_floor_lamp_button
             styles: control
             widgets:
               - label:
                   text_font: $icon_font
                   align: top_left
-                  id: office_scene_evening_icon                
-                  text: $nightlight
+                  text: $floor_lamp
               - label:
                   align: bottom_left
-                  id: office_scene_evening_label
-                  text: "Evening"
-            on_press:
+                  text: "Floor Lamp"
+            on_click:
               - homeassistant.service:
-                  service: switch.toggle
+                  service: light.toggle
                   data:
-                    entity_id: switch.office_evening_stateful_scene
+                    entity_id: light.hue_color_lamp_1_5
 
-        # Office Dimmed Scene
-        - button: 
+        # Table Lamp
+        - button:
             height: $button_height
             width: $button_width
             checkable: true
-            id: office_scene_dimmed_button
+            id: lr_table_lamp_button
             styles: control
             widgets:
               - label:
                   text_font: $icon_font
                   align: top_left
-                  id: office_scene_dimmed_icon                
-                  text: $nightlight
+                  text: $desk_lamp
               - label:
                   align: bottom_left
-                  id: office_scene_dimmed_label
-                  text: "Dimmed"
-            on_press:
+                  text: "Table Lamp"
+            on_click:
               - homeassistant.service:
-                  service: switch.toggle
+                  service: light.toggle
                   data:
-                    entity_id: switch.office_dimmed_stateful_scene
+                    entity_id: light.hue_color_lamp_1_4
 
-        # Office Blind 100%
-        - button: 
+        # TV Lightstrip
+        - button:
             height: $button_height
             width: $button_width
             checkable: true
-            id: office_blind_open_button
+            id: lr_tv_strip_button
+            styles: control
+            widgets:
+              - label:
+                  text_font: $icon_font
+                  align: top_left
+                  text: $led_strip
+              - label:
+                  align: bottom_left
+                  text: "TV Strip"
+            on_click:
+              - homeassistant.service:
+                  service: light.toggle
+                  data:
+                    entity_id: light.hue_play_gradient_lightstrip_1
+
+        # Art Deco Lamp
+        - button:
+            height: $button_height
+            width: $button_width
+            checkable: true
+            id: lr_art_deco_button
+            styles: control
+            widgets:
+              - label:
+                  text_font: $icon_font
+                  align: top_left
+                  text: $lamp
+              - label:
+                  align: bottom_left
+                  text: "Art Deco"
+            on_click:
+              - homeassistant.service:
+                  service: light.toggle
+                  data:
+                    entity_id: light.living_room_art_deco_lamp
+
+        # Scene: Relax
+        - button:
+            height: $button_height
+            width: $button_width
+            checkable: false
+            styles: control
+            widgets:
+              - label:
+                  text_font: $icon_font
+                  align: top_left
+                  text: $sofa
+              - label:
+                  align: bottom_left
+                  text: "Relax"
+            on_click:
+              - homeassistant.service:
+                  service: scene.turn_on
+                  data:
+                    entity_id: scene.living_room_relax
+
+        # Scene: Watch TV
+        - button:
+            height: $button_height
+            width: $button_width
+            checkable: false
+            styles: control
+            widgets:
+              - label:
+                  text_font: $icon_font
+                  align: top_left
+                  text: $television_classic
+              - label:
+                  align: bottom_left
+                  text: "Watch TV"
+            on_click:
+              - homeassistant.service:
+                  service: scene.turn_on
+                  data:
+                    entity_id: scene.living_room_watch_tv
+
+        # Scene: Natural Light
+        - button:
+            height: $button_height
+            width: $button_width
+            checkable: false
+            styles: control
+            widgets:
+              - label:
+                  text_font: $icon_font
+                  align: top_left
+                  text: $sunny
+              - label:
+                  align: bottom_left
+                  text: "Natural"
+            on_click:
+              - homeassistant.service:
+                  service: scene.turn_on
+                  data:
+                    entity_id: scene.living_room_all_day_scene
+
+        # Scene: All Off
+        - button:
+            height: $button_height
+            width: $button_width
+            checkable: false
+            styles: control
+            widgets:
+              - label:
+                  text_font: $icon_font
+                  align: top_left
+                  text: $power
+              - label:
+                  align: bottom_left
+                  text: "All Off"
+            on_click:
+              - homeassistant.service:
+                  service: scene.turn_on
+                  data:
+                    entity_id: scene.time_for_bed
+
+
+    # ===========================
+    # PAGE 2: BLINDS & FAN
+    # ===========================
+    - id: blinds_fan_page
+      layout:
+        type: flex
+        flex_flow: column_wrap
+        pad_row: 10
+        pad_column: 10
+      width: 100%
+      bg_color: Black
+      bg_opa: cover
+      pad_top: 42
+      pad_bottom: 60
+      pad_left: 5
+      pad_right: 5
+
+      widgets:
+
+        # Blind: Open (100%)
+        - button:
+            height: $button_height
+            width: $button_width
+            checkable: true
+            id: lr_blind_open_button
             styles: control
             widgets:
               - label:
@@ -154,15 +383,15 @@ lvgl:
               - homeassistant.service:
                   service: cover.set_cover_position
                   data:
-                    entity_id: cover.office_blind
+                    entity_id: cover.living_room_blind
                     position: "100"
 
-        # Office Blind 66%
-        - button: 
+        # Blind: 3/4 Open (75%)
+        - button:
             height: $button_height
             width: $button_width
             checkable: true
-            id: office_blind_66_button
+            id: lr_blind_75_button
             styles: control
             widgets:
               - label:
@@ -171,20 +400,20 @@ lvgl:
                   text: $blinds_open
               - label:
                   align: bottom_left
-                  text: "Semi Open"
+                  text: "3/4 Open"
             on_click:
               - homeassistant.service:
                   service: cover.set_cover_position
                   data:
-                    entity_id: cover.office_blind
-                    position: "66"
+                    entity_id: cover.living_room_blind
+                    position: "75"
 
-        # Office Blind 33%
-        - button: 
+        # Blind: Half (50%)
+        - button:
             height: $button_height
             width: $button_width
             checkable: true
-            id: office_blind_33_button
+            id: lr_blind_50_button
             styles: control
             widgets:
               - label:
@@ -193,20 +422,42 @@ lvgl:
                   text: $blinds_open
               - label:
                   align: bottom_left
-                  text: "Semi Closed"
+                  text: "Half"
             on_click:
               - homeassistant.service:
                   service: cover.set_cover_position
                   data:
-                    entity_id: cover.office_blind
-                    position: "33"
+                    entity_id: cover.living_room_blind
+                    position: "50"
 
-        # Office Blind 0%
-        - button: 
+        # Blind: 1/4 Open (25%)
+        - button:
             height: $button_height
             width: $button_width
             checkable: true
-            id: office_blind_close_button
+            id: lr_blind_25_button
+            styles: control
+            widgets:
+              - label:
+                  text_font: $icon_font
+                  align: top_left
+                  text: $blinds_open
+              - label:
+                  align: bottom_left
+                  text: "1/4 Open"
+            on_click:
+              - homeassistant.service:
+                  service: cover.set_cover_position
+                  data:
+                    entity_id: cover.living_room_blind
+                    position: "25"
+
+        # Blind: Closed (0%)
+        - button:
+            height: $button_height
+            width: $button_width
+            checkable: true
+            id: lr_blind_closed_button
             styles: control
             widgets:
               - label:
@@ -215,198 +466,263 @@ lvgl:
                   text: $blinds_closed
               - label:
                   align: bottom_left
-                  text: "Close"
+                  text: "Closed"
             on_click:
               - homeassistant.service:
                   service: cover.set_cover_position
                   data:
-                    entity_id: cover.office_blind
+                    entity_id: cover.living_room_blind
                     position: "0"
 
-
-        # 3d Printer
-        - button: 
+        # Fan: Off
+        - button:
             height: $button_height
             width: $button_width
             checkable: true
-            id: printer_power_button
+            id: lr_fan_off_button
             styles: control
             widgets:
-              # Icon (shown when OFF)
               - label:
                   text_font: $icon_font
                   align: top_left
-                  id: printer_power_icon
-                  text: $printer
-              # Progress (shown when ON)
-              - obj:
-                  align: top_left
-                  id: print_progress_container
-                  height: SIZE_CONTENT
-                  width: SIZE_CONTENT
-                  clickable: false
-                  layout:
-                    type: flex
-                    flex_flow: row
-                    flex_align_cross: end
-                  bg_opa: TRANSP
-                  border_width: 0
-                  pad_all: 0
-                  hidden: true
-                  widgets:
-                    - label:
-                        text_font: statistics_font
-                        text_color: $button_text_color
-                        id: print_progress_label
-                        text: "--"
-                    - label:
-                        text_font: label_font
-                        text_color: $button_text_color
-                        text: "%"
-                        pad_bottom: 6
+                  text: $fan_off
               - label:
                   align: bottom_left
-                  text: "Printer"
+                  text: "Fan Off"
+            on_click:
+              - homeassistant.service:
+                  service: fan.turn_off
+                  data:
+                    entity_id: fan.living_room_fans
+
+        # Fan: Low (33%)
+        - button:
+            height: $button_height
+            width: $button_width
+            checkable: true
+            id: lr_fan_low_button
+            styles: control
+            widgets:
+              - label:
+                  text_font: $icon_font
+                  align: top_left
+                  text: $fan_speed_1
+              - label:
+                  align: bottom_left
+                  text: "Fan Low"
+            on_click:
+              - homeassistant.service:
+                  service: fan.set_percentage
+                  data:
+                    entity_id: fan.living_room_fans
+                    percentage: 33
+
+        # Fan: Medium (66%)
+        - button:
+            height: $button_height
+            width: $button_width
+            checkable: true
+            id: lr_fan_med_button
+            styles: control
+            widgets:
+              - label:
+                  text_font: $icon_font
+                  align: top_left
+                  text: $fan_speed_2
+              - label:
+                  align: bottom_left
+                  text: "Fan Med"
+            on_click:
+              - homeassistant.service:
+                  service: fan.set_percentage
+                  data:
+                    entity_id: fan.living_room_fans
+                    percentage: 66
+
+        # Fan: High (100%)
+        - button:
+            height: $button_height
+            width: $button_width
+            checkable: true
+            id: lr_fan_high_button
+            styles: control
+            widgets:
+              - label:
+                  text_font: $icon_font
+                  align: top_left
+                  text: $fan_speed_3
+              - label:
+                  align: bottom_left
+                  text: "Fan High"
+            on_click:
+              - homeassistant.service:
+                  service: fan.set_percentage
+                  data:
+                    entity_id: fan.living_room_fans
+                    percentage: 100
+
+
+    # ===========================
+    # PAGE 3: ENTERTAINMENT
+    # ===========================
+    - id: entertainment_page
+      layout:
+        type: flex
+        flex_flow: column_wrap
+        pad_row: 10
+        pad_column: 10
+      width: 100%
+      bg_color: Black
+      bg_opa: cover
+      pad_top: 42
+      pad_bottom: 60
+      pad_left: 5
+      pad_right: 5
+
+      widgets:
+
+        # TV Power
+        - button:
+            height: $button_height
+            width: $button_width
+            checkable: true
+            id: lr_tv_button
+            styles: control
+            widgets:
+              - label:
+                  text_font: $icon_font
+                  align: top_left
+                  text: $television
+              - label:
+                  align: bottom_left
+                  text: "TV"
+            on_click:
+              - homeassistant.service:
+                  service: media_player.toggle
+                  data:
+                    entity_id: media_player.living_room_tv
+
+        # Apple TV
+        - button:
+            height: $button_height
+            width: $button_width
+            checkable: true
+            id: lr_appletv_button
+            styles: control
+            widgets:
+              - label:
+                  text_font: $icon_font
+                  align: top_left
+                  text: $apple
+              - label:
+                  align: bottom_left
+                  text: "Apple TV"
+            on_click:
+              - homeassistant.service:
+                  service: remote.toggle
+                  data:
+                    entity_id: remote.living_room_apple_tv
+
+        # PS5
+        - button:
+            height: $button_height
+            width: $button_width
+            checkable: true
+            id: lr_ps5_button
+            styles: control
+            widgets:
+              - label:
+                  text_font: $icon_font
+                  align: top_left
+                  text: $playstation
+              - label:
+                  align: bottom_left
+                  text: "PS5"
             on_click:
               - homeassistant.service:
                   service: switch.toggle
                   data:
-                    entity_id: switch.office_3d_printer_power
+                    entity_id: switch.ps5_power
 
-        # Filament Heater
-        - button: 
+        # Sonos
+        - button:
             height: $button_height
             width: $button_width
             checkable: true
-            id: filament_heater_button
+            id: lr_sonos_button
             styles: control
             widgets:
-              # Icon (shown when OFF)
               - label:
                   text_font: $icon_font
                   align: top_left
-                  id: filament_heater_icon
-                  text: $filament
-              # Humidity (shown when ON)
-              - obj:
-                  align: top_left
-                  id: dryer_humidity_container
-                  height: SIZE_CONTENT
-                  width: SIZE_CONTENT
-                  clickable: false
-                  layout:
-                    type: flex
-                    flex_flow: row
-                    flex_align_cross: end
-                  bg_opa: TRANSP
-                  border_width: 0
-                  pad_all: 0
-                  hidden: true
-                  widgets:
-                    - label:
-                        text_font: statistics_font
-                        text_color: $button_text_color
-                        id: dryer_humidity_label
-                        text: "--"
-                    - label:
-                        text_font: label_font
-                        text_color: $button_text_color
-                        text: "%"
-                        pad_bottom: 6
-                        pad_left: -4
+                  text: $speaker
               - label:
                   align: bottom_left
-                  text: "Dryer"
+                  text: "Sonos"
             on_click:
               - homeassistant.service:
                   service: switch.toggle
                   data:
-                    entity_id: switch.office_filament_heater_893b
+                    entity_id: switch.sonos_living_room_plug
 
-        # Office Aircon
-        - button: 
+        # Volume Up
+        - button:
             height: $button_height
             width: $button_width
-            checkable: true
-            id: office_aircon_button
+            checkable: false
             styles: control
             widgets:
               - label:
                   text_font: $icon_font
                   align: top_left
-                  text: $aircon
+                  text: $volume_plus
               - label:
                   align: bottom_left
-                  text: "Aircon"
+                  text: "Vol +"
             on_click:
               - homeassistant.service:
-                  service: script.office_air_conditioner
-
-        # Battery Charger
-        - button: 
-            height: $button_height
-            width: $button_width
-            checkable: true
-            id: battery_charger_button
-            styles: control
-            widgets:
-              - label:
-                  text_font: $icon_font
-                  align: top_left
-                  id: battery_charger_icon
-                  text: $battery
-              - label:
-                  align: bottom_left
-                  id: battery_charger_label
-                  text: "Charger"
-            on_click:
-              - homeassistant.service:
-                  service: switch.toggle
+                  service: media_player.volume_up
                   data:
-                    entity_id: switch.battery_charger
+                    entity_id: media_player.living_room_sonos
 
-        # Storage Lights
-        - button: 
+        # Volume Down
+        - button:
             height: $button_height
             width: $button_width
-            checkable: true
-            id: storage_lights_button
+            checkable: false
             styles: control
             widgets:
               - label:
                   text_font: $icon_font
                   align: top_left
-                  id: storage_lights_icon
-                  text: $package
+                  text: $volume_minus
               - label:
                   align: bottom_left
-                  id: storage_lights_label
-                  text: "Storage"
+                  text: "Vol -"
             on_click:
               - homeassistant.service:
-                  service: light.toggle
+                  service: media_player.volume_down
                   data:
-                    entity_id: light.office_storage
+                    entity_id: media_player.living_room_sonos
 
-        # Network Rack
-        - button: 
+        # Mute
+        - button:
             height: $button_height
             width: $button_width
             checkable: true
-            id: network_rack_button
+            id: lr_mute_button
             styles: control
             widgets:
               - label:
                   text_font: $icon_font
                   align: top_left
-                  id: network_rack_icon
-                  text: $network
+                  text: $volume_mute
               - label:
                   align: bottom_left
-                  id: network_rack_label
-                  text: "Network Rack"
+                  text: "Mute"
             on_click:
               - homeassistant.service:
-                  service: light.toggle
+                  service: media_player.volume_mute
                   data:
-                    entity_id: light.office_network_rack
+                    entity_id: media_player.living_room_sonos
+                    is_volume_muted: !lambda return !id(lr_sonos_muted).state;

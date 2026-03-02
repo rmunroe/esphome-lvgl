@@ -1,9 +1,9 @@
 sensor:
 
-  # Header Outdoor Temperate
+  # Header Indoor Temperature
   - platform: homeassistant
-    entity_id: sensor.office_temperature
-    id: office_temperature
+    entity_id: sensor.living_room_temperature
+    id: living_room_temperature
     on_value:
       - lvgl.label.update:
           id: temperatures
@@ -11,236 +11,310 @@ sensor:
             format: "%d° / %d°"
             args: [ '(int)round(id(outdoor_temperature).state)', '(int)round(x)' ]
 
+  # Header Outdoor Temperature (from weather entity)
   - platform: homeassistant
-    entity_id: sensor.outdoor_temperature
+    entity_id: weather.openweathermap
     id: outdoor_temperature
+    attribute: temperature
     on_value:
       - lvgl.label.update:
           id: temperatures
           text:
             format: "%d° / %d°"
-            args: [ '(int)round(x)', '(int)round(id(office_temperature).state)' ]
+            args: [ '(int)round(x)', '(int)round(id(living_room_temperature).state)' ]
 
-  # Office Blind Position
+  # Blind Position
   - platform: homeassistant
-    entity_id: cover.office_blind
-    id: office_blind_position
+    entity_id: cover.living_room_blind
+    id: lr_blind_position
     attribute: current_position
 
-  # Centauri Carbon Print Progress
+  # Fan Speed Percentage
   - platform: homeassistant
-    entity_id: sensor.centauri_carbon_percent_complete_helper
-    id: centauri_carbon_percent
-    on_value:
-      - lvgl.label.update:
-          id: print_progress_label
-          text:
-            format: "%.0f"
-            args: [ 'x' ]
-
-  # Filament Heater Humidity
-  - platform: homeassistant
-    entity_id: sensor.office_filament_heater_sensor_humidity
-    id: filament_heater_humidity
-    on_value:
-      - lvgl.label.update:
-          id: dryer_humidity_label
-          text:
-            format: "%.0f"
-            args: [ 'x' ]
-
+    entity_id: fan.living_room_fans
+    id: lr_fan_percentage
+    attribute: percentage
 
 
 binary_sensor:
 
-  # Office Evening Scene
+  # ===========================
+  # LIGHTS PAGE - State Sync
+  # ===========================
+
+  # All Lights (Hue group)
   - platform: homeassistant
-    id: office_scene_evening
-    entity_id: switch.office_evening_stateful_scene
+    id: lr_all_lights
+    entity_id: light.living_room
     trigger_on_initial_state: true
     on_state:
       then:
         lvgl.widget.update:
-          id: office_scene_evening_button
+          id: lr_all_lights_button
           state:
             checked: !lambda return x;
 
-  # Office Dimmed Scene
+  # Track Lights (group)
   - platform: homeassistant
-    id: office_scene_dimmed
-    entity_id: switch.office_dimmed_stateful_scene
+    id: lr_tracks
+    entity_id: light.living_room_track_lights
     trigger_on_initial_state: true
     on_state:
       then:
         lvgl.widget.update:
-          id: office_scene_dimmed_button
+          id: lr_tracks_button
           state:
             checked: !lambda return x;
 
-  # Office Calls Scene
+  # Floor Lamp
   - platform: homeassistant
-    id: office_scene_desk_call
-    entity_id: switch.office_calls_stateful_scene
+    id: lr_floor_lamp
+    entity_id: light.hue_color_lamp_1_5
     trigger_on_initial_state: true
     on_state:
       then:
         lvgl.widget.update:
-          id: office_scene_calls_button
+          id: lr_floor_lamp_button
           state:
             checked: !lambda return x;
 
-  # Office Features Scene
+  # Table Lamp
   - platform: homeassistant
-    id: office_scene_features
-    entity_id: switch.office_features_stateful_scene
+    id: lr_table_lamp
+    entity_id: light.hue_color_lamp_1_4
     trigger_on_initial_state: true
     on_state:
       then:
         lvgl.widget.update:
-          id: office_scene_features_button
+          id: lr_table_lamp_button
           state:
             checked: !lambda return x;
 
-  # 3d Printer
+  # TV Lightstrip
   - platform: homeassistant
-    id: office_3d_printer_power
-    entity_id: switch.office_3d_printer_power
+    id: lr_tv_strip
+    entity_id: light.hue_play_gradient_lightstrip_1
+    trigger_on_initial_state: true
+    on_state:
+      then:
+        lvgl.widget.update:
+          id: lr_tv_strip_button
+          state:
+            checked: !lambda return x;
+
+  # Art Deco Lamp
+  - platform: homeassistant
+    id: lr_art_deco
+    entity_id: light.living_room_art_deco_lamp
+    trigger_on_initial_state: true
+    on_state:
+      then:
+        lvgl.widget.update:
+          id: lr_art_deco_button
+          state:
+            checked: !lambda return x;
+
+  # ===========================
+  # BLINDS PAGE - Position Sync
+  # ===========================
+
+  # Blind Open (100%)
+  - platform: template
+    id: lr_blind_100
+    lambda: |-
+      if (id(lr_blind_position).has_state()) {
+        return abs(id(lr_blind_position).state - 100) <= 3;
+      }
+      return false;
+    on_state:
+      then:
+        lvgl.widget.update:
+          id: lr_blind_open_button
+          state:
+            checked: !lambda return x;
+
+  # Blind 3/4 Open (75%)
+  - platform: template
+    id: lr_blind_75
+    lambda: |-
+      if (id(lr_blind_position).has_state()) {
+        return abs(id(lr_blind_position).state - 75) <= 3;
+      }
+      return false;
+    on_state:
+      then:
+        lvgl.widget.update:
+          id: lr_blind_75_button
+          state:
+            checked: !lambda return x;
+
+  # Blind Half (50%)
+  - platform: template
+    id: lr_blind_50
+    lambda: |-
+      if (id(lr_blind_position).has_state()) {
+        return abs(id(lr_blind_position).state - 50) <= 3;
+      }
+      return false;
+    on_state:
+      then:
+        lvgl.widget.update:
+          id: lr_blind_50_button
+          state:
+            checked: !lambda return x;
+
+  # Blind 1/4 Open (25%)
+  - platform: template
+    id: lr_blind_25
+    lambda: |-
+      if (id(lr_blind_position).has_state()) {
+        return abs(id(lr_blind_position).state - 25) <= 3;
+      }
+      return false;
+    on_state:
+      then:
+        lvgl.widget.update:
+          id: lr_blind_25_button
+          state:
+            checked: !lambda return x;
+
+  # Blind Closed (0%)
+  - platform: template
+    id: lr_blind_0
+    lambda: |-
+      if (id(lr_blind_position).has_state()) {
+        return abs(id(lr_blind_position).state - 0) <= 3;
+      }
+      return false;
+    on_state:
+      then:
+        lvgl.widget.update:
+          id: lr_blind_closed_button
+          state:
+            checked: !lambda return x;
+
+  # ===========================
+  # FAN PAGE - Speed Sync
+  # ===========================
+
+  # Fan Off
+  - platform: homeassistant
+    id: lr_fan_state
+    entity_id: fan.living_room_fans
     trigger_on_initial_state: true
     on_state:
       then:
         - lvgl.widget.update:
-            id: printer_power_button
+            id: lr_fan_off_button
             state:
-              checked: !lambda return x;
-        - lvgl.widget.update:
-            id: printer_power_icon
-            hidden: !lambda return x;
-        - lvgl.widget.update:
-            id: print_progress_container
-            hidden: !lambda return !x;
+              checked: !lambda return !x;
 
-  # Office Aircon
-  - platform: homeassistant
-    id: office_air_conditioner
-    entity_id: switch.office_air_conditioner
-    trigger_on_initial_state: true
-    on_state:
-      then:
-        lvgl.widget.update:
-          id: office_aircon_button
-          state:
-            checked: !lambda return x;
-
-  # Battery Charger
-  - platform: homeassistant
-    id: office_battery_charger
-    entity_id: switch.battery_charger
-    trigger_on_initial_state: true
-    on_state:
-      then:
-        lvgl.widget.update:
-          id: battery_charger_button
-          state:
-            checked: !lambda return x;
-
-  # Filament Heater 
-  - platform: homeassistant
-    id: office_filament_heater
-    entity_id: switch.office_filament_heater_893b
-    trigger_on_initial_state: true
-    on_state:
-      then:
-        - lvgl.widget.update:
-            id: filament_heater_button
-            state:
-              checked: !lambda return x;
-        - lvgl.widget.update:
-            id: filament_heater_icon
-            hidden: !lambda return x;
-        - lvgl.widget.update:
-            id: dryer_humidity_container
-            hidden: !lambda return !x;
-
-  # Office Blind 100% (Open)
+  # Fan Low (~33%)
   - platform: template
-    id: office_blind_100
+    id: lr_fan_low
     lambda: |-
-      if (id(office_blind_position).has_state()) {
-        return abs(id(office_blind_position).state - 100) <= 3;
+      if (id(lr_fan_percentage).has_state() && id(lr_fan_state).state) {
+        return abs(id(lr_fan_percentage).state - 33) <= 5;
       }
       return false;
     on_state:
       then:
         lvgl.widget.update:
-          id: office_blind_open_button
+          id: lr_fan_low_button
           state:
             checked: !lambda return x;
 
-  # Office Blind 66% (Semi Open)
+  # Fan Medium (~66%)
   - platform: template
-    id: office_blind_66
+    id: lr_fan_med
     lambda: |-
-      if (id(office_blind_position).has_state()) {
-        return abs(id(office_blind_position).state - 66) <= 3;
+      if (id(lr_fan_percentage).has_state() && id(lr_fan_state).state) {
+        return abs(id(lr_fan_percentage).state - 66) <= 5;
       }
       return false;
     on_state:
       then:
         lvgl.widget.update:
-          id: office_blind_66_button
+          id: lr_fan_med_button
           state:
             checked: !lambda return x;
 
-  # Office Blind 33% (Semi Closed)
+  # Fan High (~100%)
   - platform: template
-    id: office_blind_33
+    id: lr_fan_high
     lambda: |-
-      if (id(office_blind_position).has_state()) {
-        return abs(id(office_blind_position).state - 33) <= 3;
+      if (id(lr_fan_percentage).has_state() && id(lr_fan_state).state) {
+        return abs(id(lr_fan_percentage).state - 100) <= 5;
       }
       return false;
     on_state:
       then:
         lvgl.widget.update:
-          id: office_blind_33_button
+          id: lr_fan_high_button
           state:
             checked: !lambda return x;
 
-  # Office Blind 0% (Close)
-  - platform: template
-    id: office_blind_0
-    lambda: |-
-      if (id(office_blind_position).has_state()) {
-        return abs(id(office_blind_position).state - 0) <= 3;
-      }
-      return false;
-    on_state:
-      then:
-        lvgl.widget.update:
-          id: office_blind_close_button
-          state:
-            checked: !lambda return x;
+  # ===========================
+  # ENTERTAINMENT PAGE - State Sync
+  # ===========================
 
-  # Office Storage Lights
+  # TV Power
   - platform: homeassistant
-    id: office_storage_lights
-    entity_id: light.office_storage
+    id: lr_tv_power
+    entity_id: media_player.living_room_tv
     trigger_on_initial_state: true
     on_state:
       then:
         lvgl.widget.update:
-          id: storage_lights_button
+          id: lr_tv_button
           state:
             checked: !lambda return x;
 
-  # Network Rack
+  # Apple TV
   - platform: homeassistant
-    id: network_rack
-    entity_id: light.office_network_rack
+    id: lr_appletv
+    entity_id: remote.living_room_apple_tv
     trigger_on_initial_state: true
     on_state:
       then:
         lvgl.widget.update:
-          id: network_rack_button
+          id: lr_appletv_button
+          state:
+            checked: !lambda return x;
+
+  # PS5 Power
+  - platform: homeassistant
+    id: lr_ps5
+    entity_id: switch.ps5_power
+    trigger_on_initial_state: true
+    on_state:
+      then:
+        lvgl.widget.update:
+          id: lr_ps5_button
+          state:
+            checked: !lambda return x;
+
+  # Sonos Plug
+  - platform: homeassistant
+    id: lr_sonos
+    entity_id: switch.sonos_living_room_plug
+    trigger_on_initial_state: true
+    on_state:
+      then:
+        lvgl.widget.update:
+          id: lr_sonos_button
+          state:
+            checked: !lambda return x;
+
+  # Sonos Mute State
+  - platform: homeassistant
+    id: lr_sonos_muted
+    entity_id: media_player.living_room_sonos
+    attribute: is_volume_muted
+    trigger_on_initial_state: true
+    on_state:
+      then:
+        lvgl.widget.update:
+          id: lr_mute_button
           state:
             checked: !lambda return x;
