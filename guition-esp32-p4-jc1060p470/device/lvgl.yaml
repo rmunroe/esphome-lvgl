@@ -515,7 +515,7 @@ lvgl:
                   service: fan.set_percentage
                   data:
                     entity_id: fan.living_room_fans
-                    percentage: 33
+                    percentage: "33"
 
         # Fan: Medium (66%)
         - button:
@@ -537,7 +537,7 @@ lvgl:
                   service: fan.set_percentage
                   data:
                     entity_id: fan.living_room_fans
-                    percentage: 66
+                    percentage: "66"
 
         # Fan: High (100%)
         - button:
@@ -559,7 +559,7 @@ lvgl:
                   service: fan.set_percentage
                   data:
                     entity_id: fan.living_room_fans
-                    percentage: 100
+                    percentage: "100"
 
 
     # ===========================
