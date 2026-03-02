@@ -1,8 +1,8 @@
 # ESP32-P4-JC1060P470
 substitutions:
-  name: "your-device-name"
-  friendly_name: "Your Room Sensor"
-  room: "Your Room"
+  name: "touch-screen-1"
+  friendly_name: "Touch Screen 1"
+  room: "Living Room"
 
 # Wifi Setup
 wifi:
@@ -12,6 +12,6 @@ wifi:
 # Packages
 packages:
   setup:
-    url: https://github.com/jtenniswood/esphome-lvgl/
+    url: https://github.com/rmunroe/esphome-lvgl/
     file: guition-esp32-p4-jc1060p470/package.yaml
     refresh: 1sec
