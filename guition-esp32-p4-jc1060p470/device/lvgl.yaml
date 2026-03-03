@@ -340,9 +340,9 @@ lvgl:
                   text: "All Off"
             on_click:
               - homeassistant.service:
-                  service: scene.turn_on
+                  service: light.turn_off
                   data:
-                    entity_id: scene.time_for_bed
+                    entity_id: light.living_room
 
 
     # ===========================
