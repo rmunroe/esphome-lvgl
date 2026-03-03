@@ -1,728 +1,1490 @@
+# =============================================================================
+# LVGL UI LAYOUT — Modern card-based dashboard with tabview navigation
+# =============================================================================
+# Display: 1024x600 (7" MIPI DSI)
+# Layout:  Header (40px) + Tabview (560px) with 3 tabs
+#          Tab 1: Lights — toggles + brightness sliders + scenes
+#          Tab 2: Climate — blind arc + fan arc + environment bars
+#          Tab 3: Media — device switches + Sonos controls
+# =============================================================================
+
 lvgl:
   displays: my_display
   byte_order: little_endian
 
+  # ===========================================================================
+  # TOP LAYER — Header bar (always visible above tabview)
+  # ===========================================================================
   top_layer:
     widgets:
-
-      # Temperature (outdoor / indoor)
-      - label:
-          text: "-° / -°"
-          id: temperatures
-          text_font: clockbar_font
-          align: top_left
-          x: 8
-          y: 8
-          text_color: 0xFFFFFF
-
-      # Clock
-      - label:
-          text: "--:--"
-          id: display_time
-          text_font: clockbar_font
-          align: top_mid
-          x: 0
-          y: 8
-          text_align: center
-          text_color: 0xFFFFFF
-
-      # ===========================
-      # BOTTOM NAVIGATION BAR
-      # ===========================
       - obj:
-          align: bottom_left
-          width: 100%
-          height: 56
-          bg_color: 0x1A1A1A
-          bg_opa: COVER
-          border_width: 0
-          pad_all: 0
+          id: header_bar_obj
+          align: top_left
+          width: 1024
+          height: 40
+          styles: header_bar
           layout:
             type: flex
             flex_flow: row
+            flex_align_main: space_between
+            flex_align_cross: center
           widgets:
 
-            # Nav: Lights
-            - button:
-                id: nav_lights_button
-                width: 341
-                height: 52
-                styles: nav_button_active
-                checkable: false
+            # Left: Weather icon + outdoor/indoor temps
+            - obj:
+                width: SIZE_CONTENT
+                height: 30
+                bg_opa: TRANSP
+                border_width: 0
+                pad_all: 0
+                layout:
+                  type: flex
+                  flex_flow: row
+                  flex_align_cross: center
+                  pad_column: 6
                 widgets:
                   - label:
-                      text_font: nav_icon_font
-                      align: center
-                      text: $nav_lightbulb
-                on_click:
-                  - lvgl.page.show: lights_page
-                  - lvgl.widget.update:
-                      id: nav_lights_button
-                      styles: nav_button_active
-                  - lvgl.widget.update:
-                      id: nav_blinds_button
-                      styles: nav_button
-                  - lvgl.widget.update:
-                      id: nav_entertainment_button
-                      styles: nav_button
+                      text_font: icon_font_small
+                      text: $weather
+                      text_color: $blue
+                  - label:
+                      id: temperatures
+                      text_font: header_font
+                      text: "-° / -°"
+                      text_color: $text_primary
 
-            # Nav: Blinds & Fan
-            - button:
-                id: nav_blinds_button
-                width: 341
-                height: 52
-                styles: nav_button
-                checkable: false
+            # Center: Clock
+            - label:
+                id: display_time
+                text_font: header_font
+                text: "--:--"
+                text_color: $text_primary
+
+            # Right: Humidity + status LED
+            - obj:
+                width: SIZE_CONTENT
+                height: 30
+                bg_opa: TRANSP
+                border_width: 0
+                pad_all: 0
+                layout:
+                  type: flex
+                  flex_flow: row
+                  flex_align_cross: center
+                  pad_column: 6
                 widgets:
                   - label:
-                      text_font: nav_icon_font
-                      align: center
-                      text: $nav_blinds
-                on_click:
-                  - lvgl.page.show: blinds_fan_page
-                  - lvgl.widget.update:
-                      id: nav_lights_button
-                      styles: nav_button
-                  - lvgl.widget.update:
-                      id: nav_blinds_button
-                      styles: nav_button_active
-                  - lvgl.widget.update:
-                      id: nav_entertainment_button
-                      styles: nav_button
-
-            # Nav: Entertainment
-            - button:
-                id: nav_entertainment_button
-                width: 342
-                height: 52
-                styles: nav_button
-                checkable: false
-                widgets:
+                      id: humidity_label
+                      text_font: header_font
+                      text: "--%"
+                      text_color: $text_secondary
                   - label:
-                      text_font: nav_icon_font
-                      align: center
-                      text: $nav_tv
-                on_click:
-                  - lvgl.page.show: entertainment_page
-                  - lvgl.widget.update:
-                      id: nav_lights_button
-                      styles: nav_button
-                  - lvgl.widget.update:
-                      id: nav_blinds_button
-                      styles: nav_button
-                  - lvgl.widget.update:
-                      id: nav_entertainment_button
-                      styles: nav_button_active
+                      text_font: icon_font_small
+                      text: $water_percent
+                      text_color: $blue
+                  - led:
+                      id: status_led
+                      color: 0x00E676
+                      brightness: 0
+                      max_brightness: 200
+                      width: 12
+                      height: 12
 
-  # ===========================
-  # PAGES
-  # ===========================
-  pages:
+  # ===========================================================================
+  # TABVIEW — Main navigation (3 tabs)
+  # ===========================================================================
+  widgets:
+    - tabview:
+        id: main_tabs
+        width: 1024
+        height: 560
+        position: TOP
+        size: 44
+        y: 40
+        tab_style:
+          text_font: label_font
+          text_color: $text_secondary
+          bg_color: 0x0A0A0A
+          bg_opa: COVER
+          border_width: 0
+          shadow_width: 0
+          checked:
+            text_color: $amber
+        tabs:
 
-    # ===========================
-    # PAGE 1: LIGHTS & SCENES
-    # ===========================
-    - id: lights_page
-      layout:
-        type: flex
-        flex_flow: column_wrap
-        pad_row: 10
-        pad_column: 10
-      width: 100%
-      bg_color: Black
-      bg_opa: cover
-      pad_top: 42
-      pad_bottom: 60
-      pad_left: 5
-      pad_right: 5
-
-      widgets:
-
-        # All Lights
-        - button:
-            height: $button_height
-            width: $button_width
-            checkable: true
-            id: lr_all_lights_button
-            styles: control
+          # =================================================================
+          # TAB 1: LIGHTS
+          # =================================================================
+          - name: "Lights"
+            id: lights_tab
+            bg_color: $page_bg
+            bg_opa: COVER
+            pad_all: 10
+            layout:
+              type: flex
+              flex_flow: row
+              pad_column: 10
             widgets:
-              - label:
-                  text_font: $icon_font
-                  align: top_left
-                  text: $lightbulb_group
-              - label:
-                  align: bottom_left
-                  text: "All Lights"
-            on_click:
-              - homeassistant.service:
-                  service: light.toggle
-                  data:
-                    entity_id: light.living_room
 
-        # Track Lights
-        - button:
-            height: $button_height
-            width: $button_width
-            checkable: true
-            id: lr_tracks_button
-            styles: control
+              # ----- Left Column: Light Toggles + Scenes -----
+              - obj:
+                  width: 380
+                  height: 500
+                  bg_opa: TRANSP
+                  border_width: 0
+                  pad_all: 0
+                  layout:
+                    type: flex
+                    flex_flow: column
+                    pad_row: 8
+                  widgets:
+
+                    # Light Toggles Card
+                    - obj:
+                        styles: card_warm
+                        width: 380
+                        height: 310
+                        layout:
+                          type: flex
+                          flex_flow: column
+                          pad_row: 8
+                        widgets:
+                          - label:
+                              styles: section_title
+                              text: "Lights"
+
+                          # Row 1: All, Tracks, Floor
+                          - obj:
+                              width: 356
+                              height: 80
+                              bg_opa: TRANSP
+                              border_width: 0
+                              pad_all: 0
+                              layout:
+                                type: flex
+                                flex_flow: row
+                                pad_column: 6
+                              widgets:
+                                - button:
+                                    id: lr_all_lights_button
+                                    width: 114
+                                    height: 76
+                                    checkable: true
+                                    styles: light_button
+                                    widgets:
+                                      - label:
+                                          text_font: icon_font
+                                          align: top_mid
+                                          y: 2
+                                          text: $lightbulb_group
+                                      - label:
+                                          align: bottom_mid
+                                          text_font: small_font
+                                          text: "All"
+                                    on_click:
+                                      - homeassistant.service:
+                                          service: light.toggle
+                                          data:
+                                            entity_id: light.living_room
+
+                                - button:
+                                    id: lr_tracks_button
+                                    width: 114
+                                    height: 76
+                                    checkable: true
+                                    styles: light_button
+                                    widgets:
+                                      - label:
+                                          text_font: icon_font
+                                          align: top_mid
+                                          y: 2
+                                          text: $track_light
+                                      - label:
+                                          align: bottom_mid
+                                          text_font: small_font
+                                          text: "Tracks"
+                                    on_click:
+                                      - homeassistant.service:
+                                          service: light.toggle
+                                          data:
+                                            entity_id: light.living_room_track_lights
+
+                                - button:
+                                    id: lr_floor_lamp_button
+                                    width: 114
+                                    height: 76
+                                    checkable: true
+                                    styles: light_button
+                                    widgets:
+                                      - label:
+                                          text_font: icon_font
+                                          align: top_mid
+                                          y: 2
+                                          text: $floor_lamp
+                                      - label:
+                                          align: bottom_mid
+                                          text_font: small_font
+                                          text: "Floor"
+                                    on_click:
+                                      - homeassistant.service:
+                                          service: light.toggle
+                                          data:
+                                            entity_id: light.hue_color_lamp_1_5
+
+                          # Row 2: Table, Strip, Deco
+                          - obj:
+                              width: 356
+                              height: 80
+                              bg_opa: TRANSP
+                              border_width: 0
+                              pad_all: 0
+                              layout:
+                                type: flex
+                                flex_flow: row
+                                pad_column: 6
+                              widgets:
+                                - button:
+                                    id: lr_table_lamp_button
+                                    width: 114
+                                    height: 76
+                                    checkable: true
+                                    styles: light_button
+                                    widgets:
+                                      - label:
+                                          text_font: icon_font
+                                          align: top_mid
+                                          y: 2
+                                          text: $desk_lamp
+                                      - label:
+                                          align: bottom_mid
+                                          text_font: small_font
+                                          text: "Table"
+                                    on_click:
+                                      - homeassistant.service:
+                                          service: light.toggle
+                                          data:
+                                            entity_id: light.hue_color_lamp_1_4
+
+                                - button:
+                                    id: lr_tv_strip_button
+                                    width: 114
+                                    height: 76
+                                    checkable: true
+                                    styles: light_button
+                                    widgets:
+                                      - label:
+                                          text_font: icon_font
+                                          align: top_mid
+                                          y: 2
+                                          text: $led_strip
+                                      - label:
+                                          align: bottom_mid
+                                          text_font: small_font
+                                          text: "Strip"
+                                    on_click:
+                                      - homeassistant.service:
+                                          service: light.toggle
+                                          data:
+                                            entity_id: light.hue_play_gradient_lightstrip_1
+
+                                - button:
+                                    id: lr_art_deco_button
+                                    width: 114
+                                    height: 76
+                                    checkable: true
+                                    styles: light_button
+                                    widgets:
+                                      - label:
+                                          text_font: icon_font
+                                          align: top_mid
+                                          y: 2
+                                          text: $lamp
+                                      - label:
+                                          align: bottom_mid
+                                          text_font: small_font
+                                          text: "Deco"
+                                    on_click:
+                                      - homeassistant.service:
+                                          service: light.toggle
+                                          data:
+                                            entity_id: light.living_room_art_deco_lamp
+
+                          # Spacer
+                          - obj:
+                              width: 356
+                              height: 4
+                              bg_opa: TRANSP
+                              border_width: 0
+
+                    # Scenes Card
+                    - obj:
+                        styles: card_warm
+                        width: 380
+                        height: 170
+                        layout:
+                          type: flex
+                          flex_flow: column
+                          pad_row: 8
+                        widgets:
+                          - label:
+                              styles: section_title
+                              text: "Scenes"
+                          - buttonmatrix:
+                              id: scene_matrix
+                              width: 356
+                              height: 110
+                              one_checked: true
+                              items:
+                                styles:
+                                  bg_color: $surface
+                                  text_color: $text_primary
+                                  radius: 8
+                                  checked:
+                                    bg_color: $amber
+                                    text_color: $text_primary
+                              rows:
+                                - buttons:
+                                    - text: "Relax"
+                                      on_press:
+                                        - homeassistant.service:
+                                            service: scene.turn_on
+                                            data:
+                                              entity_id: scene.living_room_relax
+                                    - text: "Watch TV"
+                                      on_press:
+                                        - homeassistant.service:
+                                            service: scene.turn_on
+                                            data:
+                                              entity_id: scene.living_room_watch_tv
+                                    - text: "Natural"
+                                      on_press:
+                                        - homeassistant.service:
+                                            service: scene.turn_on
+                                            data:
+                                              entity_id: scene.living_room_all_day_scene
+                                - buttons:
+                                    - text: "All Off"
+                                      width: 3
+                                      on_press:
+                                        - homeassistant.service:
+                                            service: light.turn_off
+                                            data:
+                                              entity_id: light.living_room
+
+              # ----- Right Column: Brightness Sliders -----
+              - obj:
+                  styles: card_warm
+                  width: 600
+                  height: 500
+                  layout:
+                    type: flex
+                    flex_flow: column
+                    pad_row: 6
+                  widgets:
+                    - label:
+                        styles: section_title
+                        text: "Brightness"
+
+                    # Slider row
+                    - obj:
+                        width: 576
+                        height: 420
+                        bg_opa: TRANSP
+                        border_width: 0
+                        pad_all: 0
+                        layout:
+                          type: flex
+                          flex_flow: row
+                          pad_column: 12
+                          flex_align_main: space_evenly
+                          flex_align_cross: center
+                        widgets:
+
+                          # --- All Lights Brightness ---
+                          - obj:
+                              width: 80
+                              height: 400
+                              bg_opa: TRANSP
+                              border_width: 0
+                              pad_all: 0
+                              layout:
+                                type: flex
+                                flex_flow: column
+                                flex_align_main: center
+                                flex_align_cross: center
+                                pad_row: 6
+                              widgets:
+                                - label:
+                                    text_font: icon_font_small
+                                    text: $lightbulb_group
+                                    text_color: $amber
+                                - slider:
+                                    id: lr_all_brightness_slider
+                                    width: 44
+                                    height: 320
+                                    min_value: 0
+                                    max_value: 255
+                                    value: 0
+                                    mode: NORMAL
+                                    styles: brightness_slider
+                                    indicator:
+                                      styles: brightness_slider_indicator
+                                    knob:
+                                      styles: brightness_slider_knob
+                                    on_release:
+                                      - homeassistant.service:
+                                          service: light.turn_on
+                                          data:
+                                            entity_id: light.living_room
+                                            brightness: !lambda return (int)id(lr_all_brightness_slider).get_value();
+                                - label:
+                                    id: lr_all_brightness_label
+                                    text_font: small_font
+                                    text: "0%"
+                                    text_color: $text_secondary
+
+                          # --- Tracks Brightness ---
+                          - obj:
+                              width: 80
+                              height: 400
+                              bg_opa: TRANSP
+                              border_width: 0
+                              pad_all: 0
+                              layout:
+                                type: flex
+                                flex_flow: column
+                                flex_align_main: center
+                                flex_align_cross: center
+                                pad_row: 6
+                              widgets:
+                                - label:
+                                    text_font: icon_font_small
+                                    text: $track_light
+                                    text_color: $amber
+                                - slider:
+                                    id: lr_tracks_brightness_slider
+                                    width: 44
+                                    height: 320
+                                    min_value: 0
+                                    max_value: 255
+                                    value: 0
+                                    mode: NORMAL
+                                    styles: brightness_slider
+                                    indicator:
+                                      styles: brightness_slider_indicator
+                                    knob:
+                                      styles: brightness_slider_knob
+                                    on_release:
+                                      - homeassistant.service:
+                                          service: light.turn_on
+                                          data:
+                                            entity_id: light.living_room_track_lights
+                                            brightness: !lambda return (int)id(lr_tracks_brightness_slider).get_value();
+                                - label:
+                                    id: lr_tracks_brightness_label
+                                    text_font: small_font
+                                    text: "0%"
+                                    text_color: $text_secondary
+
+                          # --- Floor Lamp Brightness ---
+                          - obj:
+                              width: 80
+                              height: 400
+                              bg_opa: TRANSP
+                              border_width: 0
+                              pad_all: 0
+                              layout:
+                                type: flex
+                                flex_flow: column
+                                flex_align_main: center
+                                flex_align_cross: center
+                                pad_row: 6
+                              widgets:
+                                - label:
+                                    text_font: icon_font_small
+                                    text: $floor_lamp
+                                    text_color: $amber
+                                - slider:
+                                    id: lr_floor_brightness_slider
+                                    width: 44
+                                    height: 320
+                                    min_value: 0
+                                    max_value: 255
+                                    value: 0
+                                    mode: NORMAL
+                                    styles: brightness_slider
+                                    indicator:
+                                      styles: brightness_slider_indicator
+                                    knob:
+                                      styles: brightness_slider_knob
+                                    on_release:
+                                      - homeassistant.service:
+                                          service: light.turn_on
+                                          data:
+                                            entity_id: light.hue_color_lamp_1_5
+                                            brightness: !lambda return (int)id(lr_floor_brightness_slider).get_value();
+                                - label:
+                                    id: lr_floor_brightness_label
+                                    text_font: small_font
+                                    text: "0%"
+                                    text_color: $text_secondary
+
+                          # --- Table Lamp Brightness ---
+                          - obj:
+                              width: 80
+                              height: 400
+                              bg_opa: TRANSP
+                              border_width: 0
+                              pad_all: 0
+                              layout:
+                                type: flex
+                                flex_flow: column
+                                flex_align_main: center
+                                flex_align_cross: center
+                                pad_row: 6
+                              widgets:
+                                - label:
+                                    text_font: icon_font_small
+                                    text: $desk_lamp
+                                    text_color: $amber
+                                - slider:
+                                    id: lr_table_brightness_slider
+                                    width: 44
+                                    height: 320
+                                    min_value: 0
+                                    max_value: 255
+                                    value: 0
+                                    mode: NORMAL
+                                    styles: brightness_slider
+                                    indicator:
+                                      styles: brightness_slider_indicator
+                                    knob:
+                                      styles: brightness_slider_knob
+                                    on_release:
+                                      - homeassistant.service:
+                                          service: light.turn_on
+                                          data:
+                                            entity_id: light.hue_color_lamp_1_4
+                                            brightness: !lambda return (int)id(lr_table_brightness_slider).get_value();
+                                - label:
+                                    id: lr_table_brightness_label
+                                    text_font: small_font
+                                    text: "0%"
+                                    text_color: $text_secondary
+
+                          # --- TV Strip Brightness ---
+                          - obj:
+                              width: 80
+                              height: 400
+                              bg_opa: TRANSP
+                              border_width: 0
+                              pad_all: 0
+                              layout:
+                                type: flex
+                                flex_flow: column
+                                flex_align_main: center
+                                flex_align_cross: center
+                                pad_row: 6
+                              widgets:
+                                - label:
+                                    text_font: icon_font_small
+                                    text: $led_strip
+                                    text_color: $amber
+                                - slider:
+                                    id: lr_strip_brightness_slider
+                                    width: 44
+                                    height: 320
+                                    min_value: 0
+                                    max_value: 255
+                                    value: 0
+                                    mode: NORMAL
+                                    styles: brightness_slider
+                                    indicator:
+                                      styles: brightness_slider_indicator
+                                    knob:
+                                      styles: brightness_slider_knob
+                                    on_release:
+                                      - homeassistant.service:
+                                          service: light.turn_on
+                                          data:
+                                            entity_id: light.hue_play_gradient_lightstrip_1
+                                            brightness: !lambda return (int)id(lr_strip_brightness_slider).get_value();
+                                - label:
+                                    id: lr_strip_brightness_label
+                                    text_font: small_font
+                                    text: "0%"
+                                    text_color: $text_secondary
+
+                          # --- Art Deco Brightness ---
+                          - obj:
+                              width: 80
+                              height: 400
+                              bg_opa: TRANSP
+                              border_width: 0
+                              pad_all: 0
+                              layout:
+                                type: flex
+                                flex_flow: column
+                                flex_align_main: center
+                                flex_align_cross: center
+                                pad_row: 6
+                              widgets:
+                                - label:
+                                    text_font: icon_font_small
+                                    text: $lamp
+                                    text_color: $amber
+                                - slider:
+                                    id: lr_deco_brightness_slider
+                                    width: 44
+                                    height: 320
+                                    min_value: 0
+                                    max_value: 255
+                                    value: 0
+                                    mode: NORMAL
+                                    styles: brightness_slider
+                                    indicator:
+                                      styles: brightness_slider_indicator
+                                    knob:
+                                      styles: brightness_slider_knob
+                                    on_release:
+                                      - homeassistant.service:
+                                          service: light.turn_on
+                                          data:
+                                            entity_id: light.living_room_art_deco_lamp
+                                            brightness: !lambda return (int)id(lr_deco_brightness_slider).get_value();
+                                - label:
+                                    id: lr_deco_brightness_label
+                                    text_font: small_font
+                                    text: "0%"
+                                    text_color: $text_secondary
+
+
+          # =================================================================
+          # TAB 2: CLIMATE (Blinds + Fan + Environment)
+          # =================================================================
+          - name: "Climate"
+            id: climate_tab
+            bg_color: $page_bg
+            bg_opa: COVER
+            pad_all: 10
+            layout:
+              type: flex
+              flex_flow: row
+              pad_column: 10
             widgets:
-              - label:
-                  text_font: $icon_font
-                  align: top_left
-                  text: $track_light
-              - label:
-                  align: bottom_left
-                  text: "Tracks"
-            on_click:
-              - homeassistant.service:
-                  service: light.toggle
-                  data:
-                    entity_id: light.living_room_track_lights
 
-        # Floor Lamp
-        - button:
-            height: $button_height
-            width: $button_width
-            checkable: true
-            id: lr_floor_lamp_button
-            styles: control
+              # ----- Left: Blinds Card -----
+              - obj:
+                  styles: card_cool
+                  width: 320
+                  height: 380
+                  layout:
+                    type: flex
+                    flex_flow: column
+                    flex_align_cross: center
+                    pad_row: 6
+                  widgets:
+                    - label:
+                        styles: section_title
+                        text: "Blinds"
+                        align: LEFT
+
+                    # Blind Arc
+                    - arc:
+                        id: lr_blind_arc
+                        width: 200
+                        height: 200
+                        min_value: 0
+                        max_value: 100
+                        value: 50
+                        rotation: 135
+                        arc_length: 270
+                        adjustable: true
+                        mode: NORMAL
+                        indicator:
+                          styles: control_arc_indicator
+                        knob:
+                          styles: control_arc_knob
+                        on_release:
+                          - homeassistant.service:
+                              service: cover.set_cover_position
+                              data:
+                                entity_id: cover.living_room_blind
+                                position: !lambda return (int)id(lr_blind_arc).get_value();
+                        widgets:
+                          - label:
+                              id: lr_blind_value_label
+                              align: center
+                              text_font: value_font_medium
+                              text: "50%"
+                              text_color: $text_primary
+                          - label:
+                              align: center
+                              y: 28
+                              text_font: small_font
+                              text: "Position"
+                              text_color: $text_secondary
+
+                    # Quick buttons: Open / Stop / Close
+                    - obj:
+                        width: 296
+                        height: 50
+                        bg_opa: TRANSP
+                        border_width: 0
+                        pad_all: 0
+                        layout:
+                          type: flex
+                          flex_flow: row
+                          pad_column: 6
+                          flex_align_main: space_evenly
+                        widgets:
+                          - button:
+                              width: 90
+                              height: 44
+                              styles: action_button
+                              widgets:
+                                - label:
+                                    align: center
+                                    text: "Open"
+                              on_click:
+                                - homeassistant.service:
+                                    service: cover.open_cover
+                                    data:
+                                      entity_id: cover.living_room_blind
+
+                          - button:
+                              width: 90
+                              height: 44
+                              styles: action_button
+                              widgets:
+                                - label:
+                                    align: center
+                                    text: "Stop"
+                              on_click:
+                                - homeassistant.service:
+                                    service: cover.stop_cover
+                                    data:
+                                      entity_id: cover.living_room_blind
+
+                          - button:
+                              width: 90
+                              height: 44
+                              styles: action_button
+                              widgets:
+                                - label:
+                                    align: center
+                                    text: "Close"
+                              on_click:
+                                - homeassistant.service:
+                                    service: cover.close_cover
+                                    data:
+                                      entity_id: cover.living_room_blind
+
+              # ----- Center: Fan Card -----
+              - obj:
+                  styles: card_cool
+                  width: 320
+                  height: 380
+                  layout:
+                    type: flex
+                    flex_flow: column
+                    flex_align_cross: center
+                    pad_row: 6
+                  widgets:
+                    - label:
+                        styles: section_title
+                        text: "Ceiling Fan"
+                        align: LEFT
+
+                    # Fan Arc
+                    - arc:
+                        id: lr_fan_arc
+                        width: 200
+                        height: 200
+                        min_value: 0
+                        max_value: 100
+                        value: 0
+                        rotation: 135
+                        arc_length: 270
+                        adjustable: true
+                        mode: NORMAL
+                        indicator:
+                          styles: fan_arc_indicator
+                        knob:
+                          styles: fan_arc_knob
+                        on_release:
+                          - homeassistant.service:
+                              service: fan.set_percentage
+                              data:
+                                entity_id: fan.living_room_fans
+                                percentage: !lambda |-
+                                  int val = (int)id(lr_fan_arc).get_value();
+                                  if (val < 17) return 0;
+                                  if (val < 50) return 33;
+                                  if (val < 83) return 66;
+                                  return 100;
+                        widgets:
+                          - label:
+                              id: lr_fan_value_label
+                              align: center
+                              text_font: value_font_medium
+                              text: "Off"
+                              text_color: $text_primary
+                          - label:
+                              align: center
+                              y: 28
+                              text_font: small_font
+                              text: "Speed"
+                              text_color: $text_secondary
+
+                    # Quick buttons: Off / Low / Med / High
+                    - obj:
+                        width: 296
+                        height: 50
+                        bg_opa: TRANSP
+                        border_width: 0
+                        pad_all: 0
+                        layout:
+                          type: flex
+                          flex_flow: row
+                          pad_column: 4
+                          flex_align_main: space_evenly
+                        widgets:
+                          - button:
+                              id: lr_fan_off_button
+                              width: 68
+                              height: 44
+                              checkable: true
+                              styles: action_button
+                              widgets:
+                                - label:
+                                    align: center
+                                    text: "Off"
+                              on_click:
+                                - homeassistant.service:
+                                    service: fan.turn_off
+                                    data:
+                                      entity_id: fan.living_room_fans
+
+                          - button:
+                              id: lr_fan_low_button
+                              width: 68
+                              height: 44
+                              checkable: true
+                              styles: action_button
+                              widgets:
+                                - label:
+                                    align: center
+                                    text: "Low"
+                              on_click:
+                                - homeassistant.service:
+                                    service: fan.set_percentage
+                                    data:
+                                      entity_id: fan.living_room_fans
+                                      percentage: "33"
+
+                          - button:
+                              id: lr_fan_med_button
+                              width: 68
+                              height: 44
+                              checkable: true
+                              styles: action_button
+                              widgets:
+                                - label:
+                                    align: center
+                                    text: "Med"
+                              on_click:
+                                - homeassistant.service:
+                                    service: fan.set_percentage
+                                    data:
+                                      entity_id: fan.living_room_fans
+                                      percentage: "66"
+
+                          - button:
+                              id: lr_fan_high_button
+                              width: 68
+                              height: 44
+                              checkable: true
+                              styles: action_button
+                              widgets:
+                                - label:
+                                    align: center
+                                    text: "High"
+                              on_click:
+                                - homeassistant.service:
+                                    service: fan.set_percentage
+                                    data:
+                                      entity_id: fan.living_room_fans
+                                      percentage: "100"
+
+              # ----- Right: Environment Card -----
+              - obj:
+                  styles: card_cool
+                  width: 330
+                  height: 380
+                  layout:
+                    type: flex
+                    flex_flow: column
+                    pad_row: 16
+                  widgets:
+                    - label:
+                        styles: section_title
+                        text: "Environment"
+
+                    # Indoor Temperature
+                    - obj:
+                        width: 306
+                        height: 90
+                        bg_opa: TRANSP
+                        border_width: 0
+                        pad_all: 0
+                        layout:
+                          type: flex
+                          flex_flow: column
+                          pad_row: 4
+                        widgets:
+                          - obj:
+                              width: 306
+                              height: 30
+                              bg_opa: TRANSP
+                              border_width: 0
+                              pad_all: 0
+                              layout:
+                                type: flex
+                                flex_flow: row
+                                flex_align_main: space_between
+                                flex_align_cross: center
+                              widgets:
+                                - obj:
+                                    width: SIZE_CONTENT
+                                    height: 24
+                                    bg_opa: TRANSP
+                                    border_width: 0
+                                    pad_all: 0
+                                    layout:
+                                      type: flex
+                                      flex_flow: row
+                                      pad_column: 6
+                                      flex_align_cross: center
+                                    widgets:
+                                      - label:
+                                          text_font: icon_font_small
+                                          text: $thermometer
+                                          text_color: $amber
+                                      - label:
+                                          text_font: label_font
+                                          text: "Indoor"
+                                          text_color: $text_secondary
+                                - label:
+                                    id: env_indoor_temp_label
+                                    text_font: value_font_medium
+                                    text: "--°"
+                                    text_color: $text_primary
+                          - bar:
+                              id: env_indoor_temp_bar
+                              width: 306
+                              height: 16
+                              min_value: -10
+                              max_value: 40
+                              value: 20
+                              styles: env_bar
+                              indicator:
+                                styles: temp_bar_indicator
+
+                    # Humidity
+                    - obj:
+                        width: 306
+                        height: 90
+                        bg_opa: TRANSP
+                        border_width: 0
+                        pad_all: 0
+                        layout:
+                          type: flex
+                          flex_flow: column
+                          pad_row: 4
+                        widgets:
+                          - obj:
+                              width: 306
+                              height: 30
+                              bg_opa: TRANSP
+                              border_width: 0
+                              pad_all: 0
+                              layout:
+                                type: flex
+                                flex_flow: row
+                                flex_align_main: space_between
+                                flex_align_cross: center
+                              widgets:
+                                - obj:
+                                    width: SIZE_CONTENT
+                                    height: 24
+                                    bg_opa: TRANSP
+                                    border_width: 0
+                                    pad_all: 0
+                                    layout:
+                                      type: flex
+                                      flex_flow: row
+                                      pad_column: 6
+                                      flex_align_cross: center
+                                    widgets:
+                                      - label:
+                                          text_font: icon_font_small
+                                          text: $water_percent
+                                          text_color: $blue
+                                      - label:
+                                          text_font: label_font
+                                          text: "Humidity"
+                                          text_color: $text_secondary
+                                - label:
+                                    id: env_humidity_label
+                                    text_font: value_font_medium
+                                    text: "--%"
+                                    text_color: $text_primary
+                          - bar:
+                              id: env_humidity_bar
+                              width: 306
+                              height: 16
+                              min_value: 0
+                              max_value: 100
+                              value: 40
+                              styles: env_bar
+                              indicator:
+                                styles: humidity_bar_indicator
+
+                    # Outdoor Temperature
+                    - obj:
+                        width: 306
+                        height: 90
+                        bg_opa: TRANSP
+                        border_width: 0
+                        pad_all: 0
+                        layout:
+                          type: flex
+                          flex_flow: column
+                          pad_row: 4
+                        widgets:
+                          - obj:
+                              width: 306
+                              height: 30
+                              bg_opa: TRANSP
+                              border_width: 0
+                              pad_all: 0
+                              layout:
+                                type: flex
+                                flex_flow: row
+                                flex_align_main: space_between
+                                flex_align_cross: center
+                              widgets:
+                                - obj:
+                                    width: SIZE_CONTENT
+                                    height: 24
+                                    bg_opa: TRANSP
+                                    border_width: 0
+                                    pad_all: 0
+                                    layout:
+                                      type: flex
+                                      flex_flow: row
+                                      pad_column: 6
+                                      flex_align_cross: center
+                                    widgets:
+                                      - label:
+                                          text_font: icon_font_small
+                                          text: $weather
+                                          text_color: $blue
+                                      - label:
+                                          text_font: label_font
+                                          text: "Outdoor"
+                                          text_color: $text_secondary
+                                - label:
+                                    id: env_outdoor_temp_label
+                                    text_font: value_font_medium
+                                    text: "--°"
+                                    text_color: $text_primary
+                          - bar:
+                              id: env_outdoor_temp_bar
+                              width: 306
+                              height: 16
+                              min_value: -20
+                              max_value: 45
+                              value: 15
+                              styles: env_bar
+                              indicator:
+                                styles: temp_bar_indicator
+
+
+          # =================================================================
+          # TAB 3: MEDIA (Devices + Sonos)
+          # =================================================================
+          - name: "Media"
+            id: media_tab
+            bg_color: $page_bg
+            bg_opa: COVER
+            pad_all: 10
+            layout:
+              type: flex
+              flex_flow: row
+              pad_column: 10
             widgets:
-              - label:
-                  text_font: $icon_font
-                  align: top_left
-                  text: $floor_lamp
-              - label:
-                  align: bottom_left
-                  text: "Floor Lamp"
-            on_click:
-              - homeassistant.service:
-                  service: light.toggle
-                  data:
-                    entity_id: light.hue_color_lamp_1_5
 
-        # Table Lamp
-        - button:
-            height: $button_height
-            width: $button_width
-            checkable: true
-            id: lr_table_lamp_button
-            styles: control
-            widgets:
-              - label:
-                  text_font: $icon_font
-                  align: top_left
-                  text: $desk_lamp
-              - label:
-                  align: bottom_left
-                  text: "Table Lamp"
-            on_click:
-              - homeassistant.service:
-                  service: light.toggle
-                  data:
-                    entity_id: light.hue_color_lamp_1_4
+              # ----- Left: Device Toggles -----
+              - obj:
+                  styles: card_purple
+                  width: 350
+                  height: 500
+                  layout:
+                    type: flex
+                    flex_flow: column
+                    pad_row: 8
+                  widgets:
+                    - label:
+                        styles: section_title
+                        text: "Devices"
 
-        # TV Lightstrip
-        - button:
-            height: $button_height
-            width: $button_width
-            checkable: true
-            id: lr_tv_strip_button
-            styles: control
-            widgets:
-              - label:
-                  text_font: $icon_font
-                  align: top_left
-                  text: $led_strip
-              - label:
-                  align: bottom_left
-                  text: "TV Strip"
-            on_click:
-              - homeassistant.service:
-                  service: light.toggle
-                  data:
-                    entity_id: light.hue_play_gradient_lightstrip_1
+                    # TV Row
+                    - obj:
+                        styles: device_row
+                        width: 326
+                        height: 60
+                        layout:
+                          type: flex
+                          flex_flow: row
+                          flex_align_main: space_between
+                          flex_align_cross: center
+                          pad_column: 10
+                        widgets:
+                          - led:
+                              id: lr_tv_led
+                              color: 0x00E676
+                              brightness: 0
+                              max_brightness: 200
+                              width: 14
+                              height: 14
+                          - label:
+                              text_font: icon_font
+                              text: $television
+                              text_color: $text_primary
+                          - label:
+                              text_font: label_font
+                              text: "TV"
+                              text_color: $text_primary
+                              width: 120
+                          - switch:
+                              id: lr_tv_switch
+                              width: 56
+                              height: 28
+                              on_click:
+                                - homeassistant.service:
+                                    service: media_player.toggle
+                                    data:
+                                      entity_id: media_player.living_room_tv
 
-        # Art Deco Lamp
-        - button:
-            height: $button_height
-            width: $button_width
-            checkable: true
-            id: lr_art_deco_button
-            styles: control
-            widgets:
-              - label:
-                  text_font: $icon_font
-                  align: top_left
-                  text: $lamp
-              - label:
-                  align: bottom_left
-                  text: "Art Deco"
-            on_click:
-              - homeassistant.service:
-                  service: light.toggle
-                  data:
-                    entity_id: light.living_room_art_deco_lamp
+                    # Apple TV Row
+                    - obj:
+                        styles: device_row
+                        width: 326
+                        height: 60
+                        layout:
+                          type: flex
+                          flex_flow: row
+                          flex_align_main: space_between
+                          flex_align_cross: center
+                          pad_column: 10
+                        widgets:
+                          - led:
+                              id: lr_appletv_led
+                              color: 0x00E676
+                              brightness: 0
+                              max_brightness: 200
+                              width: 14
+                              height: 14
+                          - label:
+                              text_font: icon_font
+                              text: $apple
+                              text_color: $text_primary
+                          - label:
+                              text_font: label_font
+                              text: "Apple TV"
+                              text_color: $text_primary
+                              width: 120
+                          - switch:
+                              id: lr_appletv_switch
+                              width: 56
+                              height: 28
+                              on_click:
+                                - homeassistant.service:
+                                    service: remote.toggle
+                                    data:
+                                      entity_id: remote.living_room_apple_tv
 
-        # Scene: Relax
-        - button:
-            height: $button_height
-            width: $button_width
-            checkable: false
-            styles: control
-            widgets:
-              - label:
-                  text_font: $icon_font
-                  align: top_left
-                  text: $sofa
-              - label:
-                  align: bottom_left
-                  text: "Relax"
-            on_click:
-              - homeassistant.service:
-                  service: scene.turn_on
-                  data:
-                    entity_id: scene.living_room_relax
+                    # PS5 Row
+                    - obj:
+                        styles: device_row
+                        width: 326
+                        height: 60
+                        layout:
+                          type: flex
+                          flex_flow: row
+                          flex_align_main: space_between
+                          flex_align_cross: center
+                          pad_column: 10
+                        widgets:
+                          - led:
+                              id: lr_ps5_led
+                              color: 0x00E676
+                              brightness: 0
+                              max_brightness: 200
+                              width: 14
+                              height: 14
+                          - label:
+                              text_font: icon_font
+                              text: $playstation
+                              text_color: $text_primary
+                          - label:
+                              text_font: label_font
+                              text: "PS5"
+                              text_color: $text_primary
+                              width: 120
+                          - switch:
+                              id: lr_ps5_switch
+                              width: 56
+                              height: 28
+                              on_click:
+                                - homeassistant.service:
+                                    service: switch.toggle
+                                    data:
+                                      entity_id: switch.ps5_power
 
-        # Scene: Watch TV
-        - button:
-            height: $button_height
-            width: $button_width
-            checkable: false
-            styles: control
-            widgets:
-              - label:
-                  text_font: $icon_font
-                  align: top_left
-                  text: $television_classic
-              - label:
-                  align: bottom_left
-                  text: "Watch TV"
-            on_click:
-              - homeassistant.service:
-                  service: scene.turn_on
-                  data:
-                    entity_id: scene.living_room_watch_tv
+                    # Sonos Plug Row
+                    - obj:
+                        styles: device_row
+                        width: 326
+                        height: 60
+                        layout:
+                          type: flex
+                          flex_flow: row
+                          flex_align_main: space_between
+                          flex_align_cross: center
+                          pad_column: 10
+                        widgets:
+                          - led:
+                              id: lr_sonos_led
+                              color: 0x00E676
+                              brightness: 0
+                              max_brightness: 200
+                              width: 14
+                              height: 14
+                          - label:
+                              text_font: icon_font
+                              text: $speaker
+                              text_color: $text_primary
+                          - label:
+                              text_font: label_font
+                              text: "Sonos"
+                              text_color: $text_primary
+                              width: 120
+                          - switch:
+                              id: lr_sonos_switch
+                              width: 56
+                              height: 28
+                              on_click:
+                                - homeassistant.service:
+                                    service: switch.toggle
+                                    data:
+                                      entity_id: switch.sonos_living_room_plug
 
-        # Scene: Natural Light
-        - button:
-            height: $button_height
-            width: $button_width
-            checkable: false
-            styles: control
-            widgets:
-              - label:
-                  text_font: $icon_font
-                  align: top_left
-                  text: $sunny
-              - label:
-                  align: bottom_left
-                  text: "Natural"
-            on_click:
-              - homeassistant.service:
-                  service: scene.turn_on
-                  data:
-                    entity_id: scene.living_room_all_day_scene
+              # ----- Right: Sonos Controls -----
+              - obj:
+                  styles: card_purple
+                  width: 620
+                  height: 500
+                  layout:
+                    type: flex
+                    flex_flow: column
+                    pad_row: 10
+                  widgets:
+                    - label:
+                        styles: section_title
+                        text: "Sonos"
 
-        # Scene: All Off
-        - button:
-            height: $button_height
-            width: $button_width
-            checkable: false
-            styles: control
-            widgets:
-              - label:
-                  text_font: $icon_font
-                  align: top_left
-                  text: $power
-              - label:
-                  align: bottom_left
-                  text: "All Off"
-            on_click:
-              - homeassistant.service:
-                  service: light.turn_off
-                  data:
-                    entity_id: light.living_room
+                    # Now Playing Info
+                    - obj:
+                        width: 596
+                        height: 80
+                        bg_opa: TRANSP
+                        border_width: 0
+                        pad_all: 0
+                        layout:
+                          type: flex
+                          flex_flow: row
+                          pad_column: 12
+                          flex_align_cross: center
+                        widgets:
+                          - label:
+                              text_font: icon_font
+                              text: $speaker
+                              text_color: $purple
+                          - obj:
+                              width: 500
+                              height: 70
+                              bg_opa: TRANSP
+                              border_width: 0
+                              pad_all: 0
+                              layout:
+                                type: flex
+                                flex_flow: column
+                                pad_row: 4
+                              widgets:
+                                - label:
+                                    id: lr_sonos_title
+                                    text_font: card_title_font
+                                    text: "No media"
+                                    text_color: $text_primary
+                                    long_mode: DOT
+                                    width: 490
+                                - label:
+                                    id: lr_sonos_artist
+                                    text_font: label_font
+                                    text: "--"
+                                    text_color: $text_secondary
+                                    long_mode: DOT
+                                    width: 490
 
+                    # Transport Controls
+                    - obj:
+                        width: 596
+                        height: 80
+                        bg_opa: TRANSP
+                        border_width: 0
+                        pad_all: 0
+                        layout:
+                          type: flex
+                          flex_flow: row
+                          pad_column: 16
+                          flex_align_main: center
+                          flex_align_cross: center
+                        widgets:
+                          # Previous
+                          - button:
+                              width: 56
+                              height: 56
+                              styles: transport_button
+                              widgets:
+                                - label:
+                                    text_font: icon_font
+                                    align: center
+                                    text: $skip_previous
+                              on_click:
+                                - homeassistant.service:
+                                    service: media_player.media_previous_track
+                                    data:
+                                      entity_id: media_player.living_room_sonos
 
-    # ===========================
-    # PAGE 2: BLINDS & FAN
-    # ===========================
-    - id: blinds_fan_page
-      layout:
-        type: flex
-        flex_flow: column_wrap
-        pad_row: 10
-        pad_column: 10
-      width: 100%
-      bg_color: Black
-      bg_opa: cover
-      pad_top: 42
-      pad_bottom: 60
-      pad_left: 5
-      pad_right: 5
+                          # Play/Pause (large, glowing)
+                          - button:
+                              id: lr_play_pause_button
+                              width: 68
+                              height: 68
+                              styles: transport_play
+                              widgets:
+                                - label:
+                                    id: lr_play_pause_icon
+                                    text_font: icon_font
+                                    align: center
+                                    text: $play
+                              on_click:
+                                - homeassistant.service:
+                                    service: media_player.media_play_pause
+                                    data:
+                                      entity_id: media_player.living_room_sonos
 
-      widgets:
+                          # Next
+                          - button:
+                              width: 56
+                              height: 56
+                              styles: transport_button
+                              widgets:
+                                - label:
+                                    text_font: icon_font
+                                    align: center
+                                    text: $skip_next
+                              on_click:
+                                - homeassistant.service:
+                                    service: media_player.media_next_track
+                                    data:
+                                      entity_id: media_player.living_room_sonos
 
-        # Blind: Open (100%)
-        - button:
-            height: $button_height
-            width: $button_width
-            checkable: true
-            id: lr_blind_open_button
-            styles: control
-            widgets:
-              - label:
-                  text_font: $icon_font
-                  align: top_left
-                  text: $blinds_open
-              - label:
-                  align: bottom_left
-                  text: "Open"
-            on_click:
-              - homeassistant.service:
-                  service: cover.set_cover_position
-                  data:
-                    entity_id: cover.living_room_blind
-                    position: "100"
+                          # Stop
+                          - button:
+                              width: 56
+                              height: 56
+                              styles: transport_button
+                              widgets:
+                                - label:
+                                    text_font: icon_font
+                                    align: center
+                                    text: $stop_circle
+                              on_click:
+                                - homeassistant.service:
+                                    service: media_player.media_stop
+                                    data:
+                                      entity_id: media_player.living_room_sonos
 
-        # Blind: 3/4 Open (75%)
-        - button:
-            height: $button_height
-            width: $button_width
-            checkable: true
-            id: lr_blind_75_button
-            styles: control
-            widgets:
-              - label:
-                  text_font: $icon_font
-                  align: top_left
-                  text: $blinds_open
-              - label:
-                  align: bottom_left
-                  text: "3/4 Open"
-            on_click:
-              - homeassistant.service:
-                  service: cover.set_cover_position
-                  data:
-                    entity_id: cover.living_room_blind
-                    position: "75"
-
-        # Blind: Half (50%)
-        - button:
-            height: $button_height
-            width: $button_width
-            checkable: true
-            id: lr_blind_50_button
-            styles: control
-            widgets:
-              - label:
-                  text_font: $icon_font
-                  align: top_left
-                  text: $blinds_open
-              - label:
-                  align: bottom_left
-                  text: "Half"
-            on_click:
-              - homeassistant.service:
-                  service: cover.set_cover_position
-                  data:
-                    entity_id: cover.living_room_blind
-                    position: "50"
-
-        # Blind: 1/4 Open (25%)
-        - button:
-            height: $button_height
-            width: $button_width
-            checkable: true
-            id: lr_blind_25_button
-            styles: control
-            widgets:
-              - label:
-                  text_font: $icon_font
-                  align: top_left
-                  text: $blinds_open
-              - label:
-                  align: bottom_left
-                  text: "1/4 Open"
-            on_click:
-              - homeassistant.service:
-                  service: cover.set_cover_position
-                  data:
-                    entity_id: cover.living_room_blind
-                    position: "25"
-
-        # Blind: Closed (0%)
-        - button:
-            height: $button_height
-            width: $button_width
-            checkable: true
-            id: lr_blind_closed_button
-            styles: control
-            widgets:
-              - label:
-                  text_font: $icon_font
-                  align: top_left
-                  text: $blinds_closed
-              - label:
-                  align: bottom_left
-                  text: "Closed"
-            on_click:
-              - homeassistant.service:
-                  service: cover.set_cover_position
-                  data:
-                    entity_id: cover.living_room_blind
-                    position: "0"
-
-        # Fan: Off
-        - button:
-            height: $button_height
-            width: $button_width
-            checkable: true
-            id: lr_fan_off_button
-            styles: control
-            widgets:
-              - label:
-                  text_font: $icon_font
-                  align: top_left
-                  text: $fan_off
-              - label:
-                  align: bottom_left
-                  text: "Fan Off"
-            on_click:
-              - homeassistant.service:
-                  service: fan.turn_off
-                  data:
-                    entity_id: fan.living_room_fans
-
-        # Fan: Low (33%)
-        - button:
-            height: $button_height
-            width: $button_width
-            checkable: true
-            id: lr_fan_low_button
-            styles: control
-            widgets:
-              - label:
-                  text_font: $icon_font
-                  align: top_left
-                  text: $fan_speed_1
-              - label:
-                  align: bottom_left
-                  text: "Fan Low"
-            on_click:
-              - homeassistant.service:
-                  service: fan.set_percentage
-                  data:
-                    entity_id: fan.living_room_fans
-                    percentage: "33"
-
-        # Fan: Medium (66%)
-        - button:
-            height: $button_height
-            width: $button_width
-            checkable: true
-            id: lr_fan_med_button
-            styles: control
-            widgets:
-              - label:
-                  text_font: $icon_font
-                  align: top_left
-                  text: $fan_speed_2
-              - label:
-                  align: bottom_left
-                  text: "Fan Med"
-            on_click:
-              - homeassistant.service:
-                  service: fan.set_percentage
-                  data:
-                    entity_id: fan.living_room_fans
-                    percentage: "66"
-
-        # Fan: High (100%)
-        - button:
-            height: $button_height
-            width: $button_width
-            checkable: true
-            id: lr_fan_high_button
-            styles: control
-            widgets:
-              - label:
-                  text_font: $icon_font
-                  align: top_left
-                  text: $fan_speed_3
-              - label:
-                  align: bottom_left
-                  text: "Fan High"
-            on_click:
-              - homeassistant.service:
-                  service: fan.set_percentage
-                  data:
-                    entity_id: fan.living_room_fans
-                    percentage: "100"
-
-
-    # ===========================
-    # PAGE 3: ENTERTAINMENT
-    # ===========================
-    - id: entertainment_page
-      layout:
-        type: flex
-        flex_flow: column_wrap
-        pad_row: 10
-        pad_column: 10
-      width: 100%
-      bg_color: Black
-      bg_opa: cover
-      pad_top: 42
-      pad_bottom: 60
-      pad_left: 5
-      pad_right: 5
-
-      widgets:
-
-        # TV Power
-        - button:
-            height: $button_height
-            width: $button_width
-            checkable: true
-            id: lr_tv_button
-            styles: control
-            widgets:
-              - label:
-                  text_font: $icon_font
-                  align: top_left
-                  text: $television
-              - label:
-                  align: bottom_left
-                  text: "TV"
-            on_click:
-              - homeassistant.service:
-                  service: media_player.toggle
-                  data:
-                    entity_id: media_player.living_room_tv
-
-        # Apple TV
-        - button:
-            height: $button_height
-            width: $button_width
-            checkable: true
-            id: lr_appletv_button
-            styles: control
-            widgets:
-              - label:
-                  text_font: $icon_font
-                  align: top_left
-                  text: $apple
-              - label:
-                  align: bottom_left
-                  text: "Apple TV"
-            on_click:
-              - homeassistant.service:
-                  service: remote.toggle
-                  data:
-                    entity_id: remote.living_room_apple_tv
-
-        # PS5
-        - button:
-            height: $button_height
-            width: $button_width
-            checkable: true
-            id: lr_ps5_button
-            styles: control
-            widgets:
-              - label:
-                  text_font: $icon_font
-                  align: top_left
-                  text: $playstation
-              - label:
-                  align: bottom_left
-                  text: "PS5"
-            on_click:
-              - homeassistant.service:
-                  service: switch.toggle
-                  data:
-                    entity_id: switch.ps5_power
-
-        # Sonos
-        - button:
-            height: $button_height
-            width: $button_width
-            checkable: true
-            id: lr_sonos_button
-            styles: control
-            widgets:
-              - label:
-                  text_font: $icon_font
-                  align: top_left
-                  text: $speaker
-              - label:
-                  align: bottom_left
-                  text: "Sonos"
-            on_click:
-              - homeassistant.service:
-                  service: switch.toggle
-                  data:
-                    entity_id: switch.sonos_living_room_plug
-
-        # Volume Up
-        - button:
-            height: $button_height
-            width: $button_width
-            checkable: false
-            styles: control
-            widgets:
-              - label:
-                  text_font: $icon_font
-                  align: top_left
-                  text: $volume_plus
-              - label:
-                  align: bottom_left
-                  text: "Vol +"
-            on_click:
-              - homeassistant.service:
-                  service: media_player.volume_up
-                  data:
-                    entity_id: media_player.living_room_sonos
-
-        # Volume Down
-        - button:
-            height: $button_height
-            width: $button_width
-            checkable: false
-            styles: control
-            widgets:
-              - label:
-                  text_font: $icon_font
-                  align: top_left
-                  text: $volume_minus
-              - label:
-                  align: bottom_left
-                  text: "Vol -"
-            on_click:
-              - homeassistant.service:
-                  service: media_player.volume_down
-                  data:
-                    entity_id: media_player.living_room_sonos
-
-        # Mute
-        - button:
-            height: $button_height
-            width: $button_width
-            checkable: true
-            id: lr_mute_button
-            styles: control
-            widgets:
-              - label:
-                  text_font: $icon_font
-                  align: top_left
-                  text: $volume_mute
-              - label:
-                  align: bottom_left
-                  text: "Mute"
-            on_click:
-              - homeassistant.service:
-                  service: media_player.volume_mute
-                  data:
-                    entity_id: media_player.living_room_sonos
-                    is_volume_muted: !lambda return !id(lr_sonos_muted).state;
+                    # Volume Control
+                    - obj:
+                        width: 596
+                        height: 70
+                        bg_opa: TRANSP
+                        border_width: 0
+                        pad_all: 0
+                        layout:
+                          type: flex
+                          flex_flow: row
+                          pad_column: 10
+                          flex_align_cross: center
+                        widgets:
+                          - label:
+                              text_font: icon_font_small
+                              text: $volume_high
+                              text_color: $purple
+                          - slider:
+                              id: lr_volume_slider
+                              width: 430
+                              height: 24
+                              min_value: 0
+                              max_value: 100
+                              value: 30
+                              mode: NORMAL
+                              styles: volume_slider
+                              indicator:
+                                styles: volume_slider_indicator
+                              knob:
+                                styles: volume_slider_knob
+                              on_release:
+                                - homeassistant.service:
+                                    service: media_player.volume_set
+                                    data:
+                                      entity_id: media_player.living_room_sonos
+                                      volume_level: !lambda return id(lr_volume_slider).get_value() / 100.0;
+                          - label:
+                              id: lr_volume_label
+                              text_font: label_font
+                              text: "30%"
+                              text_color: $text_secondary
+                              width: 50
+                          - button:
+                              id: lr_mute_button
+                              width: 48
+                              height: 40
+                              checkable: true
+                              styles: transport_button
+                              widgets:
+                                - label:
+                                    text_font: icon_font_small
+                                    align: center
+                                    text: $volume_mute
+                              on_click:
+                                - homeassistant.service:
+                                    service: media_player.volume_mute
+                                    data:
+                                      entity_id: media_player.living_room_sonos
+                                      is_volume_muted: !lambda return !id(lr_sonos_muted).state;

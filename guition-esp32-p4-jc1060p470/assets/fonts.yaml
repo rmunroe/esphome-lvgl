@@ -1,16 +1,43 @@
-# The styles below use these fonts, to change the font size, change the size here
+# =============================================================================
+# FONTS — Roboto family at various weights and sizes
+# =============================================================================
+# Used throughout the UI for hierarchy and readability.
+# bpp: 4 = good quality for text, bpp: 8 = smoother for large display text
+# =============================================================================
+
 font:
-  - file: "gfonts://Roboto"
-    id: statistics_font
-    size: 48
+  # Header bar — medium weight for status info
+  - file: "gfonts://Roboto@500"
+    id: header_font
+    size: 20
     bpp: 4
 
+  # Card/section titles — bold for visual hierarchy
+  - file: "gfonts://Roboto@700"
+    id: card_title_font
+    size: 18
+    bpp: 4
+
+  # General labels, button text
   - file: "gfonts://Roboto"
     id: label_font
-    size: 22
+    size: 16
     bpp: 4
 
+  # Secondary text, units, percentages
   - file: "gfonts://Roboto"
-    id: clockbar_font
-    size: 20
+    id: small_font
+    size: 13
+    bpp: 4
+
+  # Large sensor readings (header temps, big values)
+  - file: "gfonts://Roboto@300"
+    id: value_font
+    size: 40
+    bpp: 8
+
+  # Medium values — arc centers, slider readouts
+  - file: "gfonts://Roboto@300"
+    id: value_font_medium
+    size: 28
     bpp: 8

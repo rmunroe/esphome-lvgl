@@ -1,52 +1,92 @@
+# =============================================================================
+# ICONS — Material Design Icons (MDI) font glyphs + substitution mappings
+# =============================================================================
 # http://materialdesignicons.com/cdn/7.4.47/
+# Two icon fonts: 40px for main controls, 24px for tabs/status/small indicators
+# =============================================================================
 
-# Define icons used
 font:
+  # Main control icons (40px) — buttons, arc centers, transport controls
   - file: 'https://github.com/Templarian/MaterialDesign-Webfont/raw/v7.4.47/fonts/materialdesignicons-webfont.ttf'
     id: icon_font
-    size: 48
+    size: 40
     bpp: 8
     glyphs: [
+      # Lights
       "\U000F1253",  # mdi-lightbulb-group
       "\U000F0914",  # mdi-track-light
       "\U000F08DD",  # mdi-floor-lamp
       "\U000F095F",  # mdi-desk-lamp
       "\U000F07D6",  # mdi-led-strip
       "\U000F06B5",  # mdi-lamp
+      "\U000F0335",  # mdi-lightbulb
+      # Scenes
       "\U000F04B9",  # mdi-sofa
       "\U000F07BC",  # mdi-television-classic
       "\U000F05A8",  # mdi-white-balance-sunny
       "\U000F0425",  # mdi-power
+      # Blinds
       "\U000F1011",  # mdi-blinds-open
       "\U000F00AC",  # mdi-blinds-closed
+      "\U000F0E06",  # mdi-blinds-horizontal
+      "\U000F04DB",  # mdi-stop
+      # Fan
+      "\U000F0210",  # mdi-fan
       "\U000F081D",  # mdi-fan-off
       "\U000F1B04",  # mdi-fan-speed-1
       "\U000F1B05",  # mdi-fan-speed-2
       "\U000F1B06",  # mdi-fan-speed-3
+      # Entertainment / Devices
       "\U000F0502",  # mdi-television
       "\U000F0035",  # mdi-apple
       "\U000F0414",  # mdi-sony-playstation
       "\U000F04C3",  # mdi-speaker
+      # Media Transport
+      "\U000F040A",  # mdi-skip-next
+      "\U000F0409",  # mdi-skip-previous
+      "\U000F040B",  # mdi-play
+      "\U000F03E4",  # mdi-pause
+      "\U000F040C",  # mdi-play-pause
+      "\U000F047F",  # mdi-stop-circle (transport stop)
+      # Volume
+      "\U000F057E",  # mdi-volume-high
       "\U000F075D",  # mdi-volume-plus
       "\U000F075E",  # mdi-volume-minus
       "\U000F075F",  # mdi-volume-mute
+      # Environment / Sensors
+      "\U000F050F",  # mdi-thermometer
+      "\U000F058E",  # mdi-water-percent
+      "\U000F0F37",  # mdi-weather-partly-cloudy
+      "\U000F00E0",  # mdi-brightness-7 (brightness max)
       ]
 
-  # Smaller icon font for bottom navigation bar
+  # Small icons (24px) — tab headers, status indicators, inline labels
   - file: 'https://github.com/Templarian/MaterialDesign-Webfont/raw/v7.4.47/fonts/materialdesignicons-webfont.ttf'
-    id: nav_icon_font
-    size: 28
+    id: icon_font_small
+    size: 24
     bpp: 8
     glyphs: [
       "\U000F0335",  # mdi-lightbulb
       "\U000F1011",  # mdi-blinds-open
       "\U000F0502",  # mdi-television
+      "\U000F0210",  # mdi-fan
+      "\U000F050F",  # mdi-thermometer
+      "\U000F058E",  # mdi-water-percent
+      "\U000F0F37",  # mdi-weather-partly-cloudy
+      "\U000F00E0",  # mdi-brightness-7
+      "\U000F0769",  # mdi-wifi
+      "\U000F04C3",  # mdi-speaker
+      "\U000F0425",  # mdi-power
       ]
 
-# Map icons to names
+
+# =============================================================================
+# SUBSTITUTION MAPPINGS — readable names for use in lvgl.yaml
+# =============================================================================
 substitutions:
-  # Lights page
+  # Lights
   lightbulb_group:    "\U000F1253"
+  lightbulb:          "\U000F0335"
   track_light:        "\U000F0914"
   floor_lamp:         "\U000F08DD"
   desk_lamp:          "\U000F095F"
@@ -60,7 +100,10 @@ substitutions:
   # Blinds
   blinds_open:        "\U000F1011"
   blinds_closed:      "\U000F00AC"
+  blinds_horizontal:  "\U000F0E06"
+  stop_icon:          "\U000F04DB"
   # Fan
+  fan:                "\U000F0210"
   fan_off:            "\U000F081D"
   fan_speed_1:        "\U000F1B04"
   fan_speed_2:        "\U000F1B05"
@@ -70,10 +113,24 @@ substitutions:
   apple:              "\U000F0035"
   playstation:        "\U000F0414"
   speaker:            "\U000F04C3"
+  # Media Transport
+  play:               "\U000F040B"
+  pause_icon:         "\U000F03E4"
+  play_pause:         "\U000F040C"
+  skip_next:          "\U000F040A"
+  skip_previous:      "\U000F0409"
+  stop_circle:        "\U000F047F"
+  # Volume
+  volume_high:        "\U000F057E"
   volume_plus:        "\U000F075D"
   volume_minus:       "\U000F075E"
   volume_mute:        "\U000F075F"
-  # Navigation bar
-  nav_lightbulb:      "\U000F0335"
-  nav_blinds:         "\U000F1011"
-  nav_tv:             "\U000F0502"
+  # Environment
+  thermometer:        "\U000F050F"
+  water_percent:      "\U000F058E"
+  weather:            "\U000F0F37"
+  brightness_max:     "\U000F00E0"
+  # Tab icons (small font)
+  tab_lightbulb:      "\U000F0335"
+  tab_blinds:         "\U000F1011"
+  tab_tv:             "\U000F0502"

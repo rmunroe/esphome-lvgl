@@ -1,6 +1,18 @@
+# =============================================================================
+# SENSORS — Home Assistant entity bindings for the modern UI
+# =============================================================================
+# Pulls state from HA entities and syncs LVGL widgets accordingly.
+# Organized by: numeric sensors, text sensors, binary sensors.
+# =============================================================================
+
+
 sensor:
 
-  # Header Indoor Temperature
+  # ===========================================================================
+  # HEADER — Temperature & Humidity
+  # ===========================================================================
+
+  # Indoor Temperature
   - platform: homeassistant
     entity_id: sensor.living_room_temperature
     id: living_room_temperature
@@ -10,8 +22,17 @@ sensor:
           text:
             format: "%d° / %d°"
             args: [ '(int)round(id(outdoor_temperature).state)', '(int)round(x)' ]
+      # Climate tab: indoor temp bar + label
+      - lvgl.bar.update:
+          id: env_indoor_temp_bar
+          value: !lambda return (int)round(x);
+      - lvgl.label.update:
+          id: env_indoor_temp_label
+          text:
+            format: "%d°"
+            args: [ '(int)round(x)' ]
 
-  # Header Outdoor Temperature (from weather entity)
+  # Outdoor Temperature (from weather entity)
   - platform: homeassistant
     entity_id: weather.openweathermap
     id: outdoor_temperature
@@ -22,25 +43,238 @@ sensor:
           text:
             format: "%d° / %d°"
             args: [ '(int)round(x)', '(int)round(id(living_room_temperature).state)' ]
+      # Climate tab: outdoor temp bar + label
+      - lvgl.bar.update:
+          id: env_outdoor_temp_bar
+          value: !lambda return (int)round(x);
+      - lvgl.label.update:
+          id: env_outdoor_temp_label
+          text:
+            format: "%d°"
+            args: [ '(int)round(x)' ]
 
-  # Blind Position
+  # Humidity
+  - platform: homeassistant
+    entity_id: sensor.living_room_sensor_humidity
+    id: living_room_humidity
+    on_value:
+      # Header
+      - lvgl.label.update:
+          id: humidity_label
+          text:
+            format: "%d%%"
+            args: [ '(int)round(x)' ]
+      # Climate tab: humidity bar + label
+      - lvgl.bar.update:
+          id: env_humidity_bar
+          value: !lambda return (int)round(x);
+      - lvgl.label.update:
+          id: env_humidity_label
+          text:
+            format: "%d%%"
+            args: [ '(int)round(x)' ]
+
+  # ===========================================================================
+  # BLINDS & FAN — Position/Speed for arcs
+  # ===========================================================================
+
+  # Blind Position → arc + label
   - platform: homeassistant
     entity_id: cover.living_room_blind
     id: lr_blind_position
     attribute: current_position
+    on_value:
+      - lvgl.arc.update:
+          id: lr_blind_arc
+          value: !lambda return (int)x;
+      - lvgl.label.update:
+          id: lr_blind_value_label
+          text:
+            format: "%d%%"
+            args: [ '(int)round(x)' ]
 
-  # Fan Speed Percentage
+  # Fan Speed Percentage → arc + label
   - platform: homeassistant
     entity_id: fan.living_room_fans
     id: lr_fan_percentage
     attribute: percentage
+    on_value:
+      - lvgl.arc.update:
+          id: lr_fan_arc
+          value: !lambda return (int)x;
+      - lvgl.label.update:
+          id: lr_fan_value_label
+          text: !lambda |-
+            static char buf[8];
+            int val = (int)round(x);
+            if (val == 0) return "Off";
+            if (val <= 33) return "Low";
+            if (val <= 66) return "Med";
+            return "High";
+
+  # ===========================================================================
+  # LIGHT BRIGHTNESS — Slider feedback (6 lights)
+  # ===========================================================================
+
+  # All Lights (group) brightness
+  - platform: homeassistant
+    entity_id: light.living_room
+    id: lr_all_lights_brightness
+    attribute: brightness
+    on_value:
+      - lvgl.slider.update:
+          id: lr_all_brightness_slider
+          value: !lambda return (int)x;
+      - lvgl.label.update:
+          id: lr_all_brightness_label
+          text:
+            format: "%d%%"
+            args: [ '(int)round(x / 2.55)' ]
+
+  # Track Lights brightness
+  - platform: homeassistant
+    entity_id: light.living_room_track_lights
+    id: lr_tracks_brightness
+    attribute: brightness
+    on_value:
+      - lvgl.slider.update:
+          id: lr_tracks_brightness_slider
+          value: !lambda return (int)x;
+      - lvgl.label.update:
+          id: lr_tracks_brightness_label
+          text:
+            format: "%d%%"
+            args: [ '(int)round(x / 2.55)' ]
+
+  # Floor Lamp brightness
+  - platform: homeassistant
+    entity_id: light.hue_color_lamp_1_5
+    id: lr_floor_brightness
+    attribute: brightness
+    on_value:
+      - lvgl.slider.update:
+          id: lr_floor_brightness_slider
+          value: !lambda return (int)x;
+      - lvgl.label.update:
+          id: lr_floor_brightness_label
+          text:
+            format: "%d%%"
+            args: [ '(int)round(x / 2.55)' ]
+
+  # Table Lamp brightness
+  - platform: homeassistant
+    entity_id: light.hue_color_lamp_1_4
+    id: lr_table_brightness
+    attribute: brightness
+    on_value:
+      - lvgl.slider.update:
+          id: lr_table_brightness_slider
+          value: !lambda return (int)x;
+      - lvgl.label.update:
+          id: lr_table_brightness_label
+          text:
+            format: "%d%%"
+            args: [ '(int)round(x / 2.55)' ]
+
+  # TV Lightstrip brightness
+  - platform: homeassistant
+    entity_id: light.hue_play_gradient_lightstrip_1
+    id: lr_strip_brightness
+    attribute: brightness
+    on_value:
+      - lvgl.slider.update:
+          id: lr_strip_brightness_slider
+          value: !lambda return (int)x;
+      - lvgl.label.update:
+          id: lr_strip_brightness_label
+          text:
+            format: "%d%%"
+            args: [ '(int)round(x / 2.55)' ]
+
+  # Art Deco Lamp brightness
+  - platform: homeassistant
+    entity_id: light.living_room_art_deco_lamp
+    id: lr_deco_brightness
+    attribute: brightness
+    on_value:
+      - lvgl.slider.update:
+          id: lr_deco_brightness_slider
+          value: !lambda return (int)x;
+      - lvgl.label.update:
+          id: lr_deco_brightness_label
+          text:
+            format: "%d%%"
+            args: [ '(int)round(x / 2.55)' ]
+
+  # ===========================================================================
+  # SONOS — Volume level
+  # ===========================================================================
+
+  # Volume level (0.0–1.0 from HA, displayed as 0–100%)
+  - platform: homeassistant
+    entity_id: media_player.living_room_sonos
+    id: lr_sonos_volume
+    attribute: volume_level
+    on_value:
+      - lvgl.slider.update:
+          id: lr_volume_slider
+          value: !lambda return (int)round(x * 100);
+      - lvgl.label.update:
+          id: lr_volume_label
+          text:
+            format: "%d%%"
+            args: [ '(int)round(x * 100)' ]
 
 
+# =============================================================================
+# TEXT SENSORS — Media info from Sonos
+# =============================================================================
+text_sensor:
+
+  # Sonos: Track title
+  - platform: homeassistant
+    entity_id: media_player.living_room_sonos
+    id: lr_sonos_media_title
+    attribute: media_title
+    on_value:
+      - lvgl.label.update:
+          id: lr_sonos_title
+          text: !lambda |-
+            if (x.empty()) return "No media";
+            return x.c_str();
+
+  # Sonos: Artist name
+  - platform: homeassistant
+    entity_id: media_player.living_room_sonos
+    id: lr_sonos_media_artist
+    attribute: media_artist
+    on_value:
+      - lvgl.label.update:
+          id: lr_sonos_artist
+          text: !lambda |-
+            if (x.empty()) return "--";
+            return x.c_str();
+
+  # Sonos: Playback state (playing/paused/idle) → play/pause icon swap
+  - platform: homeassistant
+    entity_id: media_player.living_room_sonos
+    id: lr_sonos_state
+    on_value:
+      - lvgl.label.update:
+          id: lr_play_pause_icon
+          text: !lambda |-
+            if (x == "playing") return "\U000F03E4";
+            return "\U000F040B";
+
+
+# =============================================================================
+# BINARY SENSORS — State sync for toggles, switches, LEDs
+# =============================================================================
 binary_sensor:
 
-  # ===========================
-  # LIGHTS PAGE - State Sync
-  # ===========================
+  # ===========================================================================
+  # LIGHTS TAB — Toggle button state sync
+  # ===========================================================================
 
   # All Lights (Hue group)
   - platform: homeassistant
@@ -49,22 +283,22 @@ binary_sensor:
     trigger_on_initial_state: true
     on_state:
       then:
-        lvgl.widget.update:
-          id: lr_all_lights_button
-          state:
-            checked: !lambda return x;
+        - lvgl.widget.update:
+            id: lr_all_lights_button
+            state:
+              checked: !lambda return x;
 
-  # Track Lights (group)
+  # Track Lights
   - platform: homeassistant
     id: lr_tracks
     entity_id: light.living_room_track_lights
     trigger_on_initial_state: true
     on_state:
       then:
-        lvgl.widget.update:
-          id: lr_tracks_button
-          state:
-            checked: !lambda return x;
+        - lvgl.widget.update:
+            id: lr_tracks_button
+            state:
+              checked: !lambda return x;
 
   # Floor Lamp
   - platform: homeassistant
@@ -73,10 +307,10 @@ binary_sensor:
     trigger_on_initial_state: true
     on_state:
       then:
-        lvgl.widget.update:
-          id: lr_floor_lamp_button
-          state:
-            checked: !lambda return x;
+        - lvgl.widget.update:
+            id: lr_floor_lamp_button
+            state:
+              checked: !lambda return x;
 
   # Table Lamp
   - platform: homeassistant
@@ -85,10 +319,10 @@ binary_sensor:
     trigger_on_initial_state: true
     on_state:
       then:
-        lvgl.widget.update:
-          id: lr_table_lamp_button
-          state:
-            checked: !lambda return x;
+        - lvgl.widget.update:
+            id: lr_table_lamp_button
+            state:
+              checked: !lambda return x;
 
   # TV Lightstrip
   - platform: homeassistant
@@ -97,10 +331,10 @@ binary_sensor:
     trigger_on_initial_state: true
     on_state:
       then:
-        lvgl.widget.update:
-          id: lr_tv_strip_button
-          state:
-            checked: !lambda return x;
+        - lvgl.widget.update:
+            id: lr_tv_strip_button
+            state:
+              checked: !lambda return x;
 
   # Art Deco Lamp
   - platform: homeassistant
@@ -109,95 +343,16 @@ binary_sensor:
     trigger_on_initial_state: true
     on_state:
       then:
-        lvgl.widget.update:
-          id: lr_art_deco_button
-          state:
-            checked: !lambda return x;
+        - lvgl.widget.update:
+            id: lr_art_deco_button
+            state:
+              checked: !lambda return x;
 
-  # ===========================
-  # BLINDS PAGE - Position Sync
-  # ===========================
+  # ===========================================================================
+  # CLIMATE TAB — Fan speed buttons
+  # ===========================================================================
 
-  # Blind Open (100%)
-  - platform: template
-    id: lr_blind_100
-    lambda: |-
-      if (id(lr_blind_position).has_state()) {
-        return abs(id(lr_blind_position).state - 100) <= 3;
-      }
-      return false;
-    on_state:
-      then:
-        lvgl.widget.update:
-          id: lr_blind_open_button
-          state:
-            checked: !lambda return x;
-
-  # Blind 3/4 Open (75%)
-  - platform: template
-    id: lr_blind_75
-    lambda: |-
-      if (id(lr_blind_position).has_state()) {
-        return abs(id(lr_blind_position).state - 75) <= 3;
-      }
-      return false;
-    on_state:
-      then:
-        lvgl.widget.update:
-          id: lr_blind_75_button
-          state:
-            checked: !lambda return x;
-
-  # Blind Half (50%)
-  - platform: template
-    id: lr_blind_50
-    lambda: |-
-      if (id(lr_blind_position).has_state()) {
-        return abs(id(lr_blind_position).state - 50) <= 3;
-      }
-      return false;
-    on_state:
-      then:
-        lvgl.widget.update:
-          id: lr_blind_50_button
-          state:
-            checked: !lambda return x;
-
-  # Blind 1/4 Open (25%)
-  - platform: template
-    id: lr_blind_25
-    lambda: |-
-      if (id(lr_blind_position).has_state()) {
-        return abs(id(lr_blind_position).state - 25) <= 3;
-      }
-      return false;
-    on_state:
-      then:
-        lvgl.widget.update:
-          id: lr_blind_25_button
-          state:
-            checked: !lambda return x;
-
-  # Blind Closed (0%)
-  - platform: template
-    id: lr_blind_0
-    lambda: |-
-      if (id(lr_blind_position).has_state()) {
-        return abs(id(lr_blind_position).state - 0) <= 3;
-      }
-      return false;
-    on_state:
-      then:
-        lvgl.widget.update:
-          id: lr_blind_closed_button
-          state:
-            checked: !lambda return x;
-
-  # ===========================
-  # FAN PAGE - Speed Sync
-  # ===========================
-
-  # Fan Off
+  # Fan on/off state → Off button
   - platform: homeassistant
     id: lr_fan_state
     entity_id: fan.living_room_fans
@@ -254,59 +409,71 @@ binary_sensor:
           state:
             checked: !lambda return x;
 
-  # ===========================
-  # ENTERTAINMENT PAGE - State Sync
-  # ===========================
+  # ===========================================================================
+  # MEDIA TAB — Device switch state + LED indicators
+  # ===========================================================================
 
-  # TV Power
+  # TV Power → switch state + LED
   - platform: homeassistant
     id: lr_tv_power
     entity_id: media_player.living_room_tv
     trigger_on_initial_state: true
     on_state:
       then:
-        lvgl.widget.update:
-          id: lr_tv_button
-          state:
-            checked: !lambda return x;
+        - lvgl.widget.update:
+            id: lr_tv_switch
+            state:
+              checked: !lambda return x;
+        - lvgl.led.update:
+            id: lr_tv_led
+            brightness: !lambda return x ? 200 : 0;
 
-  # Apple TV
+  # Apple TV → switch state + LED
   - platform: homeassistant
     id: lr_appletv
     entity_id: remote.living_room_apple_tv
     trigger_on_initial_state: true
     on_state:
       then:
-        lvgl.widget.update:
-          id: lr_appletv_button
-          state:
-            checked: !lambda return x;
+        - lvgl.widget.update:
+            id: lr_appletv_switch
+            state:
+              checked: !lambda return x;
+        - lvgl.led.update:
+            id: lr_appletv_led
+            brightness: !lambda return x ? 200 : 0;
 
-  # PS5 Power
+  # PS5 Power → switch state + LED
   - platform: homeassistant
     id: lr_ps5
     entity_id: switch.ps5_power
     trigger_on_initial_state: true
     on_state:
       then:
-        lvgl.widget.update:
-          id: lr_ps5_button
-          state:
-            checked: !lambda return x;
+        - lvgl.widget.update:
+            id: lr_ps5_switch
+            state:
+              checked: !lambda return x;
+        - lvgl.led.update:
+            id: lr_ps5_led
+            brightness: !lambda return x ? 200 : 0;
 
-  # Sonos Plug
+  # Sonos Plug → switch state + LED
   - platform: homeassistant
     id: lr_sonos
     entity_id: switch.sonos_living_room_plug
     trigger_on_initial_state: true
     on_state:
       then:
-        lvgl.widget.update:
-          id: lr_sonos_button
-          state:
-            checked: !lambda return x;
+        - lvgl.widget.update:
+            id: lr_sonos_switch
+            state:
+              checked: !lambda return x;
+        - lvgl.led.update:
+            id: lr_sonos_led
+            brightness: !lambda return x ? 200 : 0;
 
-  # Sonos Mute State
+  # Sonos Mute State → mute button
   - platform: homeassistant
     id: lr_sonos_muted
     entity_id: media_player.living_room_sonos
@@ -314,7 +481,18 @@ binary_sensor:
     trigger_on_initial_state: true
     on_state:
       then:
-        lvgl.widget.update:
-          id: lr_mute_button
-          state:
-            checked: !lambda return x;
+        - lvgl.widget.update:
+            id: lr_mute_button
+            state:
+              checked: !lambda return x;
+
+  # ===========================================================================
+  # STATUS — ESPHome connection status LED
+  # ===========================================================================
+  - platform: status
+    id: esphome_status
+    on_state:
+      then:
+        - lvgl.led.update:
+            id: status_led
+            brightness: !lambda return x ? 200 : 0;

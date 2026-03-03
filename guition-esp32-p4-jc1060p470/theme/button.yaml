@@ -1,49 +1,368 @@
+# =============================================================================
+# THEME — Comprehensive style system for the modern card-based UI
+# =============================================================================
+# Color palette:
+#   Warm (lights):  0xFF8C00 (amber), 0xFFA726 (light amber)
+#   Cool (climate): 0x00A8E8 (blue), 0x00BFA5 (teal)
+#   Media:          0x9C27B0 (purple), 0x7C4DFF (violet)
+#   Neutral:        0x1E1E1E (card bg), 0x121212 (page bg), 0x2A2A2A (raised)
+# =============================================================================
+
 substitutions:
+  # Legacy compat
   icon_font: icon_font
+  # Color palette
   button_on_color: "0xFF8C00"
   button_text_color: "0xFFFFFF"
-  button_control_color: "0x313131"
-  button_height: 130px
-  button_width: 200px
-  padding: 14px
-  radius: 8px
-  nav_active_color: "0xFF8C00"
-  nav_inactive_color: "0x808080"
-  nav_bg_color: "0x1A1A1A"
+  button_control_color: "0x1E1E1E"
+  # Accent colors
+  amber: "0xFF8C00"
+  amber_light: "0xFFA726"
+  blue: "0x00A8E8"
+  teal: "0x00BFA5"
+  purple: "0x9C27B0"
+  violet: "0x7C4DFF"
+  # Neutral palette
+  card_bg: "0x1E1E1E"
+  page_bg: "0x121212"
+  surface: "0x2A2A2A"
+  text_primary: "0xFFFFFF"
+  text_secondary: "0xB0B0B0"
+  text_disabled: "0x606060"
+  # Layout
+  card_radius: "16"
+  card_pad: "12"
+
 
 lvgl:
   style_definitions:
-    - id: control
-      bg_color: $button_control_color
 
-    - id: nav_button
-      bg_color: $nav_bg_color
+    # =========================================================================
+    # CARD CONTAINERS — base card + colored accent variants
+    # =========================================================================
+    - id: card_base
+      bg_color: $card_bg
       bg_opa: COVER
-      radius: 0
-      pad_all: 4
+      radius: $card_radius
+      pad_all: $card_pad
+      border_width: 1
+      border_opa: 40%
+      shadow_width: 8
+      shadow_opa: 30%
+      shadow_color: 0x000000
+
+    - id: card_warm
+      bg_color: $card_bg
+      bg_opa: COVER
+      radius: $card_radius
+      pad_all: $card_pad
+      border_width: 1
+      border_color: $amber
+      border_opa: 50%
+      shadow_width: 12
+      shadow_opa: 25%
+      shadow_color: $amber
+
+    - id: card_cool
+      bg_color: $card_bg
+      bg_opa: COVER
+      radius: $card_radius
+      pad_all: $card_pad
+      border_width: 1
+      border_color: $blue
+      border_opa: 50%
+      shadow_width: 12
+      shadow_opa: 25%
+      shadow_color: $blue
+
+    - id: card_purple
+      bg_color: $card_bg
+      bg_opa: COVER
+      radius: $card_radius
+      pad_all: $card_pad
+      border_width: 1
+      border_color: $purple
+      border_opa: 50%
+      shadow_width: 12
+      shadow_opa: 25%
+      shadow_color: $purple
+
+    # =========================================================================
+    # SECTION TITLE
+    # =========================================================================
+    - id: section_title
+      text_font: card_title_font
+      text_color: $text_secondary
+      pad_bottom: 4
+
+    # =========================================================================
+    # LIGHT TOGGLE BUTTONS — amber glow when checked
+    # =========================================================================
+    - id: light_button
+      bg_color: $surface
+      bg_opa: COVER
+      radius: 12
+      pad_all: 10
       shadow_width: 0
       border_width: 0
-      text_color: $nav_inactive_color
+      text_color: $text_primary
+      text_font: label_font
 
-    - id: nav_button_active
-      bg_color: $nav_bg_color
+    - id: light_button_checked
+      bg_color: $amber
       bg_opa: COVER
-      radius: 0
+      radius: 12
+      pad_all: 10
+      shadow_width: 16
+      shadow_opa: 60%
+      shadow_color: $amber
+      border_width: 0
+      text_color: $text_primary
+
+    # =========================================================================
+    # BRIGHTNESS SLIDERS — vertical amber gradient
+    # =========================================================================
+    - id: brightness_slider
+      bg_color: $surface
+      bg_opa: COVER
+      radius: 8
+      border_width: 0
+
+    - id: brightness_slider_indicator
+      bg_color: $amber
+      bg_opa: COVER
+      radius: 8
+
+    - id: brightness_slider_knob
+      bg_color: 0xFFFFFF
+      radius: 12
       pad_all: 4
+      shadow_width: 6
+      shadow_opa: 60%
+      shadow_color: 0x000000
+
+    # =========================================================================
+    # CONTROL ARCS — blind (blue) and fan (teal)
+    # =========================================================================
+    - id: control_arc
+      arc_color: $surface
+      arc_width: 14
+      arc_rounded: true
+
+    - id: control_arc_indicator
+      arc_color: $blue
+      arc_width: 14
+      arc_rounded: true
+
+    - id: control_arc_knob
+      bg_color: 0xFFFFFF
+      radius: 16
+      pad_all: 4
+      shadow_width: 6
+      shadow_opa: 50%
+      shadow_color: $blue
+      border_width: 2
+      border_color: $blue
+
+    - id: fan_arc_indicator
+      arc_color: $teal
+      arc_width: 14
+      arc_rounded: true
+
+    - id: fan_arc_knob
+      bg_color: 0xFFFFFF
+      radius: 16
+      pad_all: 4
+      shadow_width: 6
+      shadow_opa: 50%
+      shadow_color: $teal
+      border_width: 2
+      border_color: $teal
+
+    # =========================================================================
+    # QUICK ACTION BUTTONS — compact control buttons (open/stop/close etc)
+    # =========================================================================
+    - id: action_button
+      bg_color: $surface
+      bg_opa: COVER
+      radius: 10
+      pad_all: 6
       shadow_width: 0
       border_width: 0
-      text_color: $nav_active_color
+      text_color: $text_primary
+      text_font: label_font
 
+    - id: action_button_checked
+      bg_color: $blue
+      bg_opa: COVER
+      radius: 10
+      pad_all: 6
+      shadow_width: 8
+      shadow_opa: 40%
+      shadow_color: $blue
+      border_width: 0
+      text_color: $text_primary
+
+    # =========================================================================
+    # VOLUME SLIDER — purple gradient
+    # =========================================================================
+    - id: volume_slider
+      bg_color: $surface
+      bg_opa: COVER
+      radius: 6
+      border_width: 0
+
+    - id: volume_slider_indicator
+      bg_color: $purple
+      bg_opa: COVER
+      radius: 6
+
+    - id: volume_slider_knob
+      bg_color: 0xFFFFFF
+      radius: 10
+      pad_all: 3
+      shadow_width: 6
+      shadow_opa: 50%
+      shadow_color: $purple
+
+    # =========================================================================
+    # ENVIRONMENT BARS — temperature (red-amber) and humidity (blue)
+    # =========================================================================
+    - id: env_bar
+      bg_color: $surface
+      bg_opa: COVER
+      radius: 4
+      border_width: 0
+
+    - id: temp_bar_indicator
+      bg_color: $amber
+      bg_opa: COVER
+      radius: 4
+
+    - id: humidity_bar_indicator
+      bg_color: $blue
+      bg_opa: COVER
+      radius: 4
+
+    # =========================================================================
+    # TRANSPORT BUTTONS — media controls (purple accent)
+    # =========================================================================
+    - id: transport_button
+      bg_color: $surface
+      bg_opa: COVER
+      radius: 20
+      pad_all: 8
+      shadow_width: 0
+      border_width: 0
+      text_color: $text_primary
+
+    - id: transport_play
+      bg_color: $purple
+      bg_opa: COVER
+      radius: 24
+      pad_all: 10
+      shadow_width: 12
+      shadow_opa: 50%
+      shadow_color: $purple
+      border_width: 0
+      text_color: $text_primary
+
+    # =========================================================================
+    # DEVICE SWITCH ROW — for media tab device toggles
+    # =========================================================================
+    - id: device_row
+      bg_color: $surface
+      bg_opa: COVER
+      radius: 10
+      pad_all: 8
+      border_width: 0
+      shadow_width: 0
+
+    # =========================================================================
+    # HEADER BAR
+    # =========================================================================
+    - id: header_bar
+      bg_color: 0x0A0A0A
+      bg_opa: COVER
+      pad_all: 6
+      pad_left: 12
+      pad_right: 12
+      border_width: 0
+      shadow_width: 4
+      shadow_opa: 40%
+      shadow_color: 0x000000
+      shadow_offset_y: 2
+
+
+  # ===========================================================================
+  # GLOBAL THEME — base styles for all widget types
+  # ===========================================================================
   theme:
     button:
       text_font: label_font
       scroll_on_focus: false
-      radius: $radius
-      width: $button_width
-      height: $button_height
-      pad_all: $padding
+      radius: 10
+      pad_all: 8
       shadow_width: 0
-      text_color: $button_text_color
+      text_color: $text_primary
+      bg_color: $surface
       checked:
-        bg_color: $button_on_color
-        text_color: $button_text_color
+        bg_color: $amber
+        text_color: $text_primary
+        shadow_width: 12
+        shadow_opa: 40%
+        shadow_color: $amber
+
+    slider:
+      bg_color: $surface
+      radius: 6
+      indicator:
+        bg_color: $amber
+        radius: 6
+      knob:
+        bg_color: 0xFFFFFF
+        radius: 10
+        pad_all: 3
+
+    arc:
+      arc_color: $surface
+      arc_width: 14
+      arc_rounded: true
+      indicator:
+        arc_width: 14
+        arc_rounded: true
+      knob:
+        bg_color: 0xFFFFFF
+        radius: 14
+        pad_all: 4
+
+    switch:
+      bg_color: $surface
+      radius: 16
+      checked:
+        bg_color: $amber
+
+    label:
+      text_font: label_font
+      text_color: $text_primary
+
+    bar:
+      bg_color: $surface
+      radius: 4
+      indicator:
+        radius: 4
+
+    tabview:
+      text_font: label_font
+
+    buttonmatrix:
+      bg_color: $surface
+      text_color: $text_primary
+      radius: 10
+      items:
+        bg_color: $surface
+        text_color: $text_primary
+        radius: 8
+        checked:
+          bg_color: $amber
+          text_color: $text_primary
