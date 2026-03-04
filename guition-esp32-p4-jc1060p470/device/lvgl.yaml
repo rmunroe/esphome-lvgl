@@ -86,7 +86,7 @@ lvgl:
                       id: status_led
                       color: 0x00E676
                       brightness: 0
-                      max_brightness: 200
+
                       width: 12
                       height: 12
 
@@ -335,13 +335,12 @@ lvgl:
                               height: 110
                               one_checked: true
                               items:
-                                styles:
-                                  bg_color: $surface
+                                bg_color: $surface
+                                text_color: $text_primary
+                                radius: 8
+                                checked:
+                                  bg_color: $amber
                                   text_color: $text_primary
-                                  radius: 8
-                                  checked:
-                                    bg_color: $amber
-                                    text_color: $text_primary
                               rows:
                                 - buttons:
                                     - text: "Relax"
@@ -1156,7 +1155,7 @@ lvgl:
                               id: lr_tv_led
                               color: 0x00E676
                               brightness: 0
-                              max_brightness: 200
+        
                               width: 14
                               height: 14
                           - label:
@@ -1194,7 +1193,7 @@ lvgl:
                               id: lr_appletv_led
                               color: 0x00E676
                               brightness: 0
-                              max_brightness: 200
+        
                               width: 14
                               height: 14
                           - label:
@@ -1232,7 +1231,7 @@ lvgl:
                               id: lr_ps5_led
                               color: 0x00E676
                               brightness: 0
-                              max_brightness: 200
+        
                               width: 14
                               height: 14
                           - label:
@@ -1270,7 +1269,7 @@ lvgl:
                               id: lr_sonos_led
                               color: 0x00E676
                               brightness: 0
-                              max_brightness: 200
+        
                               width: 14
                               height: 14
                           - label:
