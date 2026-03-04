@@ -1486,4 +1486,5 @@ lvgl:
                                     service: media_player.volume_mute
                                     data:
                                       entity_id: media_player.living_room_sonos
-                                      is_volume_muted: !lambda return id(lr_sonos_muted).state ? "false" : "true";
+                                      is_volume_muted: !lambda |-
+                                        return id(lr_sonos_muted).state ? "false" : "true";
