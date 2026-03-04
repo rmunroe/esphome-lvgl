@@ -696,8 +696,8 @@ lvgl:
                         min_value: 0
                         max_value: 100
                         value: 50
-                        rotation: 135
-                        arc_length: 270
+                        start_angle: 135
+                        end_angle: 45
                         adjustable: true
                         mode: NORMAL
                         indicator:
@@ -803,8 +803,8 @@ lvgl:
                         min_value: 0
                         max_value: 100
                         value: 0
-                        rotation: 135
-                        arc_length: 270
+                        start_angle: 135
+                        end_angle: 45
                         adjustable: true
                         mode: NORMAL
                         indicator:
