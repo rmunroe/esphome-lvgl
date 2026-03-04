@@ -113,23 +113,8 @@ sensor:
             return "High";
 
   # ===========================================================================
-  # LIGHT BRIGHTNESS — Slider feedback (6 lights)
+  # LIGHT BRIGHTNESS — Slider feedback (4 lights)
   # ===========================================================================
-
-  # All Lights (group) brightness
-  - platform: homeassistant
-    entity_id: light.living_room
-    id: lr_all_lights_brightness
-    attribute: brightness
-    on_value:
-      - lvgl.slider.update:
-          id: lr_all_brightness_slider
-          value: !lambda return (int)x;
-      - lvgl.label.update:
-          id: lr_all_brightness_label
-          text:
-            format: "%d%%"
-            args: [ '(int)round(x / 2.55)' ]
 
   # Track Lights brightness
   - platform: homeassistant
@@ -172,21 +157,6 @@ sensor:
           value: !lambda return (int)x;
       - lvgl.label.update:
           id: lr_table_brightness_label
-          text:
-            format: "%d%%"
-            args: [ '(int)round(x / 2.55)' ]
-
-  # TV Lightstrip brightness
-  - platform: homeassistant
-    entity_id: light.hue_play_gradient_lightstrip_1
-    id: lr_strip_brightness
-    attribute: brightness
-    on_value:
-      - lvgl.slider.update:
-          id: lr_strip_brightness_slider
-          value: !lambda return (int)x;
-      - lvgl.label.update:
-          id: lr_strip_brightness_label
           text:
             format: "%d%%"
             args: [ '(int)round(x / 2.55)' ]
@@ -276,18 +246,6 @@ binary_sensor:
   # LIGHTS TAB — Toggle button state sync
   # ===========================================================================
 
-  # All Lights (Hue group)
-  - platform: homeassistant
-    id: lr_all_lights
-    entity_id: light.living_room
-    trigger_on_initial_state: true
-    on_state:
-      then:
-        - lvgl.widget.update:
-            id: lr_all_lights_button
-            state:
-              checked: !lambda return x;
-
   # Track Lights
   - platform: homeassistant
     id: lr_tracks
@@ -324,18 +282,6 @@ binary_sensor:
             state:
               checked: !lambda return x;
 
-  # TV Lightstrip
-  - platform: homeassistant
-    id: lr_tv_strip
-    entity_id: light.hue_play_gradient_lightstrip_1
-    trigger_on_initial_state: true
-    on_state:
-      then:
-        - lvgl.widget.update:
-            id: lr_tv_strip_button
-            state:
-              checked: !lambda return x;
-
   # Art Deco Lamp
   - platform: homeassistant
     id: lr_art_deco
@@ -345,6 +291,46 @@ binary_sensor:
       then:
         - lvgl.widget.update:
             id: lr_art_deco_button
+            state:
+              checked: !lambda return x;
+
+  # ===========================================================================
+  # LIGHTS TAB — Other Rooms toggle state sync
+  # ===========================================================================
+
+  # Chandelier
+  - platform: homeassistant
+    id: lr_chandelier
+    entity_id: light.dining_room_chandelier
+    trigger_on_initial_state: true
+    on_state:
+      then:
+        - lvgl.widget.update:
+            id: lr_chandelier_button
+            state:
+              checked: !lambda return x;
+
+  # Picture Lights
+  - platform: homeassistant
+    id: lr_picture_lights
+    entity_id: light.dining_room_picture_lights
+    trigger_on_initial_state: true
+    on_state:
+      then:
+        - lvgl.widget.update:
+            id: lr_picture_lights_button
+            state:
+              checked: !lambda return x;
+
+  # Study
+  - platform: homeassistant
+    id: lr_study
+    entity_id: light.study
+    trigger_on_initial_state: true
+    on_state:
+      then:
+        - lvgl.widget.update:
+            id: lr_study_button
             state:
               checked: !lambda return x;
 

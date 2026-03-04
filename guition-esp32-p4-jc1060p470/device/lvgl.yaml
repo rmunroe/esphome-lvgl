@@ -122,348 +122,159 @@ lvgl:
             pad_all: 10
             layout:
               type: flex
-              flex_flow: row
-              pad_column: 10
+              flex_flow: column
+              pad_row: 8
             widgets:
 
-              # ----- Left Column: Light Toggles + Scenes -----
+              # ----- Scene Buttons Row -----
               - obj:
-                  width: 380
-                  height: 500
+                  width: 984
+                  height: 60
                   bg_opa: TRANSP
                   border_width: 0
                   pad_all: 0
                   layout:
                     type: flex
-                    flex_flow: column
-                    pad_row: 8
+                    flex_flow: row
+                    pad_column: 8
+                    flex_align_main: center
+                    flex_align_cross: center
                   widgets:
-
-                    # Light Toggles Card
-                    - obj:
-                        styles: card_warm
-                        width: 380
-                        height: 310
-                        layout:
-                          type: flex
-                          flex_flow: column
-                          pad_row: 8
+                    - button:
+                        id: lr_all_off_button
+                        width: 220
+                        height: 54
+                        styles: scene_button
                         widgets:
                           - label:
-                              styles: section_title
-                              text: "Lights"
-
-                          # Row 1: All, Tracks, Floor
-                          - obj:
-                              width: 356
-                              height: 80
-                              bg_opa: TRANSP
-                              border_width: 0
-                              pad_all: 0
-                              layout:
-                                type: flex
-                                flex_flow: row
-                                pad_column: 6
-                              widgets:
-                                - button:
-                                    id: lr_all_lights_button
-                                    width: 114
-                                    height: 76
-                                    checkable: true
-                                    styles: light_button
-                                    widgets:
-                                      - label:
-                                          text_font: icon_font
-                                          align: top_mid
-                                          y: 2
-                                          text: $lightbulb_group
-                                      - label:
-                                          align: bottom_mid
-                                          text_font: small_font
-                                          text: "All"
-                                    on_click:
-                                      - homeassistant.service:
-                                          service: light.toggle
-                                          data:
-                                            entity_id: light.living_room
-
-                                - button:
-                                    id: lr_tracks_button
-                                    width: 114
-                                    height: 76
-                                    checkable: true
-                                    styles: light_button
-                                    widgets:
-                                      - label:
-                                          text_font: icon_font
-                                          align: top_mid
-                                          y: 2
-                                          text: $track_light
-                                      - label:
-                                          align: bottom_mid
-                                          text_font: small_font
-                                          text: "Tracks"
-                                    on_click:
-                                      - homeassistant.service:
-                                          service: light.toggle
-                                          data:
-                                            entity_id: light.living_room_track_lights
-
-                                - button:
-                                    id: lr_floor_lamp_button
-                                    width: 114
-                                    height: 76
-                                    checkable: true
-                                    styles: light_button
-                                    widgets:
-                                      - label:
-                                          text_font: icon_font
-                                          align: top_mid
-                                          y: 2
-                                          text: $floor_lamp
-                                      - label:
-                                          align: bottom_mid
-                                          text_font: small_font
-                                          text: "Floor"
-                                    on_click:
-                                      - homeassistant.service:
-                                          service: light.toggle
-                                          data:
-                                            entity_id: light.hue_color_lamp_1_5
-
-                          # Row 2: Table, Strip, Deco
-                          - obj:
-                              width: 356
-                              height: 80
-                              bg_opa: TRANSP
-                              border_width: 0
-                              pad_all: 0
-                              layout:
-                                type: flex
-                                flex_flow: row
-                                pad_column: 6
-                              widgets:
-                                - button:
-                                    id: lr_table_lamp_button
-                                    width: 114
-                                    height: 76
-                                    checkable: true
-                                    styles: light_button
-                                    widgets:
-                                      - label:
-                                          text_font: icon_font
-                                          align: top_mid
-                                          y: 2
-                                          text: $desk_lamp
-                                      - label:
-                                          align: bottom_mid
-                                          text_font: small_font
-                                          text: "Table"
-                                    on_click:
-                                      - homeassistant.service:
-                                          service: light.toggle
-                                          data:
-                                            entity_id: light.hue_color_lamp_1_4
-
-                                - button:
-                                    id: lr_tv_strip_button
-                                    width: 114
-                                    height: 76
-                                    checkable: true
-                                    styles: light_button
-                                    widgets:
-                                      - label:
-                                          text_font: icon_font
-                                          align: top_mid
-                                          y: 2
-                                          text: $led_strip
-                                      - label:
-                                          align: bottom_mid
-                                          text_font: small_font
-                                          text: "Strip"
-                                    on_click:
-                                      - homeassistant.service:
-                                          service: light.toggle
-                                          data:
-                                            entity_id: light.hue_play_gradient_lightstrip_1
-
-                                - button:
-                                    id: lr_art_deco_button
-                                    width: 114
-                                    height: 76
-                                    checkable: true
-                                    styles: light_button
-                                    widgets:
-                                      - label:
-                                          text_font: icon_font
-                                          align: top_mid
-                                          y: 2
-                                          text: $lamp
-                                      - label:
-                                          align: bottom_mid
-                                          text_font: small_font
-                                          text: "Deco"
-                                    on_click:
-                                      - homeassistant.service:
-                                          service: light.toggle
-                                          data:
-                                            entity_id: light.living_room_art_deco_lamp
-
-                          # Spacer
-                          - obj:
-                              width: 356
-                              height: 4
-                              bg_opa: TRANSP
-                              border_width: 0
-
-                    # Scenes Card
-                    - obj:
-                        styles: card_warm
-                        width: 380
-                        height: 170
-                        layout:
-                          type: flex
-                          flex_flow: column
-                          pad_row: 8
+                              align: center
+                              text_font: label_font
+                              text: "All Off"
+                              text_color: $text_primary
+                        on_click:
+                          - homeassistant.service:
+                              service: light.turn_off
+                              data:
+                                entity_id: light.living_room
+                    - button:
+                        id: lr_energize_button
+                        width: 180
+                        height: 54
+                        styles: scene_button
                         widgets:
                           - label:
-                              styles: section_title
-                              text: "Scenes"
-                          - buttonmatrix:
-                              id: scene_matrix
-                              width: 356
-                              height: 110
-                              one_checked: true
-                              items:
-                                bg_color: $surface
-                                text_color: $text_primary
-                                radius: 8
-                                checked:
-                                  bg_color: $amber
-                                  text_color: $text_primary
-                              rows:
-                                - buttons:
-                                    - text: "Relax"
-                                      on_press:
-                                        - homeassistant.service:
-                                            service: scene.turn_on
-                                            data:
-                                              entity_id: scene.living_room_relax
-                                    - text: "Watch TV"
-                                      on_press:
-                                        - homeassistant.service:
-                                            service: scene.turn_on
-                                            data:
-                                              entity_id: scene.living_room_watch_tv
-                                    - text: "Natural"
-                                      on_press:
-                                        - homeassistant.service:
-                                            service: scene.turn_on
-                                            data:
-                                              entity_id: scene.living_room_all_day_scene
-                                - buttons:
-                                    - text: "All Off"
-                                      width: 3
-                                      on_press:
-                                        - homeassistant.service:
-                                            service: light.turn_off
-                                            data:
-                                              entity_id: light.living_room
+                              align: center
+                              text_font: label_font
+                              text: "Energize"
+                              text_color: $text_primary
+                        on_click:
+                          - homeassistant.service:
+                              service: scene.turn_on
+                              data:
+                                entity_id: scene.living_room_energize
+                    - button:
+                        id: lr_read_button
+                        width: 180
+                        height: 54
+                        styles: scene_button
+                        widgets:
+                          - label:
+                              align: center
+                              text_font: label_font
+                              text: "Read"
+                              text_color: $text_primary
+                        on_click:
+                          - homeassistant.service:
+                              service: scene.turn_on
+                              data:
+                                entity_id: scene.living_room_read
+                    - button:
+                        id: lr_relax_button
+                        width: 180
+                        height: 54
+                        styles: scene_button
+                        widgets:
+                          - label:
+                              align: center
+                              text_font: label_font
+                              text: "Relax"
+                              text_color: $text_primary
+                        on_click:
+                          - homeassistant.service:
+                              service: scene.turn_on
+                              data:
+                                entity_id: scene.living_room_relax
 
-              # ----- Right Column: Brightness Sliders -----
+              # ----- Separator Line -----
+              - line:
+                  width: 984
+                  height: 4
+                  points:
+                    - 0, 2
+                    - 980, 2
+                  line_color: $text_disabled
+                  line_width: 1
+
+              # ----- Main Content: Light Rows + Other Rooms -----
               - obj:
-                  styles: card_warm
-                  width: 600
-                  height: 500
+                  width: 984
+                  height: 400
+                  bg_opa: TRANSP
+                  border_width: 0
+                  pad_all: 0
                   layout:
                     type: flex
-                    flex_flow: column
-                    pad_row: 6
+                    flex_flow: row
+                    pad_column: 10
                   widgets:
-                    - label:
-                        styles: section_title
-                        text: "Brightness"
 
-                    # Slider row
+                    # ---- Left: Light Controls Column ----
                     - obj:
-                        width: 576
-                        height: 420
+                        width: 680
+                        height: 396
                         bg_opa: TRANSP
                         border_width: 0
                         pad_all: 0
                         layout:
                           type: flex
-                          flex_flow: row
-                          pad_column: 12
-                          flex_align_main: space_evenly
-                          flex_align_cross: center
+                          flex_flow: column
+                          pad_row: 10
+                          flex_align_main: center
                         widgets:
 
-                          # --- All Lights Brightness ---
+                          # --- Track Lights Row ---
                           - obj:
-                              width: 80
-                              height: 400
+                              width: 676
+                              height: 70
                               bg_opa: TRANSP
                               border_width: 0
                               pad_all: 0
                               layout:
                                 type: flex
-                                flex_flow: column
-                                flex_align_main: center
+                                flex_flow: row
+                                pad_column: 10
                                 flex_align_cross: center
-                                pad_row: 6
                               widgets:
-                                - label:
-                                    text_font: icon_font_small
-                                    text: $lightbulb_group
-                                    text_color: $amber
-                                - slider:
-                                    id: lr_all_brightness_slider
-                                    width: 44
-                                    height: 320
-                                    min_value: 0
-                                    max_value: 255
-                                    value: 0
-                                    mode: NORMAL
-                                    styles: brightness_slider
-                                    indicator:
-                                      styles: brightness_slider_indicator
-                                    knob:
-                                      styles: brightness_slider_knob
-                                    on_release:
+                                - button:
+                                    id: lr_tracks_button
+                                    width: 200
+                                    height: 65
+                                    checkable: true
+                                    styles: light_button
+                                    widgets:
+                                      - label:
+                                          align: center
+                                          text_font: label_font
+                                          text: "Track Lights"
+                                    on_click:
                                       - homeassistant.service:
-                                          service: light.turn_on
+                                          service: light.toggle
                                           data:
-                                            entity_id: light.living_room
-                                            brightness: !lambda return to_string((int)lv_slider_get_value(id(lr_all_brightness_slider)));
-                                - label:
-                                    id: lr_all_brightness_label
-                                    text_font: small_font
-                                    text: "0%"
-                                    text_color: $text_secondary
-
-                          # --- Tracks Brightness ---
-                          - obj:
-                              width: 80
-                              height: 400
-                              bg_opa: TRANSP
-                              border_width: 0
-                              pad_all: 0
-                              layout:
-                                type: flex
-                                flex_flow: column
-                                flex_align_main: center
-                                flex_align_cross: center
-                                pad_row: 6
-                              widgets:
-                                - label:
-                                    text_font: icon_font_small
-                                    text: $track_light
-                                    text_color: $amber
+                                            entity_id: light.living_room_track_lights
                                 - slider:
                                     id: lr_tracks_brightness_slider
-                                    width: 44
-                                    height: 320
+                                    width: 380
+                                    height: 40
                                     min_value: 0
                                     max_value: 255
                                     value: 0
@@ -481,32 +292,45 @@ lvgl:
                                             brightness: !lambda return to_string((int)lv_slider_get_value(id(lr_tracks_brightness_slider)));
                                 - label:
                                     id: lr_tracks_brightness_label
+                                    width: 56
                                     text_font: small_font
                                     text: "0%"
                                     text_color: $text_secondary
+                                    text_align: right
 
-                          # --- Floor Lamp Brightness ---
+                          # --- Floor Lamp Row ---
                           - obj:
-                              width: 80
-                              height: 400
+                              width: 676
+                              height: 70
                               bg_opa: TRANSP
                               border_width: 0
                               pad_all: 0
                               layout:
                                 type: flex
-                                flex_flow: column
-                                flex_align_main: center
+                                flex_flow: row
+                                pad_column: 10
                                 flex_align_cross: center
-                                pad_row: 6
                               widgets:
-                                - label:
-                                    text_font: icon_font_small
-                                    text: $floor_lamp
-                                    text_color: $amber
+                                - button:
+                                    id: lr_floor_lamp_button
+                                    width: 200
+                                    height: 65
+                                    checkable: true
+                                    styles: light_button
+                                    widgets:
+                                      - label:
+                                          align: center
+                                          text_font: label_font
+                                          text: "Floor Lamp"
+                                    on_click:
+                                      - homeassistant.service:
+                                          service: light.toggle
+                                          data:
+                                            entity_id: light.hue_color_lamp_1_5
                                 - slider:
                                     id: lr_floor_brightness_slider
-                                    width: 44
-                                    height: 320
+                                    width: 380
+                                    height: 40
                                     min_value: 0
                                     max_value: 255
                                     value: 0
@@ -524,32 +348,45 @@ lvgl:
                                             brightness: !lambda return to_string((int)lv_slider_get_value(id(lr_floor_brightness_slider)));
                                 - label:
                                     id: lr_floor_brightness_label
+                                    width: 56
                                     text_font: small_font
                                     text: "0%"
                                     text_color: $text_secondary
+                                    text_align: right
 
-                          # --- Table Lamp Brightness ---
+                          # --- Table Lamp Row ---
                           - obj:
-                              width: 80
-                              height: 400
+                              width: 676
+                              height: 70
                               bg_opa: TRANSP
                               border_width: 0
                               pad_all: 0
                               layout:
                                 type: flex
-                                flex_flow: column
-                                flex_align_main: center
+                                flex_flow: row
+                                pad_column: 10
                                 flex_align_cross: center
-                                pad_row: 6
                               widgets:
-                                - label:
-                                    text_font: icon_font_small
-                                    text: $desk_lamp
-                                    text_color: $amber
+                                - button:
+                                    id: lr_table_lamp_button
+                                    width: 200
+                                    height: 65
+                                    checkable: true
+                                    styles: light_button
+                                    widgets:
+                                      - label:
+                                          align: center
+                                          text_font: label_font
+                                          text: "Table Lamp"
+                                    on_click:
+                                      - homeassistant.service:
+                                          service: light.toggle
+                                          data:
+                                            entity_id: light.hue_color_lamp_1_4
                                 - slider:
                                     id: lr_table_brightness_slider
-                                    width: 44
-                                    height: 320
+                                    width: 380
+                                    height: 40
                                     min_value: 0
                                     max_value: 255
                                     value: 0
@@ -567,75 +404,45 @@ lvgl:
                                             brightness: !lambda return to_string((int)lv_slider_get_value(id(lr_table_brightness_slider)));
                                 - label:
                                     id: lr_table_brightness_label
+                                    width: 56
                                     text_font: small_font
                                     text: "0%"
                                     text_color: $text_secondary
+                                    text_align: right
 
-                          # --- TV Strip Brightness ---
+                          # --- Art Deco Lamp Row ---
                           - obj:
-                              width: 80
-                              height: 400
+                              width: 676
+                              height: 70
                               bg_opa: TRANSP
                               border_width: 0
                               pad_all: 0
                               layout:
                                 type: flex
-                                flex_flow: column
-                                flex_align_main: center
+                                flex_flow: row
+                                pad_column: 10
                                 flex_align_cross: center
-                                pad_row: 6
                               widgets:
-                                - label:
-                                    text_font: icon_font_small
-                                    text: $led_strip
-                                    text_color: $amber
-                                - slider:
-                                    id: lr_strip_brightness_slider
-                                    width: 44
-                                    height: 320
-                                    min_value: 0
-                                    max_value: 255
-                                    value: 0
-                                    mode: NORMAL
-                                    styles: brightness_slider
-                                    indicator:
-                                      styles: brightness_slider_indicator
-                                    knob:
-                                      styles: brightness_slider_knob
-                                    on_release:
+                                - button:
+                                    id: lr_art_deco_button
+                                    width: 200
+                                    height: 65
+                                    checkable: true
+                                    styles: light_button
+                                    widgets:
+                                      - label:
+                                          align: center
+                                          text_font: label_font
+                                          text: "Art Deco"
+                                    on_click:
                                       - homeassistant.service:
-                                          service: light.turn_on
+                                          service: light.toggle
                                           data:
-                                            entity_id: light.hue_play_gradient_lightstrip_1
-                                            brightness: !lambda return to_string((int)lv_slider_get_value(id(lr_strip_brightness_slider)));
-                                - label:
-                                    id: lr_strip_brightness_label
-                                    text_font: small_font
-                                    text: "0%"
-                                    text_color: $text_secondary
-
-                          # --- Art Deco Brightness ---
-                          - obj:
-                              width: 80
-                              height: 400
-                              bg_opa: TRANSP
-                              border_width: 0
-                              pad_all: 0
-                              layout:
-                                type: flex
-                                flex_flow: column
-                                flex_align_main: center
-                                flex_align_cross: center
-                                pad_row: 6
-                              widgets:
-                                - label:
-                                    text_font: icon_font_small
-                                    text: $lamp
-                                    text_color: $amber
+                                            entity_id: light.living_room_art_deco_lamp
                                 - slider:
                                     id: lr_deco_brightness_slider
-                                    width: 44
-                                    height: 320
+                                    width: 380
+                                    height: 40
                                     min_value: 0
                                     max_value: 255
                                     value: 0
@@ -653,9 +460,76 @@ lvgl:
                                             brightness: !lambda return to_string((int)lv_slider_get_value(id(lr_deco_brightness_slider)));
                                 - label:
                                     id: lr_deco_brightness_label
+                                    width: 56
                                     text_font: small_font
                                     text: "0%"
                                     text_color: $text_secondary
+                                    text_align: right
+
+                    # ---- Right: Other Rooms Card ----
+                    - obj:
+                        styles: card_warm
+                        width: 280
+                        height: 396
+                        layout:
+                          type: flex
+                          flex_flow: column
+                          pad_row: 12
+                        widgets:
+                          - label:
+                              styles: section_title
+                              text: "Other Rooms"
+
+                          - button:
+                              id: lr_chandelier_button
+                              width: 252
+                              height: 80
+                              checkable: true
+                              styles: other_rooms_button
+                              widgets:
+                                - label:
+                                    align: center
+                                    text_font: label_font
+                                    text: "Chandelier"
+                              on_click:
+                                - homeassistant.service:
+                                    service: light.toggle
+                                    data:
+                                      entity_id: light.dining_room_chandelier
+
+                          - button:
+                              id: lr_picture_lights_button
+                              width: 252
+                              height: 80
+                              checkable: true
+                              styles: other_rooms_button
+                              widgets:
+                                - label:
+                                    align: center
+                                    text_font: label_font
+                                    text: "Picture Lights"
+                              on_click:
+                                - homeassistant.service:
+                                    service: light.toggle
+                                    data:
+                                      entity_id: light.dining_room_picture_lights
+
+                          - button:
+                              id: lr_study_button
+                              width: 252
+                              height: 80
+                              checkable: true
+                              styles: other_rooms_button
+                              widgets:
+                                - label:
+                                    align: center
+                                    text_font: label_font
+                                    text: "Study"
+                              on_click:
+                                - homeassistant.service:
+                                    service: light.toggle
+                                    data:
+                                      entity_id: light.study
 
 
           # =================================================================

@@ -120,7 +120,44 @@ lvgl:
       text_color: $text_primary
 
     # =========================================================================
-    # BRIGHTNESS SLIDERS — vertical amber gradient
+    # SCENE BUTTONS — non-checkable scene activators
+    # =========================================================================
+    - id: scene_button
+      bg_color: $surface
+      bg_opa: COVER
+      radius: 10
+      pad_all: 10
+      shadow_width: 0
+      border_width: 0
+      text_color: $text_primary
+      text_font: label_font
+
+    # =========================================================================
+    # OTHER ROOMS BUTTONS — taller toggles for secondary room lights
+    # =========================================================================
+    - id: other_rooms_button
+      bg_color: $surface
+      bg_opa: COVER
+      radius: 12
+      pad_all: 12
+      shadow_width: 0
+      border_width: 0
+      text_color: $text_primary
+      text_font: label_font
+
+    - id: other_rooms_button_checked
+      bg_color: $amber
+      bg_opa: COVER
+      radius: 12
+      pad_all: 12
+      shadow_width: 12
+      shadow_opa: 40%
+      shadow_color: $amber
+      border_width: 0
+      text_color: $text_primary
+
+    # =========================================================================
+    # BRIGHTNESS SLIDERS — amber gradient
     # =========================================================================
     - id: brightness_slider
       bg_color: $surface
