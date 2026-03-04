@@ -686,7 +686,7 @@ lvgl:
                     - label:
                         styles: section_title
                         text: "Blinds"
-                        align: LEFT
+                        align: LEFT_MID
 
                     # Blind Arc
                     - arc:
@@ -793,7 +793,7 @@ lvgl:
                     - label:
                         styles: section_title
                         text: "Ceiling Fan"
-                        align: LEFT
+                        align: LEFT_MID
 
                     # Fan Arc
                     - arc:
