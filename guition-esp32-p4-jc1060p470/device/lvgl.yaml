@@ -435,7 +435,7 @@ lvgl:
                                           service: light.turn_on
                                           data:
                                             entity_id: light.living_room
-                                            brightness: !lambda return (int)id(lr_all_brightness_slider).get_value();
+                                            brightness: !lambda return to_string((int)lv_slider_get_value(id(lr_all_brightness_slider)));
                                 - label:
                                     id: lr_all_brightness_label
                                     text_font: small_font
@@ -478,7 +478,7 @@ lvgl:
                                           service: light.turn_on
                                           data:
                                             entity_id: light.living_room_track_lights
-                                            brightness: !lambda return (int)id(lr_tracks_brightness_slider).get_value();
+                                            brightness: !lambda return to_string((int)lv_slider_get_value(id(lr_tracks_brightness_slider)));
                                 - label:
                                     id: lr_tracks_brightness_label
                                     text_font: small_font
@@ -521,7 +521,7 @@ lvgl:
                                           service: light.turn_on
                                           data:
                                             entity_id: light.hue_color_lamp_1_5
-                                            brightness: !lambda return (int)id(lr_floor_brightness_slider).get_value();
+                                            brightness: !lambda return to_string((int)lv_slider_get_value(id(lr_floor_brightness_slider)));
                                 - label:
                                     id: lr_floor_brightness_label
                                     text_font: small_font
@@ -564,7 +564,7 @@ lvgl:
                                           service: light.turn_on
                                           data:
                                             entity_id: light.hue_color_lamp_1_4
-                                            brightness: !lambda return (int)id(lr_table_brightness_slider).get_value();
+                                            brightness: !lambda return to_string((int)lv_slider_get_value(id(lr_table_brightness_slider)));
                                 - label:
                                     id: lr_table_brightness_label
                                     text_font: small_font
@@ -607,7 +607,7 @@ lvgl:
                                           service: light.turn_on
                                           data:
                                             entity_id: light.hue_play_gradient_lightstrip_1
-                                            brightness: !lambda return (int)id(lr_strip_brightness_slider).get_value();
+                                            brightness: !lambda return to_string((int)lv_slider_get_value(id(lr_strip_brightness_slider)));
                                 - label:
                                     id: lr_strip_brightness_label
                                     text_font: small_font
@@ -650,7 +650,7 @@ lvgl:
                                           service: light.turn_on
                                           data:
                                             entity_id: light.living_room_art_deco_lamp
-                                            brightness: !lambda return (int)id(lr_deco_brightness_slider).get_value();
+                                            brightness: !lambda return to_string((int)lv_slider_get_value(id(lr_deco_brightness_slider)));
                                 - label:
                                     id: lr_deco_brightness_label
                                     text_font: small_font
@@ -709,7 +709,7 @@ lvgl:
                               service: cover.set_cover_position
                               data:
                                 entity_id: cover.living_room_blind
-                                position: !lambda return (int)id(lr_blind_arc).get_value();
+                                position: !lambda return to_string((int)lv_arc_get_value(id(lr_blind_arc)));
                         widgets:
                           - label:
                               id: lr_blind_value_label
@@ -817,11 +817,11 @@ lvgl:
                               data:
                                 entity_id: fan.living_room_fans
                                 percentage: !lambda |-
-                                  int val = (int)id(lr_fan_arc).get_value();
-                                  if (val < 17) return 0;
-                                  if (val < 50) return 33;
-                                  if (val < 83) return 66;
-                                  return 100;
+                                  int val = (int)lv_arc_get_value(id(lr_fan_arc));
+                                  if (val < 17) return "0";
+                                  if (val < 50) return "33";
+                                  if (val < 83) return "66";
+                                  return "100";
                         widgets:
                           - label:
                               id: lr_fan_value_label
@@ -1463,7 +1463,7 @@ lvgl:
                                     service: media_player.volume_set
                                     data:
                                       entity_id: media_player.living_room_sonos
-                                      volume_level: !lambda return id(lr_volume_slider).get_value() / 100.0;
+                                      volume_level: !lambda return to_string(lv_slider_get_value(id(lr_volume_slider)) / 100.0);
                           - label:
                               id: lr_volume_label
                               text_font: label_font
@@ -1486,4 +1486,4 @@ lvgl:
                                     service: media_player.volume_mute
                                     data:
                                       entity_id: media_player.living_room_sonos
-                                      is_volume_muted: !lambda return !id(lr_sonos_muted).state;
+                                      is_volume_muted: !lambda return id(lr_sonos_muted).state ? "false" : "true";
