@@ -426,7 +426,8 @@ binary_sensor:
               checked: !lambda return x;
         - lvgl.led.update:
             id: lr_tv_led
-            brightness: !lambda return x ? 200 : 0;
+            brightness: !lambda |-
+              return x ? 200 : 0;
 
   # Apple TV → switch state + LED
   - platform: homeassistant
@@ -441,7 +442,8 @@ binary_sensor:
               checked: !lambda return x;
         - lvgl.led.update:
             id: lr_appletv_led
-            brightness: !lambda return x ? 200 : 0;
+            brightness: !lambda |-
+              return x ? 200 : 0;
 
   # PS5 Power → switch state + LED
   - platform: homeassistant
@@ -456,7 +458,8 @@ binary_sensor:
               checked: !lambda return x;
         - lvgl.led.update:
             id: lr_ps5_led
-            brightness: !lambda return x ? 200 : 0;
+            brightness: !lambda |-
+              return x ? 200 : 0;
 
   # Sonos Plug → switch state + LED
   - platform: homeassistant
@@ -471,7 +474,8 @@ binary_sensor:
               checked: !lambda return x;
         - lvgl.led.update:
             id: lr_sonos_led
-            brightness: !lambda return x ? 200 : 0;
+            brightness: !lambda |-
+              return x ? 200 : 0;
 
   # Sonos Mute State → mute button
   - platform: homeassistant
@@ -495,4 +499,5 @@ binary_sensor:
       then:
         - lvgl.led.update:
             id: status_led
-            brightness: !lambda return x ? 200 : 0;
+            brightness: !lambda |-
+              return x ? 200 : 0;
