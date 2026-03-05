@@ -259,7 +259,7 @@ text_sensor:
           text: !lambda |-
             if (x == "playing") return "\U000F03E4";
             return "\U000F040B";
-      - component.update: screen_active
+      - script.execute: evaluate_screen
 
 
 # =============================================================================
@@ -519,7 +519,7 @@ binary_sensor:
             id: lr_appletv_led
             brightness: !lambda |-
               return x ? 200 : 0;
-        - component.update: screen_active
+        - script.execute: evaluate_screen
 
   # PS5 Power → switch state + LED + screen wake
   - platform: homeassistant
@@ -536,7 +536,7 @@ binary_sensor:
             id: lr_ps5_led
             brightness: !lambda |-
               return x ? 200 : 0;
-        - component.update: screen_active
+        - script.execute: evaluate_screen
 
   # Sonos Plug → switch state + LED
   - platform: homeassistant

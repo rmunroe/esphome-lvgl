@@ -8,8 +8,8 @@
 #   - Sonos is playing (media_player.living_room_sonos)
 # Screen turns off when NONE of the above are true.
 #
-# Each source sensor triggers an immediate re-evaluation of screen_active
-# via component.update calls (in this file and in sensors.yaml).
+# Each source sensor calls the evaluate_screen script, which publishes
+# the combined state to the screen_active template binary sensor.
 # =============================================================================
 
 switch:
@@ -22,29 +22,31 @@ switch:
     turn_off_action:
       - light.turn_off: display_backlight
 
+script:
+  - id: evaluate_screen
+    mode: restart
+    then:
+      - binary_sensor.template.publish:
+          id: screen_active
+          state: !lambda |-
+            return id(presence).state ||
+                   id(lr_appletv).state ||
+                   id(lr_ps5).state ||
+                   (id(lr_sonos_state).has_state() && id(lr_sonos_state).state == "playing");
+
 binary_sensor:
-  # Occupancy from HA — triggers immediate screen_active re-evaluation
+  # Occupancy from HA
   - platform: homeassistant
     id: presence
     entity_id: binary_sensor.living_room_occupancy
     internal: true
     on_state:
-      - component.update: screen_active
+      - script.execute: evaluate_screen
 
-  # Combined activity sensor — screen on if ANY source is active
+  # Combined activity sensor — state published by evaluate_screen script
   - platform: template
     id: screen_active
     internal: true
-    lambda: |-
-      // Room occupied
-      if (id(presence).state) return true;
-      // Apple TV active
-      if (id(lr_appletv).state) return true;
-      // PS5 powered on
-      if (id(lr_ps5).state) return true;
-      // Sonos actively playing
-      if (id(lr_sonos_state).has_state() && id(lr_sonos_state).state == "playing") return true;
-      return false;
     on_press:
       - lvgl.resume:
       - delay: 10ms
