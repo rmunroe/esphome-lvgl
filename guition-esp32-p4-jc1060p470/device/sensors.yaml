@@ -124,7 +124,8 @@ sensor:
     on_value:
       - lvgl.slider.update:
           id: lr_tracks_brightness_slider
-          value: !lambda return id(lr_tracks).state ? (int)x : 0;
+          value: !lambda |-
+            return id(lr_tracks).state ? (int)x : 0;
       - lvgl.label.update:
           id: lr_tracks_brightness_label
           text: !lambda |-
@@ -144,7 +145,8 @@ sensor:
     on_value:
       - lvgl.slider.update:
           id: lr_floor_brightness_slider
-          value: !lambda return id(lr_floor_lamp).state ? (int)x : 0;
+          value: !lambda |-
+            return id(lr_floor_lamp).state ? (int)x : 0;
       - lvgl.label.update:
           id: lr_floor_brightness_label
           text: !lambda |-
@@ -164,7 +166,8 @@ sensor:
     on_value:
       - lvgl.slider.update:
           id: lr_table_brightness_slider
-          value: !lambda return id(lr_table_lamp).state ? (int)x : 0;
+          value: !lambda |-
+            return id(lr_table_lamp).state ? (int)x : 0;
       - lvgl.label.update:
           id: lr_table_brightness_label
           text: !lambda |-
@@ -184,7 +187,8 @@ sensor:
     on_value:
       - lvgl.slider.update:
           id: lr_deco_brightness_slider
-          value: !lambda return id(lr_art_deco).state ? (int)x : 0;
+          value: !lambda |-
+            return id(lr_art_deco).state ? (int)x : 0;
       - lvgl.label.update:
           id: lr_deco_brightness_label
           text: !lambda |-
