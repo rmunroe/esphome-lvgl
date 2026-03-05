@@ -2,7 +2,7 @@
 # THEME — Comprehensive style system for the modern card-based UI
 # =============================================================================
 # Color palette:
-#   Primary:        0x00A8E8 (blue) — active/checked highlights
+#   Primary:        0x4682B4 (steel/slate blue) — active/checked highlights
 #   Warm accents:   0xFF8C00 (amber), 0xFFA726 (light amber) — card borders, temp bars
 #   Cool (climate): 0x00BFA5 (teal)
 #   Media:          0x9C27B0 (purple), 0x7C4DFF (violet)
@@ -13,13 +13,13 @@ substitutions:
   # Legacy compat
   icon_font: icon_font
   # Color palette
-  button_on_color: "0x00A8E8"
+  button_on_color: "0x4682B4"
   button_text_color: "0xFFFFFF"
   button_control_color: "0x1E1E1E"
   # Accent colors
   amber: "0xFF8C00"
   amber_light: "0xFFA726"
-  blue: "0x00A8E8"
+  blue: "0x4682B4"
   teal: "0x00BFA5"
   purple: "0x9C27B0"
   violet: "0x7C4DFF"
