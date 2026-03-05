@@ -109,7 +109,7 @@ lvgl:
           border_width: 0
           shadow_width: 0
           checked:
-            text_color: $amber
+            text_color: $blue
         tabs:
 
           # =================================================================

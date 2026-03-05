@@ -2,8 +2,9 @@
 # THEME — Comprehensive style system for the modern card-based UI
 # =============================================================================
 # Color palette:
-#   Warm (lights):  0xFF8C00 (amber), 0xFFA726 (light amber)
-#   Cool (climate): 0x00A8E8 (blue), 0x00BFA5 (teal)
+#   Primary:        0x00A8E8 (blue) — active/checked highlights
+#   Warm accents:   0xFF8C00 (amber), 0xFFA726 (light amber) — card borders, temp bars
+#   Cool (climate): 0x00BFA5 (teal)
 #   Media:          0x9C27B0 (purple), 0x7C4DFF (violet)
 #   Neutral:        0x1E1E1E (card bg), 0x121212 (page bg), 0x2A2A2A (raised)
 # =============================================================================
@@ -12,7 +13,7 @@ substitutions:
   # Legacy compat
   icon_font: icon_font
   # Color palette
-  button_on_color: "0xFF8C00"
+  button_on_color: "0x00A8E8"
   button_text_color: "0xFFFFFF"
   button_control_color: "0x1E1E1E"
   # Accent colors
@@ -109,13 +110,13 @@ lvgl:
       text_font: label_font
 
     - id: light_button_checked
-      bg_color: $amber
+      bg_color: $blue
       bg_opa: COVER
       radius: 12
       pad_all: 10
       shadow_width: 16
       shadow_opa: 60%
-      shadow_color: $amber
+      shadow_color: $blue
       border_width: 0
       text_color: $text_primary
 
@@ -146,13 +147,13 @@ lvgl:
       text_font: label_font
 
     - id: other_rooms_button_checked
-      bg_color: $amber
+      bg_color: $blue
       bg_opa: COVER
       radius: 12
       pad_all: 12
       shadow_width: 12
       shadow_opa: 40%
-      shadow_color: $amber
+      shadow_color: $blue
       border_width: 0
       text_color: $text_primary
 
@@ -166,7 +167,7 @@ lvgl:
       border_width: 0
 
     - id: brightness_slider_indicator
-      bg_color: $amber
+      bg_color: $blue
       bg_opa: COVER
       radius: 8
 
@@ -344,17 +345,17 @@ lvgl:
       text_color: $text_primary
       bg_color: $surface
       checked:
-        bg_color: $amber
+        bg_color: $blue
         text_color: $text_primary
         shadow_width: 12
         shadow_opa: 40%
-        shadow_color: $amber
+        shadow_color: $blue
 
     slider:
       bg_color: $surface
       radius: 6
       indicator:
-        bg_color: $amber
+        bg_color: $blue
         radius: 6
       knob:
         bg_color: 0xFFFFFF
@@ -377,7 +378,7 @@ lvgl:
       bg_color: $surface
       radius: 16
       checked:
-        bg_color: $amber
+        bg_color: $blue
 
     label:
       text_font: label_font
@@ -401,5 +402,5 @@ lvgl:
         text_color: $text_primary
         radius: 8
         checked:
-          bg_color: $amber
+          bg_color: $blue
           text_color: $text_primary
