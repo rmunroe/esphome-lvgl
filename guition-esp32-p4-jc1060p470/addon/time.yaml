@@ -24,5 +24,8 @@ script:
           text: !lambda |-
             static char time_buf[17];
             auto now = id(sntp_time).now();
-            snprintf(time_buf, sizeof(time_buf), "%02d:%02d", now.hour, now.minute);
+            int hour = now.hour % 12;
+            if (hour == 0) hour = 12;
+            const char *ampm = now.hour < 12 ? "AM" : "PM";
+            snprintf(time_buf, sizeof(time_buf), "%d:%02d %s", hour, now.minute, ampm);
             return time_buf;

@@ -11,6 +11,8 @@
 lvgl:
   displays: my_display
   byte_order: little_endian
+  bg_color: $page_bg
+  bg_opa: COVER
 
   # ===========================================================================
   # TOP LAYER — Header bar (always visible above tabview)
@@ -57,7 +59,7 @@ lvgl:
             - label:
                 id: display_time
                 text_font: header_font
-                text: "--:--"
+                text: "--:-- --"
                 text_color: $text_primary
 
             # Right: Humidity + status LED
