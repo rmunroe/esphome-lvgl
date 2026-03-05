@@ -124,10 +124,11 @@ sensor:
     on_value:
       - lvgl.slider.update:
           id: lr_tracks_brightness_slider
-          value: !lambda return (int)x;
+          value: !lambda return id(lr_tracks).state ? (int)x : 0;
       - lvgl.label.update:
           id: lr_tracks_brightness_label
           text: !lambda |-
+            if (!id(lr_tracks).state) return "0%";
             static char buf[8];
             int pct = (int)(x * 100 / 255 + 0.5);
             if (pct < 0) pct = 0;
@@ -143,10 +144,11 @@ sensor:
     on_value:
       - lvgl.slider.update:
           id: lr_floor_brightness_slider
-          value: !lambda return (int)x;
+          value: !lambda return id(lr_floor_lamp).state ? (int)x : 0;
       - lvgl.label.update:
           id: lr_floor_brightness_label
           text: !lambda |-
+            if (!id(lr_floor_lamp).state) return "0%";
             static char buf[8];
             int pct = (int)(x * 100 / 255 + 0.5);
             if (pct < 0) pct = 0;
@@ -162,10 +164,11 @@ sensor:
     on_value:
       - lvgl.slider.update:
           id: lr_table_brightness_slider
-          value: !lambda return (int)x;
+          value: !lambda return id(lr_table_lamp).state ? (int)x : 0;
       - lvgl.label.update:
           id: lr_table_brightness_label
           text: !lambda |-
+            if (!id(lr_table_lamp).state) return "0%";
             static char buf[8];
             int pct = (int)(x * 100 / 255 + 0.5);
             if (pct < 0) pct = 0;
@@ -181,10 +184,11 @@ sensor:
     on_value:
       - lvgl.slider.update:
           id: lr_deco_brightness_slider
-          value: !lambda return (int)x;
+          value: !lambda return id(lr_art_deco).state ? (int)x : 0;
       - lvgl.label.update:
           id: lr_deco_brightness_label
           text: !lambda |-
+            if (!id(lr_art_deco).state) return "0%";
             static char buf[8];
             int pct = (int)(x * 100 / 255 + 0.5);
             if (pct < 0) pct = 0;
@@ -273,6 +277,16 @@ binary_sensor:
             id: lr_tracks_button
             state:
               checked: !lambda return x;
+        - if:
+            condition:
+              lambda: return !x;
+            then:
+              - lvgl.slider.update:
+                  id: lr_tracks_brightness_slider
+                  value: 0
+              - lvgl.label.update:
+                  id: lr_tracks_brightness_label
+                  text: "0%"
 
   # Floor Lamp
   - platform: homeassistant
@@ -285,6 +299,16 @@ binary_sensor:
             id: lr_floor_lamp_button
             state:
               checked: !lambda return x;
+        - if:
+            condition:
+              lambda: return !x;
+            then:
+              - lvgl.slider.update:
+                  id: lr_floor_brightness_slider
+                  value: 0
+              - lvgl.label.update:
+                  id: lr_floor_brightness_label
+                  text: "0%"
 
   # Table Lamp
   - platform: homeassistant
@@ -297,6 +321,16 @@ binary_sensor:
             id: lr_table_lamp_button
             state:
               checked: !lambda return x;
+        - if:
+            condition:
+              lambda: return !x;
+            then:
+              - lvgl.slider.update:
+                  id: lr_table_brightness_slider
+                  value: 0
+              - lvgl.label.update:
+                  id: lr_table_brightness_label
+                  text: "0%"
 
   # Art Deco Lamp
   - platform: homeassistant
@@ -309,6 +343,16 @@ binary_sensor:
             id: lr_art_deco_button
             state:
               checked: !lambda return x;
+        - if:
+            condition:
+              lambda: return !x;
+            then:
+              - lvgl.slider.update:
+                  id: lr_deco_brightness_slider
+                  value: 0
+              - lvgl.label.update:
+                  id: lr_deco_brightness_label
+                  text: "0%"
 
   # ===========================================================================
   # LIGHTS TAB — Other Rooms toggle state sync
