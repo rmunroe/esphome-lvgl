@@ -6,12 +6,18 @@
 #   - Apple TV is active (remote.living_room_apple_tv)
 #   - PS5 is powered on (switch.ps5_power)
 #   - Sonos is playing (media_player.living_room_sonos)
-#   - Screen is touched while off (touch-to-wake)
+#   - Screen is touched while off (touch-to-wake, stays on 2 min)
 # Screen turns off when NONE of the above are true.
 #
 # Each source sensor calls the evaluate_screen script, which publishes
 # the combined state to the screen_active template binary sensor.
+# Touch-to-wake starts a 2-minute timer; further touches reset it.
 # =============================================================================
+
+globals:
+  - id: touch_wake_active
+    type: bool
+    initial_value: "false"
 
 switch:
   - platform: template
@@ -34,10 +40,21 @@ script:
       - binary_sensor.template.publish:
           id: screen_active
           state: !lambda |-
-            return id(presence).state ||
+            return id(touch_wake_active) ||
+                   id(presence).state ||
                    id(lr_appletv).state ||
                    id(lr_ps5).state ||
                    (id(lr_sonos_state).has_state() && id(lr_sonos_state).state == "playing");
+
+  - id: touch_wake_timeout
+    mode: restart
+    then:
+      - lambda: id(touch_wake_active) = true;
+      - script.execute: evaluate_screen
+      - delay: 2min
+      - lambda: id(touch_wake_active) = false;
+      - script.execute: evaluate_screen
+      - logger.log: "Touch-wake timeout expired"
 
 binary_sensor:
   # Occupancy from HA
@@ -48,7 +65,7 @@ binary_sensor:
     on_state:
       - script.execute: evaluate_screen
 
-  # Touch-to-wake — full-screen touch zone wakes screen when off
+  # Touch-to-wake — tapping the screen wakes it and resets the timeout
   - platform: touchscreen
     touchscreen_id: my_touchscreen
     id: touch_wake
@@ -62,10 +79,14 @@ binary_sensor:
           condition:
             lambda: return !id(screen_active).state;
           then:
-            - binary_sensor.template.publish:
-                id: screen_active
-                state: true
-            - logger.log: "Screen woken by touch"
+            - script.execute: touch_wake_timeout
+            - logger.log: "Screen woken by touch — 2 min timeout started"
+      - if:
+          condition:
+            lambda: return id(touch_wake_active);
+          then:
+            - script.execute: touch_wake_timeout
+            - logger.log: "Touch-wake timeout reset"
 
   # Combined activity sensor — state published by evaluate_screen script
   - platform: template
