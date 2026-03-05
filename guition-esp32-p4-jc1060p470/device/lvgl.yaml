@@ -470,7 +470,7 @@ lvgl:
 
                     # ---- Right: Other Rooms Card ----
                     - obj:
-                        styles: card_warm
+                        styles: card_base
                         width: 280
                         height: 396
                         layout:
