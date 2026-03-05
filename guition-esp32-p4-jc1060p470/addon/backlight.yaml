@@ -1,4 +1,17 @@
-# Backlight
+# =============================================================================
+# BACKLIGHT — Presence & activity-based screen control
+# =============================================================================
+# Screen turns on when ANY of the following are true:
+#   - Room is occupied (binary_sensor.living_room_occupancy)
+#   - Apple TV is active (remote.living_room_apple_tv)
+#   - PS5 is powered on (switch.ps5_power)
+#   - Sonos is playing (media_player.living_room_sonos)
+# Screen turns off when NONE of the above are true.
+#
+# The occupancy sensor triggers an immediate re-evaluation.
+# Media device states are polled every 5 seconds.
+# =============================================================================
+
 switch:
   - platform: template
     id: backlight
@@ -9,19 +22,37 @@ switch:
     turn_off_action:
       - light.turn_off: display_backlight
 
-# Screensaver Presence Trigger
 binary_sensor:
+  # Occupancy from HA — triggers immediate screen_active re-evaluation
   - platform: homeassistant
     id: presence
     entity_id: binary_sensor.living_room_occupancy
+    internal: true
+    on_state:
+      - component.update: screen_active
+
+  # Combined activity sensor — screen on if ANY source is active
+  - platform: template
+    id: screen_active
+    internal: true
+    update_interval: 5s
+    lambda: |-
+      // Room occupied
+      if (id(presence).state) return true;
+      // Apple TV active
+      if (id(lr_appletv).state) return true;
+      // PS5 powered on
+      if (id(lr_ps5).state) return true;
+      // Sonos actively playing
+      if (id(lr_sonos_state).has_state() && id(lr_sonos_state).state == "playing") return true;
+      return false;
     on_press:
       - lvgl.resume:
       - delay: 10ms
       - switch.turn_on: backlight
-      - logger.log: "Screensaver is turned off"
-
+      - logger.log: "Screen on — presence or media activity detected"
     on_release:
       - switch.turn_off: backlight
       - lvgl.pause:
           show_snow: true
-      - logger.log: "Screensaver is turned on"
+      - logger.log: "Screen off — no presence or media activity"
