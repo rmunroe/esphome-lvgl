@@ -249,7 +249,7 @@ text_sensor:
             if (x.empty()) return "--";
             return x.c_str();
 
-  # Sonos: Playback state (playing/paused/idle) → play/pause icon swap
+  # Sonos: Playback state (playing/paused/idle) → play/pause icon swap + screen wake
   - platform: homeassistant
     entity_id: media_player.living_room_sonos
     id: lr_sonos_state
@@ -259,6 +259,7 @@ text_sensor:
           text: !lambda |-
             if (x == "playing") return "\U000F03E4";
             return "\U000F040B";
+      - component.update: screen_active
 
 
 # =============================================================================
@@ -503,7 +504,7 @@ binary_sensor:
             brightness: !lambda |-
               return x ? 200 : 0;
 
-  # Apple TV → switch state + LED
+  # Apple TV → switch state + LED + screen wake
   - platform: homeassistant
     id: lr_appletv
     entity_id: remote.living_room_apple_tv
@@ -518,8 +519,9 @@ binary_sensor:
             id: lr_appletv_led
             brightness: !lambda |-
               return x ? 200 : 0;
+        - component.update: screen_active
 
-  # PS5 Power → switch state + LED
+  # PS5 Power → switch state + LED + screen wake
   - platform: homeassistant
     id: lr_ps5
     entity_id: switch.ps5_power
@@ -534,6 +536,7 @@ binary_sensor:
             id: lr_ps5_led
             brightness: !lambda |-
               return x ? 200 : 0;
+        - component.update: screen_active
 
   # Sonos Plug → switch state + LED
   - platform: homeassistant

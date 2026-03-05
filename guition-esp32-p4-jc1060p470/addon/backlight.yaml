@@ -8,8 +8,8 @@
 #   - Sonos is playing (media_player.living_room_sonos)
 # Screen turns off when NONE of the above are true.
 #
-# The occupancy sensor triggers an immediate re-evaluation.
-# Media device states are polled every 5 seconds.
+# Each source sensor triggers an immediate re-evaluation of screen_active
+# via component.update calls (in this file and in sensors.yaml).
 # =============================================================================
 
 switch:
@@ -35,7 +35,6 @@ binary_sensor:
   - platform: template
     id: screen_active
     internal: true
-    update_interval: 5s
     lambda: |-
       // Room occupied
       if (id(presence).state) return true;
