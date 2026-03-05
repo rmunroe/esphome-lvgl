@@ -2,7 +2,7 @@
 
 Welcome to my ESPHome LVGL configuration repository! This project provides a modular setup for ESP32 touch LCD devices using the LVGL graphics library, designed specifically for home automation and sensor monitoring.
 
-*7-inch touch LCD display running ESPHome with LVGL interface, showing home automation controls including temperature display, printer status, air conditioning controls, and various smart home features.*
+*7-inch touch LCD display running ESPHome with LVGL interface, showing home automation controls including lighting, blinds, ceiling fan, and entertainment device management.*
 
 ## Purpose
 
