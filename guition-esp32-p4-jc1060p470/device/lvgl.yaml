@@ -273,7 +273,7 @@ lvgl:
                                             entity_id: light.living_room_track_lights
                                 - slider:
                                     id: lr_tracks_brightness_slider
-                                    width: 330
+                                    width: 310
                                     height: 40
                                     min_value: 0
                                     max_value: 255
@@ -329,7 +329,7 @@ lvgl:
                                             entity_id: light.hue_color_lamp_1_5
                                 - slider:
                                     id: lr_floor_brightness_slider
-                                    width: 330
+                                    width: 310
                                     height: 40
                                     min_value: 0
                                     max_value: 255
@@ -385,7 +385,7 @@ lvgl:
                                             entity_id: light.hue_color_lamp_1_4
                                 - slider:
                                     id: lr_table_brightness_slider
-                                    width: 330
+                                    width: 310
                                     height: 40
                                     min_value: 0
                                     max_value: 255
@@ -441,7 +441,7 @@ lvgl:
                                             entity_id: light.living_room_art_deco_lamp
                                 - slider:
                                     id: lr_deco_brightness_slider
-                                    width: 330
+                                    width: 310
                                     height: 40
                                     min_value: 0
                                     max_value: 255
