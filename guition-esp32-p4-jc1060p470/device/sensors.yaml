@@ -127,9 +127,13 @@ sensor:
           value: !lambda return (int)x;
       - lvgl.label.update:
           id: lr_tracks_brightness_label
-          text:
-            format: "%d%%"
-            args: [ '(int)round(x / 2.55)' ]
+          text: !lambda |-
+            static char buf[8];
+            int pct = (int)(x * 100 / 255 + 0.5);
+            if (pct < 0) pct = 0;
+            if (pct > 100) pct = 100;
+            snprintf(buf, sizeof(buf), "%d%%", pct);
+            return buf;
 
   # Floor Lamp brightness
   - platform: homeassistant
@@ -142,9 +146,13 @@ sensor:
           value: !lambda return (int)x;
       - lvgl.label.update:
           id: lr_floor_brightness_label
-          text:
-            format: "%d%%"
-            args: [ '(int)round(x / 2.55)' ]
+          text: !lambda |-
+            static char buf[8];
+            int pct = (int)(x * 100 / 255 + 0.5);
+            if (pct < 0) pct = 0;
+            if (pct > 100) pct = 100;
+            snprintf(buf, sizeof(buf), "%d%%", pct);
+            return buf;
 
   # Table Lamp brightness
   - platform: homeassistant
@@ -157,9 +165,13 @@ sensor:
           value: !lambda return (int)x;
       - lvgl.label.update:
           id: lr_table_brightness_label
-          text:
-            format: "%d%%"
-            args: [ '(int)round(x / 2.55)' ]
+          text: !lambda |-
+            static char buf[8];
+            int pct = (int)(x * 100 / 255 + 0.5);
+            if (pct < 0) pct = 0;
+            if (pct > 100) pct = 100;
+            snprintf(buf, sizeof(buf), "%d%%", pct);
+            return buf;
 
   # Art Deco Lamp brightness
   - platform: homeassistant
@@ -172,9 +184,13 @@ sensor:
           value: !lambda return (int)x;
       - lvgl.label.update:
           id: lr_deco_brightness_label
-          text:
-            format: "%d%%"
-            args: [ '(int)round(x / 2.55)' ]
+          text: !lambda |-
+            static char buf[8];
+            int pct = (int)(x * 100 / 255 + 0.5);
+            if (pct < 0) pct = 0;
+            if (pct > 100) pct = 100;
+            snprintf(buf, sizeof(buf), "%d%%", pct);
+            return buf;
 
   # ===========================================================================
   # SONOS — Volume level
