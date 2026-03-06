@@ -125,3 +125,7 @@ display:
     update_interval: never
     auto_clear_enabled: false
     hsync_pulse_width: 20     # The only difference to the examples provided
+
+# Screenshot server — serves live JPEG at http://<device-ip>:8080/screenshot
+lvgl_screenshot:
+  port: 8080
