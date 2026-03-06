@@ -165,8 +165,6 @@ lvgl:
       bg_opa: COVER
       radius: 8
       border_width: 0
-      pad_left: 30
-      pad_right: 30
 
     - id: brightness_slider_indicator
       bg_color: $blue
