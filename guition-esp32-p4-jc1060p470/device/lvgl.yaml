@@ -473,6 +473,7 @@ lvgl:
                         styles: card_base
                         width: 280
                         height: 396
+                        border_width: 0
                         layout:
                           type: flex
                           flex_flow: column
@@ -484,8 +485,8 @@ lvgl:
 
                           - button:
                               id: lr_chandelier_button
-                              width: 252
-                              height: 80
+                              width: 256
+                              flex_grow: 1
                               checkable: true
                               styles: other_rooms_button
                               widgets:
@@ -501,8 +502,8 @@ lvgl:
 
                           - button:
                               id: lr_picture_lights_button
-                              width: 252
-                              height: 80
+                              width: 256
+                              flex_grow: 1
                               checkable: true
                               styles: other_rooms_button
                               widgets:
@@ -518,8 +519,8 @@ lvgl:
 
                           - button:
                               id: lr_study_button
-                              width: 252
-                              height: 80
+                              width: 256
+                              flex_grow: 1
                               checkable: true
                               styles: other_rooms_button
                               widgets:
