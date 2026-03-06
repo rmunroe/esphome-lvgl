@@ -80,3 +80,43 @@ Sensors use `platform: homeassistant` to pull entity state. The `on_value` callb
 - Button IDs in `lvgl.yaml` must have matching binary_sensor entries in `sensors.yaml` to sync checked state.
 - The `spares/` directory contains optional/experimental configs not included in `package.yaml` by default.
 - Stateful Scenes integration (external HA add-on) is used for scene state tracking — scene buttons toggle `switch.*_stateful_scene` entities.
+
+## Custom Components
+
+### `components/lvgl_screenshot/`
+
+An ESPHome external component that serves a live JPEG screenshot of the LVGL display via HTTP. Designed for ESP32-P4 MIPI DSI displays where the standard `display_capture` component doesn't work (MIPI DSI displays don't inherit from `DisplayBuffer`).
+
+**Files:**
+- `__init__.py` — ESPHome component registration; config schema with `port` option; enables `LV_USE_SNAPSHOT=1` build flag
+- `lvgl_screenshot.h` — Class definition (`LvglScreenshot : public Component`) with semaphore-based HTTP↔main-loop sync
+- `lvgl_screenshot.cpp` — Full implementation: PSRAM buffer allocation, esp_http_server on configurable port, RGB565→RGB888 conversion, JPEG encoding via stb_image_write
+- `stb_image_write.h` — v1.16 public domain JPEG/PNG encoder library
+
+**Architecture:**
+- Runs a standalone `esp_http_server` (ESP-IDF httpd) on port 8080 (configurable), independent from ESPHome's `web_server` component
+- HTTP handler runs on httpd task, signals main loop via FreeRTOS semaphores, main loop does LVGL capture (LVGL is not thread-safe), signals back when done
+- All large buffers (snapshot, RGB888 intermediate, JPEG output, stb temp buffers) allocated in PSRAM via `heap_caps_malloc(MALLOC_CAP_SPIRAM)`
+- `max_open_sockets = 2` to avoid LWIP socket starvation (ESPHome doesn't account for this server's sockets)
+
+**YAML config** (placed in `device/device.yaml` alongside `external_components` — must NOT be in a separate `!include` file):
+```yaml
+external_components:
+  - source:
+      type: git
+      url: https://github.com/rmunroe/esphome-lvgl
+      ref: main
+    refresh: 1s
+    components: [lvgl_screenshot]
+
+lvgl_screenshot:
+  port: 8080
+```
+
+**Key lessons learned:**
+- The `lvgl_screenshot:` YAML key and its `external_components` source MUST be in the same file (e.g., `device.yaml`). ESPHome's remote package system does NOT properly merge external component YAML keys from separate `!include` files.
+- ESPHome compiles ALL `.cpp` files in external component directories regardless of whether `to_code()` runs — a component can appear to compile but never instantiate if the YAML key isn't recognized.
+- For ESP-IDF builds, use `beginResponse` not `beginResponse_P` (the latter is Arduino-only).
+- `LV_COLOR_16_SWAP` affects the `lv_color_t` struct layout — use `#if LV_COLOR_16_SWAP` to handle split vs unified green channel.
+
+**Current status:** The endpoint works and serves JPEG images, but screenshots from MIPI DSI displays have a vertical shift (header cut off, bottom repeated). This is because LVGL's draw buffers (`buf1`/`buf2`) on MIPI DSI are DMA framebuffers managed by the DPI panel driver, and reading them directly produces shifted content. The fix is to use LVGL's `lv_snapshot_take_to_buf()` API which re-renders the screen to a fresh buffer independently of the hardware display driver.

@@ -28,6 +28,9 @@ class LvglScreenshot : public Component {
   SemaphoreHandle_t capture_requested_{nullptr};
   SemaphoreHandle_t capture_done_{nullptr};
 
+  // Snapshot buffer (lv_color_t) for LVGL snapshot API — allocated in PSRAM
+  lv_color_t *snap_buf_{nullptr};
+
   // Intermediate RGB888 buffer (stb input) — allocated in PSRAM
   uint8_t *rgb_buf_{nullptr};
 

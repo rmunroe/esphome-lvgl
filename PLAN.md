@@ -108,3 +108,88 @@ Each row has a status LED + icon + label + toggle switch.
 - `addon/time.yaml` — SNTP works universally
 - `addon/network.yaml` — WiFi diagnostics are device-level
 - `device/device.yaml` — hardware config unchanged
+
+---
+
+## Feature: LVGL Screenshot Server
+
+**Status: In Progress** — HTTP endpoint works and returns JPEG images, but screenshot content has a vertical shift on MIPI DSI displays.
+
+### Overview
+
+Custom ESPHome component (`components/lvgl_screenshot/`) that serves a live JPEG screenshot at `http://<device-ip>:8080/screenshot`. Designed specifically for ESP32-P4 MIPI DSI displays where the standard `display_capture` component crashes (MIPI DSI doesn't inherit from `DisplayBuffer`).
+
+### What Works
+
+- Component compiles, installs, and boots without OTA rollback
+- HTTP server starts on port 8080 and responds to GET `/screenshot`
+- Returns a valid JPEG image of the display content
+- PSRAM allocation for all large buffers (snapshot ~1.2MB, RGB888 ~1.8MB, JPEG ~1.1MB)
+- Semaphore-based thread safety (httpd task signals main loop for LVGL access)
+
+### Current Issue: Vertical Shift
+
+The screenshot image is shifted vertically — the header bar at the top of the screen is cut off, and content from the bottom of the screen is repeated/wrapped. The real display looks correct.
+
+**Root cause:** On ESP32-P4 MIPI DSI, the DPI panel driver manages its own DMA framebuffers. LVGL's draw buffers (`buf1`/`buf2`/`buf_act`) ARE those DMA framebuffers (zero-copy setup), but reading them directly produces shifted content due to how DMA scanning interacts with LVGL's double-buffered rendering.
+
+**Attempts that did NOT fix it:**
+1. Reading from `buf_act` instead of `buf1` — same result (likely same pointer)
+2. Reading from `buf1` after `lv_refr_now(disp)` — same shift
+3. Both approaches produce identical shifted output
+
+### Fix Plan: Use LVGL Snapshot API
+
+**Approach:** Replace direct draw buffer reading with LVGL's `lv_snapshot_take_to_buf()` API, which creates a temporary display driver and re-renders the LVGL object tree to a fresh user-provided buffer. This completely bypasses the hardware display's DMA framebuffer management.
+
+**Implementation steps:**
+
+1. **`__init__.py`** (done): Add `cg.add_build_flag("-DLV_USE_SNAPSHOT=1")` to enable the LVGL snapshot feature at compile time. LVGL 8.4's `lv_conf_internal.h` uses `#ifndef LV_USE_SNAPSHOT` so a `-D` flag takes precedence.
+
+2. **`lvgl_screenshot.h`** (done): Add `lv_color_t *snap_buf_{nullptr}` member for the snapshot render target.
+
+3. **`lvgl_screenshot.cpp` setup()** (done): Allocate `snap_buf_` in PSRAM (`width * height * sizeof(lv_color_t)` = ~1.2MB for 1024x600).
+
+4. **`lvgl_screenshot.cpp` do_capture_()`** (TODO): Rewrite to use `lv_snapshot_take_to_buf()`:
+   ```cpp
+   lv_img_dsc_t dsc;
+   uint32_t snap_bytes = width * height * sizeof(lv_color_t);
+   lv_res_t res = lv_snapshot_take_to_buf(
+       lv_scr_act(), LV_IMG_CF_TRUE_COLOR,
+       &dsc, this->snap_buf_, snap_bytes);
+   // Then read from dsc.data for RGB565→RGB888 conversion
+   ```
+
+**Why this should work:**
+- `lv_snapshot_take_to_buf()` creates a temporary LVGL display driver with its own draw buffer (our `snap_buf_`)
+- It re-renders the active screen's widget tree into that buffer using LVGL's software renderer
+- No hardware DMA involvement — purely software rendering
+- Output is guaranteed to be a complete, pixel-perfect, correctly-oriented frame
+- The temporary display is unregistered after rendering
+
+**Potential issues:**
+- If `LV_USE_SNAPSHOT` build flag conflicts with ESPHome's generated `lv_conf.h`, may need an alternative approach (custom flush callback interception)
+- Snapshot re-renders the entire screen, which may take 50-100ms for 1024x600 — acceptable for on-demand screenshots
+- `lv_snapshot_take_to_buf()` uses `lv_mem_alloc()` internally for a small descriptor struct — should fit in LVGL's memory pool
+
+### Files
+
+| File | Status | Description |
+|------|--------|-------------|
+| `components/lvgl_screenshot/__init__.py` | Modified | Added `LV_USE_SNAPSHOT=1` build flag |
+| `components/lvgl_screenshot/lvgl_screenshot.h` | Modified | Added `snap_buf_` member |
+| `components/lvgl_screenshot/lvgl_screenshot.cpp` | Partially modified | `setup()` allocates snap_buf; `do_capture_()` still reads draw buffer directly — needs rewrite to use snapshot API |
+| `components/lvgl_screenshot/stb_image_write.h` | Unchanged | v1.16 JPEG encoder |
+| `guition-esp32-p4-jc1060p470/device/device.yaml` | Modified | Contains `external_components` + `lvgl_screenshot:` config |
+
+### Issues Resolved Along the Way
+
+| Issue | Cause | Fix |
+|-------|-------|-----|
+| `beginResponse_P` compile error | ESP-IDF/Arduino branches swapped | Swapped `#ifdef USE_ESP_IDF` branches |
+| ESPHome git cache stale | No `ref:` or `refresh:` on git source | Added `ref: main`, `refresh: 1s` |
+| OTA rollback on boot | `display_capture` used `static_cast<DisplayBuffer*>` on MIPI DSI | Replaced with `lvgl_screenshot` (reads LVGL buffer) |
+| `green_h` struct error | `LV_COLOR_16_SWAP` layout difference | Added `#if LV_COLOR_16_SWAP` conditional |
+| Component never instantiates | YAML key in separate `!include` file | Moved both `external_components` and `lvgl_screenshot:` into `device.yaml` |
+| LWIP socket starvation | httpd default `max_open_sockets=7` | Set to 2 |
+| stb OOM from internal SRAM | stb malloc uses default allocator | Override `STBIW_MALLOC/REALLOC/FREE` to PSRAM |

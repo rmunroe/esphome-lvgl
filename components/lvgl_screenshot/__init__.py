@@ -22,3 +22,6 @@ async def to_code(config):
     var = cg.new_Pvariable(config[CONF_ID])
     await cg.register_component(var, config)
     cg.add(var.set_port(config[CONF_PORT]))
+    # Enable LVGL's snapshot API so we can re-render the screen to a clean
+    # buffer instead of reading the DMA-managed draw buffers directly.
+    cg.add_build_flag("-DLV_USE_SNAPSHOT=1")

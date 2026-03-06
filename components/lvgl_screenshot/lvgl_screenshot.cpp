@@ -74,6 +74,15 @@ void LvglScreenshot::setup() {
   uint32_t width = (uint32_t) lv_disp_get_hor_res(disp);
   uint32_t height = (uint32_t) lv_disp_get_ver_res(disp);
 
+  // Snapshot buffer: width * height * sizeof(lv_color_t) for the LVGL snapshot API
+  size_t snap_size = width * height * sizeof(lv_color_t);
+  this->snap_buf_ = (lv_color_t *) heap_caps_malloc(snap_size, MALLOC_CAP_SPIRAM);
+  if (!this->snap_buf_) {
+    ESP_LOGE(TAG, "Failed to allocate %u bytes for snapshot buffer in PSRAM", (unsigned) snap_size);
+    this->mark_failed();
+    return;
+  }
+
   // RGB888 intermediate buffer: width * height * 3 bytes
   size_t rgb_size = width * height * 3u;
   this->rgb_buf_ = (uint8_t *) heap_caps_malloc(rgb_size, MALLOC_CAP_SPIRAM);
@@ -138,26 +147,12 @@ void LvglScreenshot::loop() {
 }
 
 // ---------------------------------------------------------------------------
-// do_capture_()  –  convert LVGL RGB565 → RGB888, then encode to JPEG
+// do_capture_()  –  use LVGL snapshot API to render screen, then encode JPEG
 // ---------------------------------------------------------------------------
 void LvglScreenshot::do_capture_() {
   lv_disp_t *disp = lv_disp_get_default();
-  if (!disp || !disp->driver || !disp->driver->draw_buf) {
-    ESP_LOGE(TAG, "LVGL framebuffer not available");
-    this->jpeg_size_ = 0;
-    return;
-  }
-
-  // Force a full LVGL refresh so the draw buffer contains the current screen.
-  // This ensures buf1 has the complete, up-to-date content.
-  lv_refr_now(disp);
-
-  // Read from buf1 (the primary buffer) rather than buf_act. With MIPI DSI
-  // and double-buffered DMA, buf_act may point to the buffer being prepared
-  // for the NEXT frame, while buf1 holds the last fully-rendered frame.
-  auto *lvgl_buf = (lv_color_t *) disp->driver->draw_buf->buf1;
-  if (!lvgl_buf) {
-    ESP_LOGE(TAG, "LVGL buf1 is null");
+  if (!disp) {
+    ESP_LOGE(TAG, "No default LVGL display");
     this->jpeg_size_ = 0;
     return;
   }
@@ -165,11 +160,43 @@ void LvglScreenshot::do_capture_() {
   uint32_t width = (uint32_t) lv_disp_get_hor_res(disp);
   uint32_t height = (uint32_t) lv_disp_get_ver_res(disp);
 
-  ESP_LOGD(TAG, "Capture: %ux%u, buf1=%p, buf2=%p, buf_act=%p",
-           width, height,
-           disp->driver->draw_buf->buf1,
-           disp->driver->draw_buf->buf2,
-           disp->driver->draw_buf->buf_act);
+  // ------------------------------------------------------------------
+  // Use LVGL's snapshot API to re-render the active screen into our
+  // own PSRAM buffer.  This creates a temporary display driver and
+  // renders the widget tree from scratch — completely independent of
+  // the MIPI DSI DPI panel's DMA framebuffers, avoiding the vertical
+  // shift that occurs when reading the draw buffers directly.
+  // ------------------------------------------------------------------
+  lv_obj_t *scr = lv_scr_act();
+  if (!scr) {
+    ESP_LOGE(TAG, "No active LVGL screen");
+    this->jpeg_size_ = 0;
+    return;
+  }
+
+  lv_img_dsc_t dsc;
+  memset(&dsc, 0, sizeof(dsc));
+  uint32_t snap_bytes = width * height * sizeof(lv_color_t);
+
+  ESP_LOGD(TAG, "Taking snapshot %ux%u (%u bytes) into %p",
+           width, height, snap_bytes, this->snap_buf_);
+
+  lv_res_t res = lv_snapshot_take_to_buf(
+      scr, LV_IMG_CF_TRUE_COLOR,
+      &dsc, this->snap_buf_, snap_bytes);
+
+  if (res != LV_RES_OK) {
+    ESP_LOGE(TAG, "lv_snapshot_take_to_buf failed (res=%d)", res);
+    this->jpeg_size_ = 0;
+    return;
+  }
+
+  auto *pixels = (const lv_color_t *) dsc.data;
+  if (!pixels) {
+    ESP_LOGE(TAG, "Snapshot returned null data");
+    this->jpeg_size_ = 0;
+    return;
+  }
 
   // ------------------------------------------------------------------
   // Convert RGB565 → RGB888 into rgb_buf_ (row-major, top-down)
@@ -177,7 +204,7 @@ void LvglScreenshot::do_capture_() {
   for (uint32_t y = 0; y < height; y++) {
     uint8_t *row = this->rgb_buf_ + y * width * 3u;
     for (uint32_t x = 0; x < width; x++) {
-      lv_color_t c = lvgl_buf[y * width + x];
+      lv_color_t c = pixels[y * width + x];
 
       uint8_t r5 = c.ch.red;
       uint8_t b5 = c.ch.blue;
