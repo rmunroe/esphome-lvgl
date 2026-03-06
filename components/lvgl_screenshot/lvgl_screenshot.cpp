@@ -1,3 +1,11 @@
+// Route stb's internal allocations to PSRAM — the JPEG encoder needs
+// temporary buffers that can be significant for 1024x600 images, and
+// internal SRAM is too limited on ESP32-P4.
+#include "esp_heap_caps.h"
+#define STBIW_MALLOC(sz)       heap_caps_malloc(sz, MALLOC_CAP_SPIRAM)
+#define STBIW_REALLOC(p, newsz) heap_caps_realloc(p, newsz, MALLOC_CAP_SPIRAM)
+#define STBIW_FREE(p)          heap_caps_free(p)
+
 #define STB_IMAGE_WRITE_IMPLEMENTATION
 #define STBI_WRITE_NO_STDIO
 #include "stb_image_write.h"
@@ -7,7 +15,6 @@
 #ifdef USE_ESP_IDF
 
 #include "esphome/core/log.h"
-#include "esp_heap_caps.h"
 #include <algorithm>
 
 namespace esphome {
@@ -98,6 +105,9 @@ void LvglScreenshot::start_server_() {
   httpd_config_t cfg = HTTPD_DEFAULT_CONFIG();
   cfg.server_port = this->port_;
   cfg.stack_size = 8192;
+  // Only need 1-2 connections for screenshot requests — keep the LWIP socket
+  // count low since ESPHome doesn't account for this server's sockets.
+  cfg.max_open_sockets = 2;
   // Use a unique ctrl_port so it doesn't clash with any other httpd instance
   cfg.ctrl_port = (uint16_t) (this->port_ + 1u);
 
