@@ -8,13 +8,5 @@
 # Access via CLI:     curl -o screenshot.jpg http://<device-ip>:8080/screenshot
 # =============================================================================
 
-external_components:
-  - source:
-      type: git
-      url: https://github.com/rmunroe/esphome-lvgl
-      ref: main
-    refresh: 1s
-    components: [lvgl_screenshot]
-
 lvgl_screenshot:
   port: 8080

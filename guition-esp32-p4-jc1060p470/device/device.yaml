@@ -25,6 +25,12 @@ external_components:
   - source: github://p1ngb4ck/esphome@dev
     components: [audio, binary_storage, http_file_browser, nfs_client, picture_viewer, uart, usb_host, usb_uart, usb_storage, sd_storage, smb_client, storage, transcoder, video_player, webdav_server]
     refresh: 0s
+  - source:
+      type: git
+      url: https://github.com/rmunroe/esphome-lvgl
+      ref: main
+    refresh: 1s
+    components: [lvgl_screenshot]
   
 # Secondary ESP32-C6 device for connectivity
 esp32_hosted:
