@@ -989,379 +989,379 @@ lvgl:
 
 
           # =================================================================
-          # TAB 3: MEDIA (Devices + Sonos)
+          # TAB 3: MUSIC (Sonos Controls)
           # =================================================================
-          - name: "Media"
-            id: media_tab
+          - name: "Music"
+            id: music_tab
             bg_color: $page_bg
             bg_opa: COVER
             pad_all: 10
             layout:
               type: flex
-              flex_flow: row
-              pad_column: 10
+              flex_flow: column
+              pad_row: 8
             widgets:
 
-              # ----- Left: Device Toggles -----
+              # ----- Now Playing Row -----
               - obj:
-                  styles: card_purple
-                  width: 350
-                  height: 500
+                  width: 984
+                  height: 70
+                  bg_opa: TRANSP
+                  border_width: 0
+                  pad_all: 0
                   layout:
                     type: flex
-                    flex_flow: column
-                    pad_row: 8
+                    flex_flow: row
+                    pad_column: 12
+                    flex_align_cross: center
                   widgets:
                     - label:
-                        styles: section_title
-                        text: "Devices"
-
-                    # TV Row
+                        id: lr_play_pause_icon
+                        text_font: icon_font
+                        text: $play
+                        text_color: $blue
                     - obj:
-                        styles: device_row
-                        width: 326
-                        height: 60
-                        layout:
-                          type: flex
-                          flex_flow: row
-                          flex_align_main: space_between
-                          flex_align_cross: center
-                          pad_column: 10
-                        widgets:
-                          - led:
-                              id: lr_tv_led
-                              color: 0x00E676
-                              brightness: 0
-        
-                              width: 14
-                              height: 14
-                          - label:
-                              text_font: icon_font
-                              text: $television
-                              text_color: $text_primary
-                          - label:
-                              text_font: label_font
-                              text: "TV"
-                              text_color: $text_primary
-                              width: 120
-                          - switch:
-                              id: lr_tv_switch
-                              width: 56
-                              height: 28
-                              on_click:
-                                - homeassistant.service:
-                                    service: media_player.toggle
-                                    data:
-                                      entity_id: media_player.living_room_tv
-
-                    # Apple TV Row
-                    - obj:
-                        styles: device_row
-                        width: 326
-                        height: 60
-                        layout:
-                          type: flex
-                          flex_flow: row
-                          flex_align_main: space_between
-                          flex_align_cross: center
-                          pad_column: 10
-                        widgets:
-                          - led:
-                              id: lr_appletv_led
-                              color: 0x00E676
-                              brightness: 0
-        
-                              width: 14
-                              height: 14
-                          - label:
-                              text_font: icon_font
-                              text: $apple
-                              text_color: $text_primary
-                          - label:
-                              text_font: label_font
-                              text: "Apple TV"
-                              text_color: $text_primary
-                              width: 120
-                          - switch:
-                              id: lr_appletv_switch
-                              width: 56
-                              height: 28
-                              on_click:
-                                - homeassistant.service:
-                                    service: remote.toggle
-                                    data:
-                                      entity_id: remote.living_room_apple_tv
-
-                    # PS5 Row
-                    - obj:
-                        styles: device_row
-                        width: 326
-                        height: 60
-                        layout:
-                          type: flex
-                          flex_flow: row
-                          flex_align_main: space_between
-                          flex_align_cross: center
-                          pad_column: 10
-                        widgets:
-                          - led:
-                              id: lr_ps5_led
-                              color: 0x00E676
-                              brightness: 0
-        
-                              width: 14
-                              height: 14
-                          - label:
-                              text_font: icon_font
-                              text: $playstation
-                              text_color: $text_primary
-                          - label:
-                              text_font: label_font
-                              text: "PS5"
-                              text_color: $text_primary
-                              width: 120
-                          - switch:
-                              id: lr_ps5_switch
-                              width: 56
-                              height: 28
-                              on_click:
-                                - homeassistant.service:
-                                    service: switch.toggle
-                                    data:
-                                      entity_id: switch.ps5_power
-
-                    # Sonos Plug Row
-                    - obj:
-                        styles: device_row
-                        width: 326
-                        height: 60
-                        layout:
-                          type: flex
-                          flex_flow: row
-                          flex_align_main: space_between
-                          flex_align_cross: center
-                          pad_column: 10
-                        widgets:
-                          - led:
-                              id: lr_sonos_led
-                              color: 0x00E676
-                              brightness: 0
-        
-                              width: 14
-                              height: 14
-                          - label:
-                              text_font: icon_font
-                              text: $speaker
-                              text_color: $text_primary
-                          - label:
-                              text_font: label_font
-                              text: "Sonos"
-                              text_color: $text_primary
-                              width: 120
-                          - switch:
-                              id: lr_sonos_switch
-                              width: 56
-                              height: 28
-                              on_click:
-                                - homeassistant.service:
-                                    service: switch.toggle
-                                    data:
-                                      entity_id: switch.sonos_living_room_plug
-
-              # ----- Right: Sonos Controls -----
-              - obj:
-                  styles: card_purple
-                  width: 620
-                  height: 500
-                  layout:
-                    type: flex
-                    flex_flow: column
-                    pad_row: 10
-                  widgets:
-                    - label:
-                        styles: section_title
-                        text: "Sonos"
-
-                    # Now Playing Info
-                    - obj:
-                        width: 596
-                        height: 80
-                        bg_opa: TRANSP
-                        border_width: 0
-                        pad_all: 0
-                        layout:
-                          type: flex
-                          flex_flow: row
-                          pad_column: 12
-                          flex_align_cross: center
-                        widgets:
-                          - label:
-                              text_font: icon_font
-                              text: $speaker
-                              text_color: $purple
-                          - obj:
-                              width: 500
-                              height: 70
-                              bg_opa: TRANSP
-                              border_width: 0
-                              pad_all: 0
-                              layout:
-                                type: flex
-                                flex_flow: column
-                                pad_row: 4
-                              widgets:
-                                - label:
-                                    id: lr_sonos_title
-                                    text_font: card_title_font
-                                    text: "No media"
-                                    text_color: $text_primary
-                                    long_mode: DOT
-                                    width: 490
-                                - label:
-                                    id: lr_sonos_artist
-                                    text_font: label_font
-                                    text: "--"
-                                    text_color: $text_secondary
-                                    long_mode: DOT
-                                    width: 490
-
-                    # Transport Controls
-                    - obj:
-                        width: 596
-                        height: 80
-                        bg_opa: TRANSP
-                        border_width: 0
-                        pad_all: 0
-                        layout:
-                          type: flex
-                          flex_flow: row
-                          pad_column: 16
-                          flex_align_main: center
-                          flex_align_cross: center
-                        widgets:
-                          # Previous
-                          - button:
-                              width: 56
-                              height: 56
-                              styles: transport_button
-                              widgets:
-                                - label:
-                                    text_font: icon_font
-                                    align: center
-                                    text: $skip_previous
-                              on_click:
-                                - homeassistant.service:
-                                    service: media_player.media_previous_track
-                                    data:
-                                      entity_id: media_player.living_room_sonos
-
-                          # Play/Pause (large, glowing)
-                          - button:
-                              id: lr_play_pause_button
-                              width: 68
-                              height: 68
-                              styles: transport_play
-                              widgets:
-                                - label:
-                                    id: lr_play_pause_icon
-                                    text_font: icon_font
-                                    align: center
-                                    text: $play
-                              on_click:
-                                - homeassistant.service:
-                                    service: media_player.media_play_pause
-                                    data:
-                                      entity_id: media_player.living_room_sonos
-
-                          # Next
-                          - button:
-                              width: 56
-                              height: 56
-                              styles: transport_button
-                              widgets:
-                                - label:
-                                    text_font: icon_font
-                                    align: center
-                                    text: $skip_next
-                              on_click:
-                                - homeassistant.service:
-                                    service: media_player.media_next_track
-                                    data:
-                                      entity_id: media_player.living_room_sonos
-
-                          # Stop
-                          - button:
-                              width: 56
-                              height: 56
-                              styles: transport_button
-                              widgets:
-                                - label:
-                                    text_font: icon_font
-                                    align: center
-                                    text: $stop_circle
-                              on_click:
-                                - homeassistant.service:
-                                    service: media_player.media_stop
-                                    data:
-                                      entity_id: media_player.living_room_sonos
-
-                    # Volume Control
-                    - obj:
-                        width: 596
+                        width: 920
                         height: 70
                         bg_opa: TRANSP
                         border_width: 0
                         pad_all: 0
                         layout:
                           type: flex
-                          flex_flow: row
-                          pad_column: 10
-                          flex_align_cross: center
+                          flex_flow: column
+                          pad_row: 4
+                          flex_align_main: center
                         widgets:
                           - label:
-                              text_font: icon_font_small
-                              text: $volume_high
-                              text_color: $purple
-                          - slider:
-                              id: lr_volume_slider
-                              width: 430
-                              height: 24
-                              min_value: 0
-                              max_value: 100
-                              value: 30
-                              mode: NORMAL
-                              styles: volume_slider
-                              indicator:
-                                styles: volume_slider_indicator
-                              knob:
-                                styles: volume_slider_knob
-                              on_release:
-                                - homeassistant.service:
-                                    service: media_player.volume_set
-                                    data:
-                                      entity_id: media_player.living_room_sonos
-                                      volume_level: !lambda return to_string(lv_slider_get_value(id(lr_volume_slider)) / 100.0);
+                              id: lr_sonos_title
+                              text_font: card_title_font
+                              text: "No media"
+                              text_color: $text_primary
+                              long_mode: DOT
+                              width: 910
                           - label:
-                              id: lr_volume_label
+                              id: lr_sonos_artist
                               text_font: label_font
-                              text: "30%"
+                              text: "--"
                               text_color: $text_secondary
-                              width: 50
+                              long_mode: DOT
+                              width: 910
+
+              # ----- Separator -----
+              - line:
+                  width: 984
+                  height: 4
+                  points:
+                    - 0, 2
+                    - 980, 2
+                  line_color: $text_disabled
+                  line_width: 1
+
+              # ----- Main Content: Sliders + Sound Settings -----
+              - obj:
+                  width: 984
+                  height: 396
+                  bg_opa: TRANSP
+                  border_width: 0
+                  pad_all: 0
+                  layout:
+                    type: flex
+                    flex_flow: row
+                    pad_column: 10
+                  widgets:
+
+                    # ---- Left: Slider Controls Column ----
+                    - obj:
+                        width: 680
+                        height: 396
+                        bg_opa: TRANSP
+                        border_width: 0
+                        pad_all: 0
+                        layout:
+                          type: flex
+                          flex_flow: column
+                          pad_row: 10
+                          flex_align_main: center
+                        widgets:
+
+                          # --- Amp Volume Row ---
+                          - obj:
+                              width: 676
+                              height: 70
+                              bg_opa: TRANSP
+                              border_width: 0
+                              pad_all: 0
+                              layout:
+                                type: flex
+                                flex_flow: row
+                                pad_column: 16
+                                flex_align_cross: center
+                              widgets:
+                                - obj:
+                                    width: 200
+                                    height: 65
+                                    bg_color: $surface
+                                    bg_opa: COVER
+                                    radius: 12
+                                    border_width: 0
+                                    shadow_width: 0
+                                    widgets:
+                                      - label:
+                                          align: center
+                                          text_font: label_font
+                                          text: "Amp Volume"
+                                          text_color: $text_primary
+                                - slider:
+                                    id: lr_volume_slider
+                                    width: 300
+                                    height: 40
+                                    min_value: 0
+                                    max_value: 100
+                                    value: 0
+                                    mode: NORMAL
+                                    styles: brightness_slider
+                                    indicator:
+                                      styles: brightness_slider_indicator
+                                    knob:
+                                      styles: brightness_slider_knob
+                                    on_release:
+                                      - homeassistant.service:
+                                          service: media_player.volume_set
+                                          data:
+                                            entity_id: media_player.living_room_sonos
+                                            volume_level: !lambda return to_string(lv_slider_get_value(id(lr_volume_slider)) / 100.0);
+                                - label:
+                                    id: lr_volume_label
+                                    width: 56
+                                    text_font: small_font
+                                    text: "0%"
+                                    text_color: $text_secondary
+                                    text_align: right
+
+                          # --- Sub Gain Row ---
+                          - obj:
+                              width: 676
+                              height: 70
+                              bg_opa: TRANSP
+                              border_width: 0
+                              pad_all: 0
+                              layout:
+                                type: flex
+                                flex_flow: row
+                                pad_column: 16
+                                flex_align_cross: center
+                              widgets:
+                                - obj:
+                                    width: 200
+                                    height: 65
+                                    bg_color: $surface
+                                    bg_opa: COVER
+                                    radius: 12
+                                    border_width: 0
+                                    shadow_width: 0
+                                    widgets:
+                                      - label:
+                                          align: center
+                                          text_font: label_font
+                                          text: "Sub Gain"
+                                          text_color: $text_primary
+                                - slider:
+                                    id: lr_sub_gain_slider
+                                    width: 300
+                                    height: 40
+                                    min_value: -15
+                                    max_value: 15
+                                    value: 0
+                                    mode: SYMMETRICAL
+                                    styles: brightness_slider
+                                    indicator:
+                                      styles: brightness_slider_indicator
+                                    knob:
+                                      styles: brightness_slider_knob
+                                    on_release:
+                                      - homeassistant.service:
+                                          service: number.set_value
+                                          data:
+                                            entity_id: number.living_room_sonos_sub_gain
+                                            value: !lambda return to_string((int)lv_slider_get_value(id(lr_sub_gain_slider)));
+                                - label:
+                                    id: lr_sub_gain_label
+                                    width: 56
+                                    text_font: small_font
+                                    text: "0"
+                                    text_color: $text_secondary
+                                    text_align: right
+
+                          # --- Bass Row ---
+                          - obj:
+                              width: 676
+                              height: 70
+                              bg_opa: TRANSP
+                              border_width: 0
+                              pad_all: 0
+                              layout:
+                                type: flex
+                                flex_flow: row
+                                pad_column: 16
+                                flex_align_cross: center
+                              widgets:
+                                - obj:
+                                    width: 200
+                                    height: 65
+                                    bg_color: $surface
+                                    bg_opa: COVER
+                                    radius: 12
+                                    border_width: 0
+                                    shadow_width: 0
+                                    widgets:
+                                      - label:
+                                          align: center
+                                          text_font: label_font
+                                          text: "Bass"
+                                          text_color: $text_primary
+                                - slider:
+                                    id: lr_bass_slider
+                                    width: 300
+                                    height: 40
+                                    min_value: -10
+                                    max_value: 10
+                                    value: 0
+                                    mode: SYMMETRICAL
+                                    styles: brightness_slider
+                                    indicator:
+                                      styles: brightness_slider_indicator
+                                    knob:
+                                      styles: brightness_slider_knob
+                                    on_release:
+                                      - homeassistant.service:
+                                          service: number.set_value
+                                          data:
+                                            entity_id: number.living_room_sonos_bass
+                                            value: !lambda return to_string((int)lv_slider_get_value(id(lr_bass_slider)));
+                                - label:
+                                    id: lr_bass_label
+                                    width: 56
+                                    text_font: small_font
+                                    text: "0"
+                                    text_color: $text_secondary
+                                    text_align: right
+
+                          # --- Treble Row ---
+                          - obj:
+                              width: 676
+                              height: 70
+                              bg_opa: TRANSP
+                              border_width: 0
+                              pad_all: 0
+                              layout:
+                                type: flex
+                                flex_flow: row
+                                pad_column: 16
+                                flex_align_cross: center
+                              widgets:
+                                - obj:
+                                    width: 200
+                                    height: 65
+                                    bg_color: $surface
+                                    bg_opa: COVER
+                                    radius: 12
+                                    border_width: 0
+                                    shadow_width: 0
+                                    widgets:
+                                      - label:
+                                          align: center
+                                          text_font: label_font
+                                          text: "Treble"
+                                          text_color: $text_primary
+                                - slider:
+                                    id: lr_treble_slider
+                                    width: 300
+                                    height: 40
+                                    min_value: -10
+                                    max_value: 10
+                                    value: 0
+                                    mode: SYMMETRICAL
+                                    styles: brightness_slider
+                                    indicator:
+                                      styles: brightness_slider_indicator
+                                    knob:
+                                      styles: brightness_slider_knob
+                                    on_release:
+                                      - homeassistant.service:
+                                          service: number.set_value
+                                          data:
+                                            entity_id: number.living_room_sonos_treble
+                                            value: !lambda return to_string((int)lv_slider_get_value(id(lr_treble_slider)));
+                                - label:
+                                    id: lr_treble_label
+                                    width: 56
+                                    text_font: small_font
+                                    text: "0"
+                                    text_color: $text_secondary
+                                    text_align: right
+
+                    # ---- Right: Sound Settings Card ----
+                    - obj:
+                        styles: card_base
+                        width: 280
+                        height: 396
+                        border_width: 0
+                        layout:
+                          type: flex
+                          flex_flow: column
+                          pad_row: 12
+                        widgets:
+                          - label:
+                              styles: section_title
+                              text: "Sound"
+
                           - button:
-                              id: lr_mute_button
-                              width: 48
-                              height: 40
+                              id: lr_loudness_button
+                              width: 256
+                              flex_grow: 1
                               checkable: true
-                              styles: transport_button
+                              styles: other_rooms_button
                               widgets:
                                 - label:
-                                    text_font: icon_font_small
                                     align: center
-                                    text: $volume_mute
+                                    text_font: label_font
+                                    text: "Loudness"
                               on_click:
                                 - homeassistant.service:
-                                    service: media_player.volume_mute
+                                    service: switch.toggle
                                     data:
-                                      entity_id: media_player.living_room_sonos
-                                      is_volume_muted: !lambda |-
-                                        return id(lr_sonos_muted).state ? "false" : "true";
+                                      entity_id: switch.living_room_sonos_loudness
+
+                          - button:
+                              id: lr_night_sound_button
+                              width: 256
+                              flex_grow: 1
+                              checkable: true
+                              styles: other_rooms_button
+                              widgets:
+                                - label:
+                                    align: center
+                                    text_font: label_font
+                                    text: "Night Sound"
+                              on_click:
+                                - homeassistant.service:
+                                    service: switch.toggle
+                                    data:
+                                      entity_id: switch.living_room_sonos_night_sound
+
+                          - button:
+                              id: lr_speech_enhance_button
+                              width: 256
+                              flex_grow: 1
+                              checkable: true
+                              styles: other_rooms_button
+                              widgets:
+                                - label:
+                                    align: center
+                                    text_font: label_font
+                                    text: "Enhance Speech"
+                              on_click:
+                                - homeassistant.service:
+                                    service: switch.toggle
+                                    data:
+                                      entity_id: switch.living_room_sonos_speech_enhancement

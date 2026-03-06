@@ -219,6 +219,52 @@ sensor:
             format: "%d%%"
             args: [ '(int)round(x * 100)' ]
 
+  # ===========================================================================
+  # SONOS EQ — Sub Gain, Bass, Treble
+  # ===========================================================================
+
+  # Sub Gain (-15 to +15)
+  - platform: homeassistant
+    entity_id: number.living_room_sonos_sub_gain
+    id: lr_sub_gain
+    on_value:
+      - lvgl.slider.update:
+          id: lr_sub_gain_slider
+          value: !lambda return (int)round(x);
+      - lvgl.label.update:
+          id: lr_sub_gain_label
+          text:
+            format: "%d"
+            args: [ '(int)round(x)' ]
+
+  # Bass (-10 to +10)
+  - platform: homeassistant
+    entity_id: number.living_room_sonos_bass
+    id: lr_bass
+    on_value:
+      - lvgl.slider.update:
+          id: lr_bass_slider
+          value: !lambda return (int)round(x);
+      - lvgl.label.update:
+          id: lr_bass_label
+          text:
+            format: "%d"
+            args: [ '(int)round(x)' ]
+
+  # Treble (-10 to +10)
+  - platform: homeassistant
+    entity_id: number.living_room_sonos_treble
+    id: lr_treble
+    on_value:
+      - lvgl.slider.update:
+          id: lr_treble_slider
+          value: !lambda return (int)round(x);
+      - lvgl.label.update:
+          id: lr_treble_label
+          text:
+            format: "%d"
+            args: [ '(int)round(x)' ]
+
 
 # =============================================================================
 # TEXT SENSORS — Media info from Sonos
@@ -493,85 +539,42 @@ binary_sensor:
             checked: !lambda return x;
 
   # ===========================================================================
-  # MEDIA TAB — Device switch state + LED indicators
+  # MUSIC TAB — Sound setting toggles
   # ===========================================================================
 
-  # TV Power → switch state + LED
+  # Loudness
   - platform: homeassistant
-    id: lr_tv_power
-    entity_id: media_player.living_room_tv
+    id: lr_loudness
+    entity_id: switch.living_room_sonos_loudness
     trigger_on_initial_state: true
     on_state:
       then:
         - lvgl.widget.update:
-            id: lr_tv_switch
+            id: lr_loudness_button
             state:
               checked: !lambda return x;
-        - lvgl.led.update:
-            id: lr_tv_led
-            brightness: !lambda |-
-              return x ? 200 : 0;
 
-  # Apple TV → switch state + LED + screen wake
+  # Night Sound
   - platform: homeassistant
-    id: lr_appletv
-    entity_id: remote.living_room_apple_tv
+    id: lr_night_sound
+    entity_id: switch.living_room_sonos_night_sound
     trigger_on_initial_state: true
     on_state:
       then:
         - lvgl.widget.update:
-            id: lr_appletv_switch
+            id: lr_night_sound_button
             state:
               checked: !lambda return x;
-        - lvgl.led.update:
-            id: lr_appletv_led
-            brightness: !lambda |-
-              return x ? 200 : 0;
-        - script.execute: evaluate_screen
 
-  # PS5 Power → switch state + LED + screen wake
+  # Speech Enhancement
   - platform: homeassistant
-    id: lr_ps5
-    entity_id: switch.ps5_power
+    id: lr_speech_enhance
+    entity_id: switch.living_room_sonos_speech_enhancement
     trigger_on_initial_state: true
     on_state:
       then:
         - lvgl.widget.update:
-            id: lr_ps5_switch
-            state:
-              checked: !lambda return x;
-        - lvgl.led.update:
-            id: lr_ps5_led
-            brightness: !lambda |-
-              return x ? 200 : 0;
-        - script.execute: evaluate_screen
-
-  # Sonos Plug → switch state + LED
-  - platform: homeassistant
-    id: lr_sonos
-    entity_id: switch.sonos_living_room_plug
-    trigger_on_initial_state: true
-    on_state:
-      then:
-        - lvgl.widget.update:
-            id: lr_sonos_switch
-            state:
-              checked: !lambda return x;
-        - lvgl.led.update:
-            id: lr_sonos_led
-            brightness: !lambda |-
-              return x ? 200 : 0;
-
-  # Sonos Mute State → mute button
-  - platform: homeassistant
-    id: lr_sonos_muted
-    entity_id: media_player.living_room_sonos
-    attribute: is_volume_muted
-    trigger_on_initial_state: true
-    on_state:
-      then:
-        - lvgl.widget.update:
-            id: lr_mute_button
+            id: lr_speech_enhance_button
             state:
               checked: !lambda return x;
 
