@@ -278,7 +278,7 @@ lvgl:
                                     height: SIZE_CONTENT
                                     bg_opa: TRANSP
                                     border_width: 0
-                                    pad_all: 8
+                                    pad_all: 12
                                     layout:
                                       type: flex
                                       flex_flow: row
@@ -346,7 +346,7 @@ lvgl:
                                     height: SIZE_CONTENT
                                     bg_opa: TRANSP
                                     border_width: 0
-                                    pad_all: 8
+                                    pad_all: 12
                                     layout:
                                       type: flex
                                       flex_flow: row
@@ -414,7 +414,7 @@ lvgl:
                                     height: SIZE_CONTENT
                                     bg_opa: TRANSP
                                     border_width: 0
-                                    pad_all: 8
+                                    pad_all: 12
                                     layout:
                                       type: flex
                                       flex_flow: row
@@ -482,7 +482,7 @@ lvgl:
                                     height: SIZE_CONTENT
                                     bg_opa: TRANSP
                                     border_width: 0
-                                    pad_all: 8
+                                    pad_all: 12
                                     layout:
                                       type: flex
                                       flex_flow: row
