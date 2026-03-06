@@ -100,5 +100,4 @@ binary_sensor:
     on_release:
       - switch.turn_off: backlight
       - lvgl.pause:
-          show_snow: true
       - logger.log: "Screen off — no presence or media activity"

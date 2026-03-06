@@ -254,7 +254,7 @@ lvgl:
                               layout:
                                 type: flex
                                 flex_flow: row
-                                pad_column: 24
+                                pad_column: 32
                                 flex_align_cross: center
                               widgets:
                                 - button:
@@ -310,7 +310,7 @@ lvgl:
                               layout:
                                 type: flex
                                 flex_flow: row
-                                pad_column: 24
+                                pad_column: 32
                                 flex_align_cross: center
                               widgets:
                                 - button:
@@ -366,7 +366,7 @@ lvgl:
                               layout:
                                 type: flex
                                 flex_flow: row
-                                pad_column: 24
+                                pad_column: 32
                                 flex_align_cross: center
                               widgets:
                                 - button:
@@ -422,7 +422,7 @@ lvgl:
                               layout:
                                 type: flex
                                 flex_flow: row
-                                pad_column: 24
+                                pad_column: 32
                                 flex_align_cross: center
                               widgets:
                                 - button:
