@@ -16,6 +16,7 @@
 
 #include "esphome/core/log.h"
 #include <algorithm>
+#include <cstring>
 
 namespace esphome {
 namespace lvgl_screenshot {
@@ -147,7 +148,16 @@ void LvglScreenshot::loop() {
 }
 
 // ---------------------------------------------------------------------------
-// do_capture_()  –  use LVGL snapshot API to render screen, then encode JPEG
+// do_capture_()  –  snapshot all LVGL layers, composite, and encode JPEG
+//
+// LVGL has three independent layers per display:
+//   lv_scr_act()    — main content (tabview, buttons, etc.)
+//   lv_layer_top()  — overlay (header bar with temps, clock, humidity)
+//   lv_layer_sys()  — system overlay (unused here)
+//
+// lv_snapshot_take_to_buf() only captures one object tree, so we take
+// two snapshots and alpha-composite them.  The rgb_buf_ is reused as
+// temporary storage for the top-layer snapshot (both are w*h*3 bytes).
 // ---------------------------------------------------------------------------
 void LvglScreenshot::do_capture_() {
   lv_disp_t *disp = lv_disp_get_default();
@@ -159,14 +169,11 @@ void LvglScreenshot::do_capture_() {
 
   uint32_t width = (uint32_t) lv_disp_get_hor_res(disp);
   uint32_t height = (uint32_t) lv_disp_get_ver_res(disp);
+  uint32_t num_pixels = width * height;
 
-  // ------------------------------------------------------------------
-  // Use LVGL's snapshot API to re-render the active screen into our
-  // own PSRAM buffer.  This creates a temporary display driver and
-  // renders the widget tree from scratch — completely independent of
-  // the MIPI DSI DPI panel's DMA framebuffers, avoiding the vertical
-  // shift that occurs when reading the draw buffers directly.
-  // ------------------------------------------------------------------
+  // ==================================================================
+  // Phase 1: Snapshot the active screen (RGB565) → snap_buf_
+  // ==================================================================
   lv_obj_t *scr = lv_scr_act();
   if (!scr) {
     ESP_LOGE(TAG, "No active LVGL screen");
@@ -174,33 +181,95 @@ void LvglScreenshot::do_capture_() {
     return;
   }
 
-  lv_img_dsc_t dsc;
-  memset(&dsc, 0, sizeof(dsc));
-  uint32_t snap_bytes = width * height * sizeof(lv_color_t);
-
-  ESP_LOGD(TAG, "Taking snapshot %ux%u (%u bytes) into %p",
-           width, height, snap_bytes, this->snap_buf_);
+  lv_img_dsc_t dsc_scr;
+  memset(&dsc_scr, 0, sizeof(dsc_scr));
+  uint32_t snap_bytes = num_pixels * sizeof(lv_color_t);
 
   lv_res_t res = lv_snapshot_take_to_buf(
       scr, LV_IMG_CF_TRUE_COLOR,
-      &dsc, this->snap_buf_, snap_bytes);
+      &dsc_scr, this->snap_buf_, snap_bytes);
 
   if (res != LV_RES_OK) {
-    ESP_LOGE(TAG, "lv_snapshot_take_to_buf failed (res=%d)", res);
+    ESP_LOGE(TAG, "Screen snapshot failed (res=%d)", res);
     this->jpeg_size_ = 0;
     return;
   }
 
-  auto *pixels = (const lv_color_t *) dsc.data;
-  if (!pixels) {
-    ESP_LOGE(TAG, "Snapshot returned null data");
-    this->jpeg_size_ = 0;
-    return;
+  // ==================================================================
+  // Phase 2: Snapshot the top layer (RGB565 + Alpha) → rgb_buf_
+  //
+  // LV_IMG_CF_TRUE_COLOR_ALPHA = 3 bytes/pixel (2 color + 1 alpha),
+  // which is exactly the same size as our RGB888 buffer (w*h*3).
+  // We reuse rgb_buf_ here since we don't need it until Phase 4.
+  // ==================================================================
+  lv_obj_t *top = lv_layer_top();
+  if (top && lv_obj_get_child_cnt(top) > 0) {
+    lv_img_dsc_t dsc_top;
+    memset(&dsc_top, 0, sizeof(dsc_top));
+    uint32_t top_bytes = num_pixels * 3u;  // LV_IMG_CF_TRUE_COLOR_ALPHA: 3 bytes/px
+
+    res = lv_snapshot_take_to_buf(
+        top, LV_IMG_CF_TRUE_COLOR_ALPHA,
+        &dsc_top, this->rgb_buf_, top_bytes);
+
+    if (res == LV_RES_OK && dsc_top.data) {
+      // ================================================================
+      // Phase 3: Alpha-composite top layer onto screen snapshot
+      //
+      // Pixel layout for TRUE_COLOR_ALPHA (16-bit color):
+      //   byte 0-1: lv_color_t  (RGB565)
+      //   byte 2:   alpha       (0=transparent, 255=opaque)
+      //
+      // Fast-path: ~93% of pixels are alpha==0 (only header region has
+      // content), so the skip branch dominates.
+      // ================================================================
+      auto *top_data = (const uint8_t *) dsc_top.data;
+      auto *scr_data = (lv_color_t *) this->snap_buf_;
+
+      for (uint32_t i = 0; i < num_pixels; i++) {
+        uint8_t alpha = top_data[i * 3 + 2];
+        if (alpha == 0)
+          continue;  // transparent — keep screen pixel
+
+        lv_color_t top_c;
+        memcpy(&top_c, &top_data[i * 3], sizeof(lv_color_t));
+
+        if (alpha == 255) {
+          scr_data[i] = top_c;  // fully opaque — overwrite
+          continue;
+        }
+
+        // Semi-transparent (e.g. header shadow) — alpha blend in 5/6/5 space
+        lv_color_t scr_c = scr_data[i];
+        uint16_t inv_a = (uint16_t) (255u - alpha);
+
+        lv_color_t out;
+        out.ch.red = (uint8_t) ((top_c.ch.red * alpha + scr_c.ch.red * inv_a + 127u) / 255u);
+#if LV_COLOR_16_SWAP
+        out.ch.green_h = (uint8_t) ((top_c.ch.green_h * alpha + scr_c.ch.green_h * inv_a + 127u) / 255u);
+        out.ch.green_l = (uint8_t) ((top_c.ch.green_l * alpha + scr_c.ch.green_l * inv_a + 127u) / 255u);
+#else
+        out.ch.green = (uint8_t) ((top_c.ch.green * alpha + scr_c.ch.green * inv_a + 127u) / 255u);
+#endif
+        out.ch.blue = (uint8_t) ((top_c.ch.blue * alpha + scr_c.ch.blue * inv_a + 127u) / 255u);
+
+        scr_data[i] = out;
+      }
+
+      ESP_LOGD(TAG, "Composited top layer onto screen");
+    } else {
+      ESP_LOGW(TAG, "Top layer snapshot failed (res=%d) — header bar will be missing", res);
+    }
   }
 
-  // ------------------------------------------------------------------
-  // Convert RGB565 → RGB888 into rgb_buf_ (row-major, top-down)
-  // ------------------------------------------------------------------
+  // ==================================================================
+  // Phase 4: Convert composited RGB565 → RGB888 into rgb_buf_
+  //
+  // This overwrites the top-layer snapshot data, which is no longer
+  // needed after compositing.
+  // ==================================================================
+  auto *pixels = (const lv_color_t *) this->snap_buf_;
+
   for (uint32_t y = 0; y < height; y++) {
     uint8_t *row = this->rgb_buf_ + y * width * 3u;
     for (uint32_t x = 0; x < width; x++) {
@@ -209,22 +278,20 @@ void LvglScreenshot::do_capture_() {
       uint8_t r5 = c.ch.red;
       uint8_t b5 = c.ch.blue;
 #if LV_COLOR_16_SWAP
-      // When byte-swapped, green is split across green_h and green_l
       uint8_t g6 = (uint8_t) ((c.ch.green_h << 3) | c.ch.green_l);
 #else
       uint8_t g6 = c.ch.green;
 #endif
 
-      // Scale 5-bit → 8-bit and 6-bit → 8-bit by replicating the MSBs
       row[x * 3 + 0] = (uint8_t) ((r5 << 3) | (r5 >> 2));
       row[x * 3 + 1] = (uint8_t) ((g6 << 2) | (g6 >> 4));
       row[x * 3 + 2] = (uint8_t) ((b5 << 3) | (b5 >> 2));
     }
   }
 
-  // ------------------------------------------------------------------
-  // Encode RGB888 → JPEG via stb_image_write (quality 80)
-  // ------------------------------------------------------------------
+  // ==================================================================
+  // Phase 5: Encode RGB888 → JPEG via stb_image_write (quality 80)
+  // ==================================================================
   JpegWriteCtx ctx = {this->jpeg_buf_, this->jpeg_capacity_, 0};
   stbi_write_jpg_to_func(LvglScreenshot::jpeg_write_cb_, &ctx,
                          (int) width, (int) height, 3, this->rgb_buf_, 80);
