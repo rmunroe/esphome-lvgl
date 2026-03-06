@@ -13,7 +13,7 @@ web_server:
 external_components:
   - source:
       type: git
-      url: https://github.com/ay129-35MR/esphome-display-screenshot
+      url: https://github.com/rmunroe/esphome-lvgl
     components: [display_capture]
 
 display_capture:
