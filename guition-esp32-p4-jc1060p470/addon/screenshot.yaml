@@ -1,14 +1,12 @@
 # =============================================================================
 # SCREENSHOT — Remote display capture via HTTP
 # =============================================================================
-# Adds a /screenshot endpoint that serves a live BMP image of the display.
-# Access via browser: http://<device-ip>/screenshot
-# Access via CLI:     curl -o screenshot.bmp http://<device-ip>/screenshot
-# JSON info:          http://<device-ip>/screenshot/info
+# Serves a live JPEG screenshot of the LVGL display over HTTP.
+# Uses LVGL's own draw buffer — compatible with MIPI DSI and all backends.
+#
+# Access via browser: http://<device-ip>:8080/screenshot
+# Access via CLI:     curl -o screenshot.jpg http://<device-ip>:8080/screenshot
 # =============================================================================
-
-web_server:
-  port: 80
 
 external_components:
   - source:
@@ -16,7 +14,7 @@ external_components:
       url: https://github.com/rmunroe/esphome-lvgl
       ref: main
     refresh: 1s
-    components: [display_capture]
+    components: [lvgl_screenshot]
 
-display_capture:
-  display_id: my_display
+lvgl_screenshot:
+  port: 8080
