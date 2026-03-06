@@ -227,7 +227,7 @@ lvgl:
                   layout:
                     type: flex
                     flex_flow: row
-                    pad_column: 10
+                    pad_column: 4
                   widgets:
 
                     # ---- Left: Light Controls Column ----
@@ -254,7 +254,7 @@ lvgl:
                               layout:
                                 type: flex
                                 flex_flow: row
-                                pad_column: 32
+                                pad_column: 48
                                 flex_align_cross: center
                               widgets:
                                 - button:
@@ -273,32 +273,44 @@ lvgl:
                                           service: light.toggle
                                           data:
                                             entity_id: light.living_room_track_lights
-                                - slider:
-                                    id: lr_tracks_brightness_slider
-                                    width: 300
-                                    height: 40
-                                    min_value: 0
-                                    max_value: 255
-                                    value: 0
-                                    mode: NORMAL
-                                    styles: brightness_slider
-                                    indicator:
-                                      styles: brightness_slider_indicator
-                                    knob:
-                                      styles: brightness_slider_knob
-                                    on_release:
-                                      - homeassistant.service:
-                                          service: light.turn_on
-                                          data:
-                                            entity_id: light.living_room_track_lights
-                                            brightness: !lambda return to_string((int)lv_slider_get_value(id(lr_tracks_brightness_slider)));
-                                - label:
-                                    id: lr_tracks_brightness_label
-                                    width: 56
-                                    text_font: small_font
-                                    text: "0%"
-                                    text_color: $text_secondary
-                                    text_align: right
+                                - obj:
+                                    width: SIZE_CONTENT
+                                    height: SIZE_CONTENT
+                                    bg_opa: TRANSP
+                                    border_width: 0
+                                    pad_all: 0
+                                    layout:
+                                      type: flex
+                                      flex_flow: row
+                                      pad_column: 8
+                                      flex_align_cross: center
+                                    widgets:
+                                      - slider:
+                                          id: lr_tracks_brightness_slider
+                                          width: 300
+                                          height: 40
+                                          min_value: 0
+                                          max_value: 255
+                                          value: 0
+                                          mode: NORMAL
+                                          styles: brightness_slider
+                                          indicator:
+                                            styles: brightness_slider_indicator
+                                          knob:
+                                            styles: brightness_slider_knob
+                                          on_release:
+                                            - homeassistant.service:
+                                                service: light.turn_on
+                                                data:
+                                                  entity_id: light.living_room_track_lights
+                                                  brightness: !lambda return to_string((int)lv_slider_get_value(id(lr_tracks_brightness_slider)));
+                                      - label:
+                                          id: lr_tracks_brightness_label
+                                          width: 56
+                                          text_font: small_font
+                                          text: "0%"
+                                          text_color: $text_secondary
+                                          text_align: right
 
                           # --- Floor Lamp Row ---
                           - obj:
@@ -310,7 +322,7 @@ lvgl:
                               layout:
                                 type: flex
                                 flex_flow: row
-                                pad_column: 32
+                                pad_column: 48
                                 flex_align_cross: center
                               widgets:
                                 - button:
@@ -329,32 +341,44 @@ lvgl:
                                           service: light.toggle
                                           data:
                                             entity_id: light.hue_color_lamp_1_5
-                                - slider:
-                                    id: lr_floor_brightness_slider
-                                    width: 300
-                                    height: 40
-                                    min_value: 0
-                                    max_value: 255
-                                    value: 0
-                                    mode: NORMAL
-                                    styles: brightness_slider
-                                    indicator:
-                                      styles: brightness_slider_indicator
-                                    knob:
-                                      styles: brightness_slider_knob
-                                    on_release:
-                                      - homeassistant.service:
-                                          service: light.turn_on
-                                          data:
-                                            entity_id: light.hue_color_lamp_1_5
-                                            brightness: !lambda return to_string((int)lv_slider_get_value(id(lr_floor_brightness_slider)));
-                                - label:
-                                    id: lr_floor_brightness_label
-                                    width: 56
-                                    text_font: small_font
-                                    text: "0%"
-                                    text_color: $text_secondary
-                                    text_align: right
+                                - obj:
+                                    width: SIZE_CONTENT
+                                    height: SIZE_CONTENT
+                                    bg_opa: TRANSP
+                                    border_width: 0
+                                    pad_all: 0
+                                    layout:
+                                      type: flex
+                                      flex_flow: row
+                                      pad_column: 8
+                                      flex_align_cross: center
+                                    widgets:
+                                      - slider:
+                                          id: lr_floor_brightness_slider
+                                          width: 300
+                                          height: 40
+                                          min_value: 0
+                                          max_value: 255
+                                          value: 0
+                                          mode: NORMAL
+                                          styles: brightness_slider
+                                          indicator:
+                                            styles: brightness_slider_indicator
+                                          knob:
+                                            styles: brightness_slider_knob
+                                          on_release:
+                                            - homeassistant.service:
+                                                service: light.turn_on
+                                                data:
+                                                  entity_id: light.hue_color_lamp_1_5
+                                                  brightness: !lambda return to_string((int)lv_slider_get_value(id(lr_floor_brightness_slider)));
+                                      - label:
+                                          id: lr_floor_brightness_label
+                                          width: 56
+                                          text_font: small_font
+                                          text: "0%"
+                                          text_color: $text_secondary
+                                          text_align: right
 
                           # --- Table Lamp Row ---
                           - obj:
@@ -366,7 +390,7 @@ lvgl:
                               layout:
                                 type: flex
                                 flex_flow: row
-                                pad_column: 32
+                                pad_column: 48
                                 flex_align_cross: center
                               widgets:
                                 - button:
@@ -385,32 +409,44 @@ lvgl:
                                           service: light.toggle
                                           data:
                                             entity_id: light.hue_color_lamp_1_4
-                                - slider:
-                                    id: lr_table_brightness_slider
-                                    width: 300
-                                    height: 40
-                                    min_value: 0
-                                    max_value: 255
-                                    value: 0
-                                    mode: NORMAL
-                                    styles: brightness_slider
-                                    indicator:
-                                      styles: brightness_slider_indicator
-                                    knob:
-                                      styles: brightness_slider_knob
-                                    on_release:
-                                      - homeassistant.service:
-                                          service: light.turn_on
-                                          data:
-                                            entity_id: light.hue_color_lamp_1_4
-                                            brightness: !lambda return to_string((int)lv_slider_get_value(id(lr_table_brightness_slider)));
-                                - label:
-                                    id: lr_table_brightness_label
-                                    width: 56
-                                    text_font: small_font
-                                    text: "0%"
-                                    text_color: $text_secondary
-                                    text_align: right
+                                - obj:
+                                    width: SIZE_CONTENT
+                                    height: SIZE_CONTENT
+                                    bg_opa: TRANSP
+                                    border_width: 0
+                                    pad_all: 0
+                                    layout:
+                                      type: flex
+                                      flex_flow: row
+                                      pad_column: 8
+                                      flex_align_cross: center
+                                    widgets:
+                                      - slider:
+                                          id: lr_table_brightness_slider
+                                          width: 300
+                                          height: 40
+                                          min_value: 0
+                                          max_value: 255
+                                          value: 0
+                                          mode: NORMAL
+                                          styles: brightness_slider
+                                          indicator:
+                                            styles: brightness_slider_indicator
+                                          knob:
+                                            styles: brightness_slider_knob
+                                          on_release:
+                                            - homeassistant.service:
+                                                service: light.turn_on
+                                                data:
+                                                  entity_id: light.hue_color_lamp_1_4
+                                                  brightness: !lambda return to_string((int)lv_slider_get_value(id(lr_table_brightness_slider)));
+                                      - label:
+                                          id: lr_table_brightness_label
+                                          width: 56
+                                          text_font: small_font
+                                          text: "0%"
+                                          text_color: $text_secondary
+                                          text_align: right
 
                           # --- Art Deco Lamp Row ---
                           - obj:
@@ -422,7 +458,7 @@ lvgl:
                               layout:
                                 type: flex
                                 flex_flow: row
-                                pad_column: 32
+                                pad_column: 48
                                 flex_align_cross: center
                               widgets:
                                 - button:
@@ -441,32 +477,44 @@ lvgl:
                                           service: light.toggle
                                           data:
                                             entity_id: light.living_room_art_deco_lamp
-                                - slider:
-                                    id: lr_deco_brightness_slider
-                                    width: 300
-                                    height: 40
-                                    min_value: 0
-                                    max_value: 255
-                                    value: 0
-                                    mode: NORMAL
-                                    styles: brightness_slider
-                                    indicator:
-                                      styles: brightness_slider_indicator
-                                    knob:
-                                      styles: brightness_slider_knob
-                                    on_release:
-                                      - homeassistant.service:
-                                          service: light.turn_on
-                                          data:
-                                            entity_id: light.living_room_art_deco_lamp
-                                            brightness: !lambda return to_string((int)lv_slider_get_value(id(lr_deco_brightness_slider)));
-                                - label:
-                                    id: lr_deco_brightness_label
-                                    width: 56
-                                    text_font: small_font
-                                    text: "0%"
-                                    text_color: $text_secondary
-                                    text_align: right
+                                - obj:
+                                    width: SIZE_CONTENT
+                                    height: SIZE_CONTENT
+                                    bg_opa: TRANSP
+                                    border_width: 0
+                                    pad_all: 0
+                                    layout:
+                                      type: flex
+                                      flex_flow: row
+                                      pad_column: 8
+                                      flex_align_cross: center
+                                    widgets:
+                                      - slider:
+                                          id: lr_deco_brightness_slider
+                                          width: 300
+                                          height: 40
+                                          min_value: 0
+                                          max_value: 255
+                                          value: 0
+                                          mode: NORMAL
+                                          styles: brightness_slider
+                                          indicator:
+                                            styles: brightness_slider_indicator
+                                          knob:
+                                            styles: brightness_slider_knob
+                                          on_release:
+                                            - homeassistant.service:
+                                                service: light.turn_on
+                                                data:
+                                                  entity_id: light.living_room_art_deco_lamp
+                                                  brightness: !lambda return to_string((int)lv_slider_get_value(id(lr_deco_brightness_slider)));
+                                      - label:
+                                          id: lr_deco_brightness_label
+                                          width: 56
+                                          text_font: small_font
+                                          text: "0%"
+                                          text_color: $text_secondary
+                                          text_align: right
 
                     # ---- Right: Other Rooms Card ----
                     - obj:

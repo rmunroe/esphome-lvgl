@@ -298,6 +298,8 @@ binary_sensor:
               if (pct > 100) pct = 100;
               snprintf(buf, sizeof(buf), "%d%%", pct);
               return buf;
+        - lambda: |-
+            lv_obj_set_style_bg_color(id(lr_tracks_brightness_slider), lv_color_hex(x ? 0xFFFFFF : 0x555555), LV_PART_KNOB);
 
   # Floor Lamp
   - platform: homeassistant
@@ -326,6 +328,8 @@ binary_sensor:
               if (pct > 100) pct = 100;
               snprintf(buf, sizeof(buf), "%d%%", pct);
               return buf;
+        - lambda: |-
+            lv_obj_set_style_bg_color(id(lr_floor_brightness_slider), lv_color_hex(x ? 0xFFFFFF : 0x555555), LV_PART_KNOB);
 
   # Table Lamp
   - platform: homeassistant
@@ -354,6 +358,8 @@ binary_sensor:
               if (pct > 100) pct = 100;
               snprintf(buf, sizeof(buf), "%d%%", pct);
               return buf;
+        - lambda: |-
+            lv_obj_set_style_bg_color(id(lr_table_brightness_slider), lv_color_hex(x ? 0xFFFFFF : 0x555555), LV_PART_KNOB);
 
   # Art Deco Lamp
   - platform: homeassistant
@@ -382,6 +388,8 @@ binary_sensor:
               if (pct > 100) pct = 100;
               snprintf(buf, sizeof(buf), "%d%%", pct);
               return buf;
+        - lambda: |-
+            lv_obj_set_style_bg_color(id(lr_deco_brightness_slider), lv_color_hex(x ? 0xFFFFFF : 0x555555), LV_PART_KNOB);
 
   # ===========================================================================
   # LIGHTS TAB — Other Rooms toggle state sync
