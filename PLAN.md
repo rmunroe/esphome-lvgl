@@ -113,7 +113,7 @@ Each row has a status LED + icon + label + toggle switch.
 
 ## Feature: LVGL Screenshot Server
 
-**Status: In Progress** — HTTP endpoint works and returns JPEG images, but screenshot content has a vertical shift on MIPI DSI displays.
+**Status: Complete** — HTTP endpoint works and returns pixel-perfect JPEG screenshots with header bar compositing.
 
 ### Overview
 

@@ -119,4 +119,41 @@ lvgl_screenshot:
 - For ESP-IDF builds, use `beginResponse` not `beginResponse_P` (the latter is Arduino-only).
 - `LV_COLOR_16_SWAP` affects the `lv_color_t` struct layout — use `#if LV_COLOR_16_SWAP` to handle split vs unified green channel.
 
-**Current status:** The endpoint works and serves JPEG images, but screenshots from MIPI DSI displays have a vertical shift (header cut off, bottom repeated). This is because LVGL's draw buffers (`buf1`/`buf2`) on MIPI DSI are DMA framebuffers managed by the DPI panel driver, and reading them directly produces shifted content. The fix is to use LVGL's `lv_snapshot_take_to_buf()` API which re-renders the screen to a fresh buffer independently of the hardware display driver.
+**Current status:** Fully working. Screenshots are pixel-perfect with header bar compositing. Uses LVGL's `lv_snapshot_take_to_buf()` API to re-render the screen to a fresh PSRAM buffer (bypassing DMA framebuffers), then composites `lv_layer_top()` (header bar) via alpha blending, converts RGB565→RGB888, and encodes to JPEG via stb_image_write.
+
+**Screenshot URL:** `http://10.3.0.243:8080/screenshot` (Touch Screen 1 / Living Room)
+
+## Build Automation
+
+### `scripts/esphome_build.py`
+
+Triggers ESPHome compile+flash from the command line via the HA WebSocket API → ESPHome dashboard ingress.
+
+**Usage:**
+```bash
+python3 scripts/esphome_build.py [device-name]          # compile + flash OTA
+python3 scripts/esphome_build.py [device-name] --compile-only  # compile only
+```
+Default device: `touch-screen-1`
+
+**How it works:**
+1. Connects to HA WebSocket API (`wss://hass.robmunroe.com/api/websocket`)
+2. Authenticates with long-lived access token
+3. Gets ESPHome addon info via `supervisor/api` WS command (addon slug: `5c53de3b_esphome`)
+4. Creates an ingress session via `supervisor/api` WS command
+5. Connects to ESPHome dashboard's `/run` WebSocket endpoint through HA ingress proxy
+6. Sends `{"type": "spawn", "configuration": "<device>.yaml", "port": "OTA"}` to start the build
+7. Streams build output in real-time
+
+**Key details:**
+- HA URL: `https://hass.robmunroe.com`
+- HA long-lived access token is embedded in the script (expires 2088)
+- ESPHome addon slug: `5c53de3b_esphome` (ESPHome Device Builder)
+- Ingress URL: `/api/hassio_ingress/B8-6qoGVVsSNqIm7cy0qaPThHToClGeaicyq7rclWWw/`
+- The `X-HA-Ingress: YES` header is required for ESPHome dashboard auth bypass when accessed via ingress
+- SSL certificate verification is disabled (HA uses custom/self-signed cert)
+- The HA Supervisor REST API (`/api/hassio/*`) returns 401 with long-lived tokens in HA 2026.3+; the WebSocket API (`supervisor/api` command type) works correctly
+- ESPHome dashboard compile/run endpoints use WebSocket (not HTTP POST), with message type `"spawn"`
+- Typical build time: ~15s compile + ~6s OTA upload
+
+**Dependencies:** `pip3 install websockets aiohttp`
