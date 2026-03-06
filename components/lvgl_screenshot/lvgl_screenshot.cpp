@@ -142,16 +142,34 @@ void LvglScreenshot::loop() {
 // ---------------------------------------------------------------------------
 void LvglScreenshot::do_capture_() {
   lv_disp_t *disp = lv_disp_get_default();
-  if (!disp || !disp->driver || !disp->driver->draw_buf ||
-      !disp->driver->draw_buf->buf_act) {
+  if (!disp || !disp->driver || !disp->driver->draw_buf) {
     ESP_LOGE(TAG, "LVGL framebuffer not available");
     this->jpeg_size_ = 0;
     return;
   }
 
-  auto *lvgl_buf = (lv_color_t *) disp->driver->draw_buf->buf_act;
+  // Force a full LVGL refresh so the draw buffer contains the current screen.
+  // This ensures buf1 has the complete, up-to-date content.
+  lv_refr_now(disp);
+
+  // Read from buf1 (the primary buffer) rather than buf_act. With MIPI DSI
+  // and double-buffered DMA, buf_act may point to the buffer being prepared
+  // for the NEXT frame, while buf1 holds the last fully-rendered frame.
+  auto *lvgl_buf = (lv_color_t *) disp->driver->draw_buf->buf1;
+  if (!lvgl_buf) {
+    ESP_LOGE(TAG, "LVGL buf1 is null");
+    this->jpeg_size_ = 0;
+    return;
+  }
+
   uint32_t width = (uint32_t) lv_disp_get_hor_res(disp);
   uint32_t height = (uint32_t) lv_disp_get_ver_res(disp);
+
+  ESP_LOGD(TAG, "Capture: %ux%u, buf1=%p, buf2=%p, buf_act=%p",
+           width, height,
+           disp->driver->draw_buf->buf1,
+           disp->driver->draw_buf->buf2,
+           disp->driver->draw_buf->buf_act);
 
   // ------------------------------------------------------------------
   // Convert RGB565 → RGB888 into rgb_buf_ (row-major, top-down)
