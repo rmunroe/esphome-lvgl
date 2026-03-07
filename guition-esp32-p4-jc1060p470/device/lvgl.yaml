@@ -1112,8 +1112,10 @@ lvgl:
                                     text_align: center
                                 - slider:
                                     id: lr_volume_slider
-                                    width: 300
+                                    width: 340
                                     height: 40
+                                    pad_left: 20
+                                    pad_right: 20
                                     min_value: 0
                                     max_value: 100
                                     value: 0
@@ -1158,8 +1160,10 @@ lvgl:
                                     text_align: center
                                 - slider:
                                     id: lr_sub_gain_slider
-                                    width: 300
+                                    width: 340
                                     height: 40
+                                    pad_left: 20
+                                    pad_right: 20
                                     min_value: 0
                                     max_value: 100
                                     value: 50
@@ -1206,8 +1210,10 @@ lvgl:
                                     text_align: center
                                 - slider:
                                     id: lr_bass_slider
-                                    width: 300
+                                    width: 340
                                     height: 40
+                                    pad_left: 20
+                                    pad_right: 20
                                     min_value: 0
                                     max_value: 100
                                     value: 50
@@ -1254,8 +1260,10 @@ lvgl:
                                     text_align: center
                                 - slider:
                                     id: lr_treble_slider
-                                    width: 300
+                                    width: 340
                                     height: 40
+                                    pad_left: 20
+                                    pad_right: 20
                                     min_value: 0
                                     max_value: 100
                                     value: 50
@@ -1290,94 +1298,83 @@ lvgl:
                         layout:
                           type: flex
                           flex_flow: column
-                          pad_row: 20
+                          pad_row: 12
                         widgets:
                           - label:
                               styles: section_title
                               text: "Sound"
 
-                          # Toggles container — tighter spacing
+                          # Loudness toggle
                           - obj:
                               width: 256
+                              height: 40
                               bg_opa: TRANSP
                               border_width: 0
                               pad_all: 0
                               layout:
                                 type: flex
-                                flex_flow: column
-                                pad_row: 16
+                                flex_flow: row
+                                flex_align_cross: center
+                                flex_align_main: SPACE_BETWEEN
                               widgets:
-                                # Loudness toggle
-                                - obj:
-                                    width: 256
-                                    height: 40
-                                    bg_opa: TRANSP
-                                    border_width: 0
-                                    pad_all: 0
-                                    layout:
-                                      type: flex
-                                      flex_flow: row
-                                      flex_align_cross: center
-                                      flex_align_main: SPACE_BETWEEN
-                                    widgets:
-                                      - label:
-                                          text_font: label_font
-                                          text: "Loudness"
-                                          text_color: $text_primary
-                                      - switch:
-                                          id: lr_loudness_switch
-                                          on_click:
-                                            - homeassistant.service:
-                                                service: switch.toggle
-                                                data:
-                                                  entity_id: switch.living_room_sonos_loudness
+                                - label:
+                                    text_font: label_font
+                                    text: "Loudness"
+                                    text_color: $text_primary
+                                - switch:
+                                    id: lr_loudness_switch
+                                    on_click:
+                                      - homeassistant.service:
+                                          service: switch.toggle
+                                          data:
+                                            entity_id: switch.living_room_sonos_loudness
 
-                                # Night Sound toggle
-                                - obj:
-                                    width: 256
-                                    height: 40
-                                    bg_opa: TRANSP
-                                    border_width: 0
-                                    pad_all: 0
-                                    layout:
-                                      type: flex
-                                      flex_flow: row
-                                      flex_align_cross: center
-                                      flex_align_main: SPACE_BETWEEN
-                                    widgets:
-                                      - label:
-                                          text_font: label_font
-                                          text: "Night Sound"
-                                          text_color: $text_primary
-                                      - switch:
-                                          id: lr_night_sound_switch
-                                          on_click:
-                                            - homeassistant.service:
-                                                service: switch.toggle
-                                                data:
-                                                  entity_id: switch.living_room_sonos_night_sound
+                          # Night Sound toggle
+                          - obj:
+                              width: 256
+                              height: 40
+                              bg_opa: TRANSP
+                              border_width: 0
+                              pad_all: 0
+                              layout:
+                                type: flex
+                                flex_flow: row
+                                flex_align_cross: center
+                                flex_align_main: SPACE_BETWEEN
+                              widgets:
+                                - label:
+                                    text_font: label_font
+                                    text: "Night Sound"
+                                    text_color: $text_primary
+                                - switch:
+                                    id: lr_night_sound_switch
+                                    on_click:
+                                      - homeassistant.service:
+                                          service: switch.toggle
+                                          data:
+                                            entity_id: switch.living_room_sonos_night_sound
 
-                                # Enhance Speech toggle
-                                - obj:
-                                    width: 256
-                                    height: 40
-                                    bg_opa: TRANSP
-                                    border_width: 0
-                                    pad_all: 0
-                                    layout:
-                                      type: flex
-                                      flex_flow: row
-                                      flex_align_cross: center
-                                      flex_align_main: SPACE_BETWEEN
-                                    widgets:
-                                      - label:
-                                          text_font: label_font
-                                          text: "Enhance Speech"
-                                          text_color: $text_primary
-                                      - switch:
-                                          id: lr_speech_enhance_switch
-                                          on_click:
-                                            - homeassistant.service:
-                                                service: switch.toggle
-                                                data:
-                                                  entity_id: switch.living_room_sonos_speech_enhancement
+                          # Enhance Speech toggle
+                          - obj:
+                              width: 256
+                              height: 40
+                              bg_opa: TRANSP
+                              border_width: 0
+                              pad_all: 0
+                              layout:
+                                type: flex
+                                flex_flow: row
+                                flex_align_cross: center
+                                flex_align_main: SPACE_BETWEEN
+                              widgets:
+                                - label:
+                                    text_font: label_font
+                                    text: "Enhance Speech"
+                                    text_color: $text_primary
+                                - switch:
+                                    id: lr_speech_enhance_switch
+                                    on_click:
+                                      - homeassistant.service:
+                                          service: switch.toggle
+                                          data:
+                                            entity_id: switch.living_room_sonos_speech_enhancement
