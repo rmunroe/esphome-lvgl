@@ -1113,9 +1113,11 @@ lvgl:
                                 - slider:
                                     id: lr_volume_slider
                                     width: 340
-                                    height: 40
+                                    height: 60
                                     pad_left: 20
                                     pad_right: 20
+                                    pad_top: 10
+                                    pad_bottom: 10
                                     min_value: 0
                                     max_value: 100
                                     value: 0
@@ -1161,9 +1163,11 @@ lvgl:
                                 - slider:
                                     id: lr_sub_gain_slider
                                     width: 340
-                                    height: 40
+                                    height: 60
                                     pad_left: 20
                                     pad_right: 20
+                                    pad_top: 10
+                                    pad_bottom: 10
                                     min_value: 0
                                     max_value: 100
                                     value: 50
@@ -1211,9 +1215,11 @@ lvgl:
                                 - slider:
                                     id: lr_bass_slider
                                     width: 340
-                                    height: 40
+                                    height: 60
                                     pad_left: 20
                                     pad_right: 20
+                                    pad_top: 10
+                                    pad_bottom: 10
                                     min_value: 0
                                     max_value: 100
                                     value: 50
@@ -1261,9 +1267,11 @@ lvgl:
                                 - slider:
                                     id: lr_treble_slider
                                     width: 340
-                                    height: 40
+                                    height: 60
                                     pad_left: 20
                                     pad_right: 20
+                                    pad_top: 10
+                                    pad_bottom: 10
                                     min_value: 0
                                     max_value: 100
                                     value: 50
