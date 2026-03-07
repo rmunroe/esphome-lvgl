@@ -223,47 +223,47 @@ sensor:
   # SONOS EQ — Sub Gain, Bass, Treble
   # ===========================================================================
 
-  # Sub Gain (-15 to +15)
+  # Sub Gain (-15 to +15) → displayed as 0–100%
   - platform: homeassistant
     entity_id: number.living_room_sonos_sub_gain
     id: lr_sub_gain
     on_value:
       - lvgl.slider.update:
           id: lr_sub_gain_slider
-          value: !lambda return (int)round(x);
+          value: !lambda return (int)round((x + 15.0) * 100.0 / 30.0);
       - lvgl.label.update:
           id: lr_sub_gain_label
           text:
-            format: "%d"
-            args: [ '(int)round(x)' ]
+            format: "%d%%"
+            args: [ '(int)round((x + 15.0) * 100.0 / 30.0)' ]
 
-  # Bass (-10 to +10)
+  # Bass (-10 to +10) → displayed as 0–100%
   - platform: homeassistant
     entity_id: number.living_room_sonos_bass
     id: lr_bass
     on_value:
       - lvgl.slider.update:
           id: lr_bass_slider
-          value: !lambda return (int)round(x);
+          value: !lambda return (int)round((x + 10.0) * 100.0 / 20.0);
       - lvgl.label.update:
           id: lr_bass_label
           text:
-            format: "%d"
-            args: [ '(int)round(x)' ]
+            format: "%d%%"
+            args: [ '(int)round((x + 10.0) * 100.0 / 20.0)' ]
 
-  # Treble (-10 to +10)
+  # Treble (-10 to +10) → displayed as 0–100%
   - platform: homeassistant
     entity_id: number.living_room_sonos_treble
     id: lr_treble
     on_value:
       - lvgl.slider.update:
           id: lr_treble_slider
-          value: !lambda return (int)round(x);
+          value: !lambda return (int)round((x + 10.0) * 100.0 / 20.0);
       - lvgl.label.update:
           id: lr_treble_label
           text:
-            format: "%d"
-            args: [ '(int)round(x)' ]
+            format: "%d%%"
+            args: [ '(int)round((x + 10.0) * 100.0 / 20.0)' ]
 
 
 # =============================================================================
@@ -306,6 +306,18 @@ text_sensor:
             if (x == "playing") return "\U000F03E4";
             return "\U000F040B";
       - script.execute: evaluate_screen
+
+  # Sonos: Media source (Apple Music, TV, Line In, etc.)
+  - platform: homeassistant
+    entity_id: media_player.living_room_sonos
+    id: lr_sonos_media_source
+    attribute: source
+    on_value:
+      - lvgl.label.update:
+          id: lr_sonos_source
+          text: !lambda |-
+            if (x.empty()) return "";
+            return x.c_str();
 
 
 # =============================================================================

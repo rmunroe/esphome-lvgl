@@ -1005,7 +1005,7 @@ lvgl:
               # ----- Now Playing Row -----
               - obj:
                   width: 984
-                  height: 70
+                  height: 85
                   bg_opa: TRANSP
                   border_width: 0
                   pad_all: 0
@@ -1022,7 +1022,7 @@ lvgl:
                         text_color: $blue
                     - obj:
                         width: 920
-                        height: 70
+                        height: 85
                         bg_opa: TRANSP
                         border_width: 0
                         pad_all: 0
@@ -1046,6 +1046,13 @@ lvgl:
                               text_color: $text_secondary
                               long_mode: DOT
                               width: 910
+                          - label:
+                              id: lr_sonos_source
+                              text_font: small_font
+                              text: ""
+                              text_color: $text_disabled
+                              long_mode: DOT
+                              width: 910
 
               # ----- Separator -----
               - line:
@@ -1060,7 +1067,7 @@ lvgl:
               # ----- Main Content: Sliders + Sound Settings -----
               - obj:
                   width: 984
-                  height: 396
+                  height: 381
                   bg_opa: TRANSP
                   border_width: 0
                   pad_all: 0
@@ -1073,7 +1080,7 @@ lvgl:
                     # ---- Left: Slider Controls Column ----
                     - obj:
                         width: 680
-                        height: 396
+                        height: 381
                         bg_opa: TRANSP
                         border_width: 0
                         pad_all: 0
@@ -1087,7 +1094,7 @@ lvgl:
                           # --- Amp Volume Row ---
                           - obj:
                               width: 676
-                              height: 70
+                              height: 80
                               bg_opa: TRANSP
                               border_width: 0
                               pad_all: 0
@@ -1133,7 +1140,7 @@ lvgl:
                           # --- Sub Gain Row ---
                           - obj:
                               width: 676
-                              height: 70
+                              height: 80
                               bg_opa: TRANSP
                               border_width: 0
                               pad_all: 0
@@ -1153,10 +1160,10 @@ lvgl:
                                     id: lr_sub_gain_slider
                                     width: 300
                                     height: 40
-                                    min_value: -15
-                                    max_value: 15
-                                    value: 0
-                                    mode: SYMMETRICAL
+                                    min_value: 0
+                                    max_value: 100
+                                    value: 50
+                                    mode: NORMAL
                                     styles: brightness_slider
                                     indicator:
                                       styles: brightness_slider_indicator
@@ -1167,19 +1174,21 @@ lvgl:
                                           service: number.set_value
                                           data:
                                             entity_id: number.living_room_sonos_sub_gain
-                                            value: !lambda return to_string((int)lv_slider_get_value(id(lr_sub_gain_slider)));
+                                            value: !lambda |-
+                                              int pct = lv_slider_get_value(id(lr_sub_gain_slider));
+                                              return to_string((int)round(pct * 30.0 / 100.0 - 15.0));
                                 - label:
                                     id: lr_sub_gain_label
                                     width: 56
                                     text_font: small_font
-                                    text: "0"
+                                    text: "50%"
                                     text_color: $text_secondary
                                     text_align: right
 
                           # --- Bass Row ---
                           - obj:
                               width: 676
-                              height: 70
+                              height: 80
                               bg_opa: TRANSP
                               border_width: 0
                               pad_all: 0
@@ -1199,10 +1208,10 @@ lvgl:
                                     id: lr_bass_slider
                                     width: 300
                                     height: 40
-                                    min_value: -10
-                                    max_value: 10
-                                    value: 0
-                                    mode: SYMMETRICAL
+                                    min_value: 0
+                                    max_value: 100
+                                    value: 50
+                                    mode: NORMAL
                                     styles: brightness_slider
                                     indicator:
                                       styles: brightness_slider_indicator
@@ -1213,19 +1222,21 @@ lvgl:
                                           service: number.set_value
                                           data:
                                             entity_id: number.living_room_sonos_bass
-                                            value: !lambda return to_string((int)lv_slider_get_value(id(lr_bass_slider)));
+                                            value: !lambda |-
+                                              int pct = lv_slider_get_value(id(lr_bass_slider));
+                                              return to_string((int)round(pct * 20.0 / 100.0 - 10.0));
                                 - label:
                                     id: lr_bass_label
                                     width: 56
                                     text_font: small_font
-                                    text: "0"
+                                    text: "50%"
                                     text_color: $text_secondary
                                     text_align: right
 
                           # --- Treble Row ---
                           - obj:
                               width: 676
-                              height: 70
+                              height: 80
                               bg_opa: TRANSP
                               border_width: 0
                               pad_all: 0
@@ -1245,10 +1256,10 @@ lvgl:
                                     id: lr_treble_slider
                                     width: 300
                                     height: 40
-                                    min_value: -10
-                                    max_value: 10
-                                    value: 0
-                                    mode: SYMMETRICAL
+                                    min_value: 0
+                                    max_value: 100
+                                    value: 50
+                                    mode: NORMAL
                                     styles: brightness_slider
                                     indicator:
                                       styles: brightness_slider_indicator
@@ -1259,12 +1270,14 @@ lvgl:
                                           service: number.set_value
                                           data:
                                             entity_id: number.living_room_sonos_treble
-                                            value: !lambda return to_string((int)lv_slider_get_value(id(lr_treble_slider)));
+                                            value: !lambda |-
+                                              int pct = lv_slider_get_value(id(lr_treble_slider));
+                                              return to_string((int)round(pct * 20.0 / 100.0 - 10.0));
                                 - label:
                                     id: lr_treble_label
                                     width: 56
                                     text_font: small_font
-                                    text: "0"
+                                    text: "50%"
                                     text_color: $text_secondary
                                     text_align: right
 
@@ -1272,88 +1285,99 @@ lvgl:
                     - obj:
                         styles: card_base
                         width: 280
-                        height: 396
+                        height: 381
                         border_width: 0
                         layout:
                           type: flex
                           flex_flow: column
-                          pad_row: 12
+                          pad_row: 20
                         widgets:
                           - label:
                               styles: section_title
                               text: "Sound"
 
-                          # Loudness toggle
+                          # Toggles container — tighter spacing
                           - obj:
                               width: 256
-                              flex_grow: 1
                               bg_opa: TRANSP
                               border_width: 0
                               pad_all: 0
                               layout:
                                 type: flex
-                                flex_flow: row
-                                flex_align_cross: center
-                                flex_align_main: SPACE_BETWEEN
+                                flex_flow: column
+                                pad_row: 16
                               widgets:
-                                - label:
-                                    text_font: label_font
-                                    text: "Loudness"
-                                    text_color: $text_primary
-                                - switch:
-                                    id: lr_loudness_switch
-                                    on_click:
-                                      - homeassistant.service:
-                                          service: switch.toggle
-                                          data:
-                                            entity_id: switch.living_room_sonos_loudness
+                                # Loudness toggle
+                                - obj:
+                                    width: 256
+                                    height: 40
+                                    bg_opa: TRANSP
+                                    border_width: 0
+                                    pad_all: 0
+                                    layout:
+                                      type: flex
+                                      flex_flow: row
+                                      flex_align_cross: center
+                                      flex_align_main: SPACE_BETWEEN
+                                    widgets:
+                                      - label:
+                                          text_font: label_font
+                                          text: "Loudness"
+                                          text_color: $text_primary
+                                      - switch:
+                                          id: lr_loudness_switch
+                                          on_click:
+                                            - homeassistant.service:
+                                                service: switch.toggle
+                                                data:
+                                                  entity_id: switch.living_room_sonos_loudness
 
-                          # Night Sound toggle
-                          - obj:
-                              width: 256
-                              flex_grow: 1
-                              bg_opa: TRANSP
-                              border_width: 0
-                              pad_all: 0
-                              layout:
-                                type: flex
-                                flex_flow: row
-                                flex_align_cross: center
-                                flex_align_main: SPACE_BETWEEN
-                              widgets:
-                                - label:
-                                    text_font: label_font
-                                    text: "Night Sound"
-                                    text_color: $text_primary
-                                - switch:
-                                    id: lr_night_sound_switch
-                                    on_click:
-                                      - homeassistant.service:
-                                          service: switch.toggle
-                                          data:
-                                            entity_id: switch.living_room_sonos_night_sound
+                                # Night Sound toggle
+                                - obj:
+                                    width: 256
+                                    height: 40
+                                    bg_opa: TRANSP
+                                    border_width: 0
+                                    pad_all: 0
+                                    layout:
+                                      type: flex
+                                      flex_flow: row
+                                      flex_align_cross: center
+                                      flex_align_main: SPACE_BETWEEN
+                                    widgets:
+                                      - label:
+                                          text_font: label_font
+                                          text: "Night Sound"
+                                          text_color: $text_primary
+                                      - switch:
+                                          id: lr_night_sound_switch
+                                          on_click:
+                                            - homeassistant.service:
+                                                service: switch.toggle
+                                                data:
+                                                  entity_id: switch.living_room_sonos_night_sound
 
-                          # Enhance Speech toggle
-                          - obj:
-                              width: 256
-                              flex_grow: 1
-                              bg_opa: TRANSP
-                              border_width: 0
-                              pad_all: 0
-                              layout:
-                                type: flex
-                                flex_flow: row
-                                flex_align_cross: center
-                                flex_align_main: SPACE_BETWEEN
-                              widgets:
-                                - label:
-                                    text_font: label_font
-                                    text: "Enhance Speech"
-                                    text_color: $text_primary
-                                - switch:
-                                    id: lr_speech_enhance_switch
-                                    on_click:
-                                      - homeassistant.service:
-                                          service: switch.toggle
-                                          data:
-                                            entity_id: switch.living_room_sonos_speech_enhancement
+                                # Enhance Speech toggle
+                                - obj:
+                                    width: 256
+                                    height: 40
+                                    bg_opa: TRANSP
+                                    border_width: 0
+                                    pad_all: 0
+                                    layout:
+                                      type: flex
+                                      flex_flow: row
+                                      flex_align_cross: center
+                                      flex_align_main: SPACE_BETWEEN
+                                    widgets:
+                                      - label:
+                                          text_font: label_font
+                                          text: "Enhance Speech"
+                                          text_color: $text_primary
+                                      - switch:
+                                          id: lr_speech_enhance_switch
+                                          on_click:
+                                            - homeassistant.service:
+                                                service: switch.toggle
+                                                data:
+                                                  entity_id: switch.living_room_sonos_speech_enhancement
