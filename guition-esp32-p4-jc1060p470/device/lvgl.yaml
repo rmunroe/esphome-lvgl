@@ -1294,7 +1294,7 @@ lvgl:
                                 type: flex
                                 flex_flow: row
                                 flex_align_cross: center
-                                flex_align_main: space-between
+                                flex_align_main: SPACE_BETWEEN
                               widgets:
                                 - label:
                                     text_font: label_font
@@ -1319,7 +1319,7 @@ lvgl:
                                 type: flex
                                 flex_flow: row
                                 flex_align_cross: center
-                                flex_align_main: space-between
+                                flex_align_main: SPACE_BETWEEN
                               widgets:
                                 - label:
                                     text_font: label_font
@@ -1344,7 +1344,7 @@ lvgl:
                                 type: flex
                                 flex_flow: row
                                 flex_align_cross: center
-                                flex_align_main: space-between
+                                flex_align_main: SPACE_BETWEEN
                               widgets:
                                 - label:
                                     text_font: label_font
