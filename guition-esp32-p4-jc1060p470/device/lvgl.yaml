@@ -1097,20 +1097,12 @@ lvgl:
                                 pad_column: 16
                                 flex_align_cross: center
                               widgets:
-                                - obj:
+                                - label:
                                     width: 200
-                                    height: 65
-                                    bg_color: $surface
-                                    bg_opa: COVER
-                                    radius: 12
-                                    border_width: 0
-                                    shadow_width: 0
-                                    widgets:
-                                      - label:
-                                          align: center
-                                          text_font: label_font
-                                          text: "Amp Volume"
-                                          text_color: $text_primary
+                                    text_font: label_font
+                                    text: "Amp Volume"
+                                    text_color: $text_secondary
+                                    text_align: center
                                 - slider:
                                     id: lr_volume_slider
                                     width: 300
@@ -1151,20 +1143,12 @@ lvgl:
                                 pad_column: 16
                                 flex_align_cross: center
                               widgets:
-                                - obj:
+                                - label:
                                     width: 200
-                                    height: 65
-                                    bg_color: $surface
-                                    bg_opa: COVER
-                                    radius: 12
-                                    border_width: 0
-                                    shadow_width: 0
-                                    widgets:
-                                      - label:
-                                          align: center
-                                          text_font: label_font
-                                          text: "Sub Gain"
-                                          text_color: $text_primary
+                                    text_font: label_font
+                                    text: "Sub Gain"
+                                    text_color: $text_secondary
+                                    text_align: center
                                 - slider:
                                     id: lr_sub_gain_slider
                                     width: 300
@@ -1205,20 +1189,12 @@ lvgl:
                                 pad_column: 16
                                 flex_align_cross: center
                               widgets:
-                                - obj:
+                                - label:
                                     width: 200
-                                    height: 65
-                                    bg_color: $surface
-                                    bg_opa: COVER
-                                    radius: 12
-                                    border_width: 0
-                                    shadow_width: 0
-                                    widgets:
-                                      - label:
-                                          align: center
-                                          text_font: label_font
-                                          text: "Bass"
-                                          text_color: $text_primary
+                                    text_font: label_font
+                                    text: "Bass"
+                                    text_color: $text_secondary
+                                    text_align: center
                                 - slider:
                                     id: lr_bass_slider
                                     width: 300
@@ -1259,20 +1235,12 @@ lvgl:
                                 pad_column: 16
                                 flex_align_cross: center
                               widgets:
-                                - obj:
+                                - label:
                                     width: 200
-                                    height: 65
-                                    bg_color: $surface
-                                    bg_opa: COVER
-                                    radius: 12
-                                    border_width: 0
-                                    shadow_width: 0
-                                    widgets:
-                                      - label:
-                                          align: center
-                                          text_font: label_font
-                                          text: "Treble"
-                                          text_color: $text_primary
+                                    text_font: label_font
+                                    text: "Treble"
+                                    text_color: $text_secondary
+                                    text_align: center
                                 - slider:
                                     id: lr_treble_slider
                                     width: 300
@@ -1315,53 +1283,77 @@ lvgl:
                               styles: section_title
                               text: "Sound"
 
-                          - button:
-                              id: lr_loudness_button
+                          # Loudness toggle
+                          - obj:
                               width: 256
                               flex_grow: 1
-                              checkable: true
-                              styles: other_rooms_button
+                              bg_opa: TRANSP
+                              border_width: 0
+                              pad_all: 0
+                              layout:
+                                type: flex
+                                flex_flow: row
+                                flex_align_cross: center
+                                flex_align_main: space-between
                               widgets:
                                 - label:
-                                    align: center
                                     text_font: label_font
                                     text: "Loudness"
-                              on_click:
-                                - homeassistant.service:
-                                    service: switch.toggle
-                                    data:
-                                      entity_id: switch.living_room_sonos_loudness
+                                    text_color: $text_primary
+                                - switch:
+                                    id: lr_loudness_switch
+                                    on_click:
+                                      - homeassistant.service:
+                                          service: switch.toggle
+                                          data:
+                                            entity_id: switch.living_room_sonos_loudness
 
-                          - button:
-                              id: lr_night_sound_button
+                          # Night Sound toggle
+                          - obj:
                               width: 256
                               flex_grow: 1
-                              checkable: true
-                              styles: other_rooms_button
+                              bg_opa: TRANSP
+                              border_width: 0
+                              pad_all: 0
+                              layout:
+                                type: flex
+                                flex_flow: row
+                                flex_align_cross: center
+                                flex_align_main: space-between
                               widgets:
                                 - label:
-                                    align: center
                                     text_font: label_font
                                     text: "Night Sound"
-                              on_click:
-                                - homeassistant.service:
-                                    service: switch.toggle
-                                    data:
-                                      entity_id: switch.living_room_sonos_night_sound
+                                    text_color: $text_primary
+                                - switch:
+                                    id: lr_night_sound_switch
+                                    on_click:
+                                      - homeassistant.service:
+                                          service: switch.toggle
+                                          data:
+                                            entity_id: switch.living_room_sonos_night_sound
 
-                          - button:
-                              id: lr_speech_enhance_button
+                          # Enhance Speech toggle
+                          - obj:
                               width: 256
                               flex_grow: 1
-                              checkable: true
-                              styles: other_rooms_button
+                              bg_opa: TRANSP
+                              border_width: 0
+                              pad_all: 0
+                              layout:
+                                type: flex
+                                flex_flow: row
+                                flex_align_cross: center
+                                flex_align_main: space-between
                               widgets:
                                 - label:
-                                    align: center
                                     text_font: label_font
                                     text: "Enhance Speech"
-                              on_click:
-                                - homeassistant.service:
-                                    service: switch.toggle
-                                    data:
-                                      entity_id: switch.living_room_sonos_speech_enhancement
+                                    text_color: $text_primary
+                                - switch:
+                                    id: lr_speech_enhance_switch
+                                    on_click:
+                                      - homeassistant.service:
+                                          service: switch.toggle
+                                          data:
+                                            entity_id: switch.living_room_sonos_speech_enhancement

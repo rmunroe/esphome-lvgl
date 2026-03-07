@@ -550,7 +550,7 @@ binary_sensor:
     on_state:
       then:
         - lvgl.widget.update:
-            id: lr_loudness_button
+            id: lr_loudness_switch
             state:
               checked: !lambda return x;
 
@@ -562,7 +562,7 @@ binary_sensor:
     on_state:
       then:
         - lvgl.widget.update:
-            id: lr_night_sound_button
+            id: lr_night_sound_switch
             state:
               checked: !lambda return x;
 
@@ -574,7 +574,7 @@ binary_sensor:
     on_state:
       then:
         - lvgl.widget.update:
-            id: lr_speech_enhance_button
+            id: lr_speech_enhance_switch
             state:
               checked: !lambda return x;
 
