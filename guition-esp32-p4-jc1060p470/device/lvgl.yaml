@@ -1114,8 +1114,6 @@ lvgl:
                                     id: lr_volume_slider
                                     width: 340
                                     height: 40
-                                    pad_left: 20
-                                    pad_right: 20
                                     min_value: 0
                                     max_value: 100
                                     value: 0
@@ -1163,8 +1161,6 @@ lvgl:
                                     id: lr_sub_gain_slider
                                     width: 340
                                     height: 40
-                                    pad_left: 20
-                                    pad_right: 20
                                     min_value: 0
                                     max_value: 100
                                     value: 50
@@ -1214,8 +1210,6 @@ lvgl:
                                     id: lr_bass_slider
                                     width: 340
                                     height: 40
-                                    pad_left: 20
-                                    pad_right: 20
                                     min_value: 0
                                     max_value: 100
                                     value: 50
@@ -1265,8 +1259,6 @@ lvgl:
                                     id: lr_treble_slider
                                     width: 340
                                     height: 40
-                                    pad_left: 20
-                                    pad_right: 20
                                     min_value: 0
                                     max_value: 100
                                     value: 50
@@ -1307,6 +1299,7 @@ lvgl:
                           - label:
                               styles: section_title
                               text: "Sound"
+                              pad_bottom: 24
 
                           # Loudness toggle
                           - obj:
