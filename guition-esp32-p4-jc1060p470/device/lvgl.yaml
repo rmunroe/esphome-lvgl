@@ -144,9 +144,12 @@ lvgl:
                   widgets:
                     - button:
                         id: lr_all_off_button
+                        checkable: true
                         width: 220
                         height: 54
                         styles: scene_button
+                        checked:
+                          styles: scene_button_checked
                         widgets:
                           - label:
                               align: center
@@ -154,15 +157,22 @@ lvgl:
                               text: "All Off"
                               text_color: $text_primary
                         on_click:
+                          - lvgl.widget.update:
+                              id: [lr_energize_button, lr_read_button, lr_relax_button]
+                              state:
+                                checked: false
                           - homeassistant.service:
                               service: light.turn_off
                               data:
                                 entity_id: light.living_room
                     - button:
                         id: lr_energize_button
+                        checkable: true
                         width: 180
                         height: 54
                         styles: scene_button
+                        checked:
+                          styles: scene_button_checked
                         widgets:
                           - label:
                               align: center
@@ -170,15 +180,22 @@ lvgl:
                               text: "Energize"
                               text_color: $text_primary
                         on_click:
+                          - lvgl.widget.update:
+                              id: [lr_all_off_button, lr_read_button, lr_relax_button]
+                              state:
+                                checked: false
                           - homeassistant.service:
                               service: scene.turn_on
                               data:
                                 entity_id: scene.living_room_energize
                     - button:
                         id: lr_read_button
+                        checkable: true
                         width: 180
                         height: 54
                         styles: scene_button
+                        checked:
+                          styles: scene_button_checked
                         widgets:
                           - label:
                               align: center
@@ -186,15 +203,22 @@ lvgl:
                               text: "Read"
                               text_color: $text_primary
                         on_click:
+                          - lvgl.widget.update:
+                              id: [lr_all_off_button, lr_energize_button, lr_relax_button]
+                              state:
+                                checked: false
                           - homeassistant.service:
                               service: scene.turn_on
                               data:
                                 entity_id: scene.living_room_read
                     - button:
                         id: lr_relax_button
+                        checkable: true
                         width: 180
                         height: 54
                         styles: scene_button
+                        checked:
+                          styles: scene_button_checked
                         widgets:
                           - label:
                               align: center
@@ -202,6 +226,10 @@ lvgl:
                               text: "Relax"
                               text_color: $text_primary
                         on_click:
+                          - lvgl.widget.update:
+                              id: [lr_all_off_button, lr_energize_button, lr_read_button]
+                              state:
+                                checked: false
                           - homeassistant.service:
                               service: scene.turn_on
                               data:

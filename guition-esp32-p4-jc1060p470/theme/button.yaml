@@ -125,7 +125,7 @@ lvgl:
       text_color: $text_primary
 
     # =========================================================================
-    # SCENE BUTTONS — non-checkable scene activators
+    # SCENE BUTTONS — checkable scene activators with active highlight
     # =========================================================================
     - id: scene_button
       bg_color: $surface
@@ -136,6 +136,17 @@ lvgl:
       border_width: 0
       text_color: $text_primary
       text_font: label_font
+
+    - id: scene_button_checked
+      bg_color: $blue
+      bg_opa: COVER
+      radius: 10
+      pad_all: 10
+      shadow_width: 8
+      shadow_opa: 40%
+      shadow_color: $blue
+      border_width: 0
+      text_color: $text_primary
 
     # =========================================================================
     # OTHER ROOMS BUTTONS — taller toggles for secondary room lights
