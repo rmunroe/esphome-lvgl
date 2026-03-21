@@ -537,7 +537,7 @@ binary_sensor:
   # CLIMATE TAB — Fan speed buttons
   # ===========================================================================
 
-  # Fan on/off state → Off button
+  # Fan on/off state → Off button + reset arc/label when off
   - platform: homeassistant
     id: lr_fan_state
     entity_id: fan.living_room_fans
@@ -548,6 +548,16 @@ binary_sensor:
             id: lr_fan_off_button
             state:
               checked: !lambda return !x;
+        - if:
+            condition:
+              lambda: return !x;
+            then:
+              - lvgl.arc.update:
+                  id: lr_fan_arc
+                  value: 0
+              - lvgl.label.update:
+                  id: lr_fan_value_label
+                  text: "Off"
 
   # Fan Low (~33%)
   - platform: template
