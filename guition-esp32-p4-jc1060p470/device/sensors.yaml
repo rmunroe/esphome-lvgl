@@ -78,7 +78,7 @@ sensor:
   # BLINDS & FAN — Position/Speed for arcs
   # ===========================================================================
 
-  # Blind Position → vertical slider (inverted: slider_value = 100 - position)
+  # Blind Position → vertical slider (direct: slider_value = position)
   - platform: homeassistant
     entity_id: cover.living_room_blinds
     id: lr_blind_position
@@ -86,7 +86,7 @@ sensor:
     on_value:
       - lvgl.slider.update:
           id: lr_blind_slider
-          value: !lambda return 100 - (int)x;
+          value: !lambda return (int)x;
 
   # Fan Speed Percentage → arc + label
   - platform: homeassistant
