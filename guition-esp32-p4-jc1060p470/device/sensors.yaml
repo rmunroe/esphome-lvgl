@@ -78,20 +78,15 @@ sensor:
   # BLINDS & FAN — Position/Speed for arcs
   # ===========================================================================
 
-  # Blind Position → arc + label
+  # Blind Position → vertical slider (inverted: slider_value = 100 - position)
   - platform: homeassistant
-    entity_id: cover.living_room_blind
+    entity_id: cover.living_room_blinds
     id: lr_blind_position
     attribute: current_position
     on_value:
-      - lvgl.arc.update:
-          id: lr_blind_arc
-          value: !lambda return (int)x;
-      - lvgl.label.update:
-          id: lr_blind_value_label
-          text:
-            format: "%d%%"
-            args: [ '(int)round(x)' ]
+      - lvgl.slider.update:
+          id: lr_blind_slider
+          value: !lambda return 100 - (int)x;
 
   # Fan Speed Percentage → arc + label
   - platform: homeassistant
@@ -488,6 +483,55 @@ binary_sensor:
             id: lr_study_button
             state:
               checked: !lambda return x;
+
+  # ===========================================================================
+  # CLIMATE TAB — Blind scene buttons
+  # ===========================================================================
+
+  - platform: homeassistant
+    entity_id: switch.living_room_blind_open_stateful_scene
+    id: lr_blind_open_state
+    on_state:
+      - lvgl.widget.update:
+          id: lr_blind_open_btn
+          state:
+            checked: !lambda return x;
+
+  - platform: homeassistant
+    entity_id: switch.living_room_blind_3_4_open_stateful_scene
+    id: lr_blind_34_state
+    on_state:
+      - lvgl.widget.update:
+          id: lr_blind_34_btn
+          state:
+            checked: !lambda return x;
+
+  - platform: homeassistant
+    entity_id: switch.living_room_blind_halfway_stateful_scene
+    id: lr_blind_half_state
+    on_state:
+      - lvgl.widget.update:
+          id: lr_blind_half_btn
+          state:
+            checked: !lambda return x;
+
+  - platform: homeassistant
+    entity_id: switch.living_room_blind_1_4_opened_stateful_scene
+    id: lr_blind_14_state
+    on_state:
+      - lvgl.widget.update:
+          id: lr_blind_14_btn
+          state:
+            checked: !lambda return x;
+
+  - platform: homeassistant
+    entity_id: switch.living_room_blind_closed_stateful_scene
+    id: lr_blind_closed_state
+    on_state:
+      - lvgl.widget.update:
+          id: lr_blind_closed_btn
+          state:
+            checked: !lambda return x;
 
   # ===========================================================================
   # CLIMATE TAB — Fan speed buttons

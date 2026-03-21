@@ -565,96 +565,143 @@ lvgl:
                         text: "Blinds"
                         align: LEFT_MID
 
-                    # Blind Arc
-                    - arc:
-                        id: lr_blind_arc
-                        width: 200
-                        height: 200
-                        min_value: 0
-                        max_value: 100
-                        value: 50
-                        start_angle: 135
-                        end_angle: 45
-                        adjustable: true
-                        mode: NORMAL
-                        indicator:
-                          styles: control_arc_indicator
-                        knob:
-                          styles: control_arc_knob
-                        on_release:
-                          - homeassistant.service:
-                              service: cover.set_cover_position
-                              data:
-                                entity_id: cover.living_room_blind
-                                position: !lambda return to_string((int)lv_arc_get_value(id(lr_blind_arc)));
-                        widgets:
-                          - label:
-                              id: lr_blind_value_label
-                              align: center
-                              text_font: value_font_medium
-                              text: "50%"
-                              text_color: $text_primary
-                          - label:
-                              align: center
-                              y: 28
-                              text_font: small_font
-                              text: "Position"
-                              text_color: $text_secondary
-
-                    # Quick buttons: Open / Stop / Close
+                    # Content: scene buttons + vertical slider
                     - obj:
                         width: 296
-                        height: 50
+                        height: 330
                         bg_opa: TRANSP
                         border_width: 0
                         pad_all: 0
                         layout:
                           type: flex
                           flex_flow: row
-                          pad_column: 6
-                          flex_align_main: space_evenly
+                          pad_column: 10
+                          flex_align_cross: center
                         widgets:
-                          - button:
-                              width: 90
-                              height: 44
-                              styles: action_button
-                              widgets:
-                                - label:
-                                    align: center
-                                    text: "Open"
-                              on_click:
-                                - homeassistant.service:
-                                    service: cover.open_cover
-                                    data:
-                                      entity_id: cover.living_room_blind
 
-                          - button:
-                              width: 90
-                              height: 44
-                              styles: action_button
+                          # Left: 5 scene preset buttons stacked vertically
+                          - obj:
+                              width: 200
+                              height: 320
+                              bg_opa: TRANSP
+                              border_width: 0
+                              pad_all: 0
+                              layout:
+                                type: flex
+                                flex_flow: column
+                                pad_row: 6
+                                flex_align_main: space_evenly
                               widgets:
-                                - label:
-                                    align: center
-                                    text: "Stop"
-                              on_click:
-                                - homeassistant.service:
-                                    service: cover.stop_cover
-                                    data:
-                                      entity_id: cover.living_room_blind
+                                - button:
+                                    id: lr_blind_open_btn
+                                    checkable: true
+                                    width: 200
+                                    height: 56
+                                    styles: action_button
+                                    checked:
+                                      styles: action_button_checked
+                                    widgets:
+                                      - label:
+                                          align: center
+                                          text: "Open"
+                                    on_click:
+                                      - homeassistant.service:
+                                          service: scene.turn_on
+                                          data:
+                                            entity_id: scene.living_room_blinds_open
 
-                          - button:
-                              width: 90
-                              height: 44
-                              styles: action_button
-                              widgets:
-                                - label:
-                                    align: center
-                                    text: "Close"
-                              on_click:
+                                - button:
+                                    id: lr_blind_34_btn
+                                    checkable: true
+                                    width: 200
+                                    height: 56
+                                    styles: action_button
+                                    checked:
+                                      styles: action_button_checked
+                                    widgets:
+                                      - label:
+                                          align: center
+                                          text: "3/4"
+                                    on_click:
+                                      - homeassistant.service:
+                                          service: scene.turn_on
+                                          data:
+                                            entity_id: scene.living_room_blinds_3_4_open
+
+                                - button:
+                                    id: lr_blind_half_btn
+                                    checkable: true
+                                    width: 200
+                                    height: 56
+                                    styles: action_button
+                                    checked:
+                                      styles: action_button_checked
+                                    widgets:
+                                      - label:
+                                          align: center
+                                          text: "1/2"
+                                    on_click:
+                                      - homeassistant.service:
+                                          service: scene.turn_on
+                                          data:
+                                            entity_id: scene.living_room_blinds_halfway
+
+                                - button:
+                                    id: lr_blind_14_btn
+                                    checkable: true
+                                    width: 200
+                                    height: 56
+                                    styles: action_button
+                                    checked:
+                                      styles: action_button_checked
+                                    widgets:
+                                      - label:
+                                          align: center
+                                          text: "1/4"
+                                    on_click:
+                                      - homeassistant.service:
+                                          service: scene.turn_on
+                                          data:
+                                            entity_id: scene.living_room_blinds_1_4_opened
+
+                                - button:
+                                    id: lr_blind_closed_btn
+                                    checkable: true
+                                    width: 200
+                                    height: 56
+                                    styles: action_button
+                                    checked:
+                                      styles: action_button_checked
+                                    widgets:
+                                      - label:
+                                          align: center
+                                          text: "Closed"
+                                    on_click:
+                                      - homeassistant.service:
+                                          service: scene.turn_on
+                                          data:
+                                            entity_id: scene.living_room_blinds_closed
+
+                          # Right: Vertical position slider (inverted: 0=open at top, 100=closed at bottom)
+                          - slider:
+                              id: lr_blind_slider
+                              width: 40
+                              height: 300
+                              min_value: 0
+                              max_value: 100
+                              value: 100
+                              mode: NORMAL
+                              styles: brightness_slider
+                              indicator:
+                                styles: brightness_slider_indicator
+                              knob:
+                                styles: brightness_slider_knob
+                              on_release:
                                 - homeassistant.service:
-                                    service: cover.close_cover
+                                    service: cover.set_cover_position
                                     data:
-                                      entity_id: cover.living_room_blind
+                                      entity_id: cover.living_room_blinds
+                                      position: !lambda return to_string(100 - (int)lv_slider_get_value(id(lr_blind_slider)));
 
               # ----- Center: Fan Card -----
               - obj:
