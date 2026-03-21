@@ -51,6 +51,7 @@ lvgl:
       shadow_width: 8
       shadow_opa: 30%
       shadow_color: 0x000000
+      scrollbar_mode: "off"
 
     - id: card_warm
       bg_color: $card_bg
@@ -63,6 +64,7 @@ lvgl:
       shadow_width: 12
       shadow_opa: 25%
       shadow_color: $amber
+      scrollbar_mode: "off"
 
     - id: card_cool
       bg_color: $card_bg
@@ -75,6 +77,7 @@ lvgl:
       shadow_width: 12
       shadow_opa: 25%
       shadow_color: $blue
+      scrollbar_mode: "off"
 
     - id: card_purple
       bg_color: $card_bg
@@ -87,6 +90,7 @@ lvgl:
       shadow_width: 12
       shadow_opa: 25%
       shadow_color: $purple
+      scrollbar_mode: "off"
 
     # =========================================================================
     # SECTION TITLE
