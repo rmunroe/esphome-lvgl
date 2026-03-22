@@ -499,6 +499,7 @@ lvgl:
                     # ---- Right: Other Rooms Card ----
                     - obj:
                         styles: card_base
+                        scrollbar_mode: "off"
                         width: 280
                         height: 396
                         border_width: 0
@@ -580,6 +581,7 @@ lvgl:
               # ----- Left: Blinds Card -----
               - obj:
                   styles: card_cool
+                  scrollbar_mode: "off"
                   width: 320
                   height: 380
                   layout:
@@ -710,14 +712,15 @@ lvgl:
                                           data:
                                             entity_id: scene.living_room_blinds_closed
 
-                          # Right: Vertical position slider (drag up=open, drag down=closed)
+                          # Right: Vertical position slider (top=open, bottom=closed)
+                          # Slider value 0=top(open) to 100=bottom(closed), inverted for HA position
                           - slider:
                               id: lr_blind_slider
                               width: 40
                               height: 300
                               min_value: 0
                               max_value: 100
-                              value: 0
+                              value: 100
                               mode: NORMAL
                               styles: brightness_slider
                               indicator:
@@ -729,11 +732,12 @@ lvgl:
                                     service: cover.set_cover_position
                                     data:
                                       entity_id: cover.living_room_blinds
-                                      position: !lambda return to_string((int)lv_slider_get_value(id(lr_blind_slider)));
+                                      position: !lambda return to_string(100 - (int)lv_slider_get_value(id(lr_blind_slider)));
 
               # ----- Center: Fan Card -----
               - obj:
                   styles: card_cool
+                  scrollbar_mode: "off"
                   width: 320
                   height: 380
                   layout:
@@ -871,6 +875,7 @@ lvgl:
               # ----- Right: Environment Card -----
               - obj:
                   styles: card_cool
+                  scrollbar_mode: "off"
                   width: 330
                   height: 380
                   layout:
@@ -1363,6 +1368,7 @@ lvgl:
                     # ---- Right: Sound Settings Card ----
                     - obj:
                         styles: card_base
+                        scrollbar_mode: "off"
                         width: 280
                         height: 381
                         border_width: 0

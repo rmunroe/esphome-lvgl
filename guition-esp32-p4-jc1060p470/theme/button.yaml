@@ -351,6 +351,9 @@ lvgl:
   # GLOBAL THEME — base styles for all widget types
   # ===========================================================================
   theme:
+    obj:
+      scrollbar_mode: "off"
+
     button:
       text_font: label_font
       scroll_on_focus: false
