@@ -326,19 +326,6 @@ sensor:
             format: "%d%%"
             args: [ '(int)round((x + 15.0) * 100.0 / 30.0)' ]
 
-  # Arc Surround Level (-15 to +15) → displayed as 0–100%
-  - platform: homeassistant
-    entity_id: number.living_room_arc_surround_level
-    id: lr_arc_surround
-    on_value:
-      - lvgl.slider.update:
-          id: lr_tv_surround_slider
-          value: !lambda return (int)round((x + 15.0) * 100.0 / 30.0);
-      - lvgl.label.update:
-          id: lr_tv_surround_label
-          text:
-            format: "%d%%"
-            args: [ '(int)round((x + 15.0) * 100.0 / 30.0)' ]
 
 
 # =============================================================================
