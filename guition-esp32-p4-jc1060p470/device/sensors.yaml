@@ -201,12 +201,12 @@ sensor:
             return buf;
 
   # ===========================================================================
-  # SONOS — Volume level
+  # MUSIC TAB — Volume level
   # ===========================================================================
 
   # Volume level (0.0–1.0 from HA, displayed as 0–100%)
   - platform: homeassistant
-    entity_id: media_player.living_room_sonos
+    entity_id: media_player.living_room_amp
     id: lr_sonos_volume
     attribute: volume_level
     on_value:
@@ -220,12 +220,12 @@ sensor:
             args: [ '(int)round(x * 100)' ]
 
   # ===========================================================================
-  # SONOS EQ — Sub Gain, Bass, Treble
+  # MUSIC TAB — EQ: Sub Gain, Bass, Treble
   # ===========================================================================
 
   # Sub Gain (-15 to +15) → displayed as 0–100%
   - platform: homeassistant
-    entity_id: number.living_room_sonos_sub_gain
+    entity_id: number.living_room_amp_sub_gain
     id: lr_sub_gain
     on_value:
       - lvgl.slider.update:
@@ -239,7 +239,7 @@ sensor:
 
   # Bass (-10 to +10) → displayed as 0–100%
   - platform: homeassistant
-    entity_id: number.living_room_sonos_bass
+    entity_id: number.living_room_amp_bass
     id: lr_bass
     on_value:
       - lvgl.slider.update:
@@ -253,7 +253,7 @@ sensor:
 
   # Treble (-10 to +10) → displayed as 0–100%
   - platform: homeassistant
-    entity_id: number.living_room_sonos_treble
+    entity_id: number.living_room_amp_treble
     id: lr_treble
     on_value:
       - lvgl.slider.update:
@@ -265,15 +265,90 @@ sensor:
             format: "%d%%"
             args: [ '(int)round((x + 10.0) * 100.0 / 20.0)' ]
 
+  # ===========================================================================
+  # TV TAB — Arc Volume & EQ
+  # ===========================================================================
+
+  # Arc Volume (0.0–1.0 from HA, displayed as 0–100%)
+  - platform: homeassistant
+    entity_id: media_player.living_room_arc
+    id: lr_arc_volume
+    attribute: volume_level
+    on_value:
+      - lvgl.slider.update:
+          id: lr_tv_volume_slider
+          value: !lambda return (int)round(x * 100);
+      - lvgl.label.update:
+          id: lr_tv_volume_label
+          text:
+            format: "%d%%"
+            args: [ '(int)round(x * 100)' ]
+
+  # Arc Bass (-10 to +10) → displayed as 0–100%
+  - platform: homeassistant
+    entity_id: number.living_room_arc_bass
+    id: lr_arc_bass
+    on_value:
+      - lvgl.slider.update:
+          id: lr_tv_bass_slider
+          value: !lambda return (int)round((x + 10.0) * 100.0 / 20.0);
+      - lvgl.label.update:
+          id: lr_tv_bass_label
+          text:
+            format: "%d%%"
+            args: [ '(int)round((x + 10.0) * 100.0 / 20.0)' ]
+
+  # Arc Treble (-10 to +10) → displayed as 0–100%
+  - platform: homeassistant
+    entity_id: number.living_room_arc_treble
+    id: lr_arc_treble
+    on_value:
+      - lvgl.slider.update:
+          id: lr_tv_treble_slider
+          value: !lambda return (int)round((x + 10.0) * 100.0 / 20.0);
+      - lvgl.label.update:
+          id: lr_tv_treble_label
+          text:
+            format: "%d%%"
+            args: [ '(int)round((x + 10.0) * 100.0 / 20.0)' ]
+
+  # Arc Sub Gain (-15 to +15) → displayed as 0–100%
+  - platform: homeassistant
+    entity_id: number.living_room_arc_sub_gain
+    id: lr_arc_sub_gain
+    on_value:
+      - lvgl.slider.update:
+          id: lr_tv_sub_slider
+          value: !lambda return (int)round((x + 15.0) * 100.0 / 30.0);
+      - lvgl.label.update:
+          id: lr_tv_sub_label
+          text:
+            format: "%d%%"
+            args: [ '(int)round((x + 15.0) * 100.0 / 30.0)' ]
+
+  # Arc Surround Level (-15 to +15) → displayed as 0–100%
+  - platform: homeassistant
+    entity_id: number.living_room_arc_surround_level
+    id: lr_arc_surround
+    on_value:
+      - lvgl.slider.update:
+          id: lr_tv_surround_slider
+          value: !lambda return (int)round((x + 15.0) * 100.0 / 30.0);
+      - lvgl.label.update:
+          id: lr_tv_surround_label
+          text:
+            format: "%d%%"
+            args: [ '(int)round((x + 15.0) * 100.0 / 30.0)' ]
+
 
 # =============================================================================
-# TEXT SENSORS — Media info from Sonos
+# TEXT SENSORS — Media info from Amp
 # =============================================================================
 text_sensor:
 
-  # Sonos: Track title
+  # Amp: Track title
   - platform: homeassistant
-    entity_id: media_player.living_room_sonos
+    entity_id: media_player.living_room_amp
     id: lr_sonos_media_title
     attribute: media_title
     on_value:
@@ -283,9 +358,9 @@ text_sensor:
             if (x.empty()) return "No media";
             return x.c_str();
 
-  # Sonos: Artist name
+  # Amp: Artist name
   - platform: homeassistant
-    entity_id: media_player.living_room_sonos
+    entity_id: media_player.living_room_amp
     id: lr_sonos_media_artist
     attribute: media_artist
     on_value:
@@ -295,9 +370,9 @@ text_sensor:
             if (x.empty()) return "--";
             return x.c_str();
 
-  # Sonos: Playback state (playing/paused/idle) → play/pause icon swap + screen wake
+  # Amp: Playback state (playing/paused/idle) → play/pause icon swap + screen wake
   - platform: homeassistant
-    entity_id: media_player.living_room_sonos
+    entity_id: media_player.living_room_amp
     id: lr_sonos_state
     on_value:
       - lvgl.label.update:
@@ -307,9 +382,9 @@ text_sensor:
             return "\U000F040B";
       - script.execute: evaluate_screen
 
-  # Sonos: Media source (Apple Music, TV, Line In, etc.)
+  # Amp: Media source (Apple Music, TV, Line In, etc.)
   - platform: homeassistant
-    entity_id: media_player.living_room_sonos
+    entity_id: media_player.living_room_amp
     id: lr_sonos_media_source
     attribute: source
     on_value:
@@ -318,6 +393,77 @@ text_sensor:
           text: !lambda |-
             if (x.empty()) return "";
             return x.c_str();
+
+  # Apple TV: Track title
+  - platform: homeassistant
+    entity_id: media_player.living_room_apple_tv
+    id: lr_atv_media_title
+    attribute: media_title
+    on_value:
+      - lvgl.label.update:
+          id: lr_tv_title
+          text: !lambda |-
+            if (x.empty()) return "No media";
+            return x.c_str();
+
+  # Apple TV: Artist name
+  - platform: homeassistant
+    entity_id: media_player.living_room_apple_tv
+    id: lr_atv_media_artist
+    attribute: media_artist
+    on_value:
+      - lvgl.label.update:
+          id: lr_tv_artist
+          text: !lambda |-
+            if (x.empty()) return "--";
+            return x.c_str();
+
+  # Apple TV: Playback state → play/pause icon swap
+  - platform: homeassistant
+    entity_id: media_player.living_room_apple_tv
+    id: lr_atv_state
+    on_value:
+      - lvgl.label.update:
+          id: lr_tv_play_pause_icon
+          text: !lambda |-
+            if (x == "playing") return "\U000F03E4";
+            return "\U000F040B";
+
+  # Sync Box: HDMI Input → source button checked state
+  - platform: homeassistant
+    entity_id: select.sync_box_1_hdmi_input
+    id: lr_sync_hdmi_input
+    on_value:
+      - lvgl.widget.update:
+          id: lr_tv_src_atv_btn
+          state:
+            checked: !lambda return x == "Apple TV";
+      - lvgl.widget.update:
+          id: lr_tv_src_ps5_btn
+          state:
+            checked: !lambda return x == "PS5";
+      - lvgl.widget.update:
+          id: lr_tv_src_sw2_btn
+          state:
+            checked: !lambda return x == "Switch 2";
+
+  # Sync Box: Sync Mode → mode button checked state
+  - platform: homeassistant
+    entity_id: select.sync_box_1_sync_mode
+    id: lr_sync_mode
+    on_value:
+      - lvgl.widget.update:
+          id: lr_tv_sync_video_btn
+          state:
+            checked: !lambda return x == "video";
+      - lvgl.widget.update:
+          id: lr_tv_sync_music_btn
+          state:
+            checked: !lambda return x == "music";
+      - lvgl.widget.update:
+          id: lr_tv_sync_game_btn
+          state:
+            checked: !lambda return x == "game";
 
 
 # =============================================================================
@@ -616,7 +762,7 @@ binary_sensor:
   # Loudness
   - platform: homeassistant
     id: lr_loudness
-    entity_id: switch.living_room_sonos_loudness
+    entity_id: switch.living_room_amp_loudness
     trigger_on_initial_state: true
     on_state:
       then:
@@ -628,7 +774,7 @@ binary_sensor:
   # Night Sound
   - platform: homeassistant
     id: lr_night_sound
-    entity_id: switch.living_room_sonos_night_sound
+    entity_id: switch.living_room_amp_night_sound
     trigger_on_initial_state: true
     on_state:
       then:
@@ -640,12 +786,76 @@ binary_sensor:
   # Speech Enhancement
   - platform: homeassistant
     id: lr_speech_enhance
-    entity_id: switch.living_room_sonos_speech_enhancement
+    entity_id: switch.living_room_amp_speech_enhancement
     trigger_on_initial_state: true
     on_state:
       then:
         - lvgl.widget.update:
             id: lr_speech_enhance_switch
+            state:
+              checked: !lambda return x;
+
+  # ===========================================================================
+  # TV TAB — Sound & Sync toggles
+  # ===========================================================================
+
+  # Arc Night Sound
+  - platform: homeassistant
+    id: lr_arc_night_sound
+    entity_id: switch.living_room_arc_night_sound
+    trigger_on_initial_state: true
+    on_state:
+      then:
+        - lvgl.widget.update:
+            id: lr_tv_night_sound_switch
+            state:
+              checked: !lambda return x;
+
+  # Arc Speech Enhancement
+  - platform: homeassistant
+    id: lr_arc_speech_enhance
+    entity_id: switch.living_room_arc_speech_enhancement
+    trigger_on_initial_state: true
+    on_state:
+      then:
+        - lvgl.widget.update:
+            id: lr_tv_speech_enhance_switch
+            state:
+              checked: !lambda return x;
+
+  # Arc Loudness
+  - platform: homeassistant
+    id: lr_arc_loudness
+    entity_id: switch.living_room_arc_loudness
+    trigger_on_initial_state: true
+    on_state:
+      then:
+        - lvgl.widget.update:
+            id: lr_tv_loudness_switch
+            state:
+              checked: !lambda return x;
+
+  # Sync Box Light Sync
+  - platform: homeassistant
+    id: lr_sync_light_sync
+    entity_id: switch.sync_box_1_light_sync
+    trigger_on_initial_state: true
+    on_state:
+      then:
+        - lvgl.widget.update:
+            id: lr_tv_light_sync_switch
+            state:
+              checked: !lambda return x;
+
+  # Samsung TV Power
+  - platform: homeassistant
+    id: lr_tv_power_state
+    entity_id: media_player.living_room_tv
+    trigger_on_initial_state: true
+    on_state:
+      then:
+        - lvgl.widget.update:
+            id: lr_tv_power_switch
             state:
               checked: !lambda return x;
 

@@ -41,6 +41,9 @@ font:
       "\U000F0035",  # mdi-apple
       "\U000F0414",  # mdi-sony-playstation
       "\U000F04C3",  # mdi-speaker
+      "\U000F0878",  # mdi-hdmi-port
+      "\U000F0E18",  # mdi-nintendo-switch
+      "\U000F0493",  # mdi-link-variant (sync/link)
       # Media Transport
       "\U000F040A",  # mdi-skip-next
       "\U000F0409",  # mdi-skip-previous
@@ -113,6 +116,9 @@ substitutions:
   apple:              "\U000F0035"
   playstation:        "\U000F0414"
   speaker:            "\U000F04C3"
+  hdmi_port:          "\U000F0878"
+  nintendo_switch:    "\U000F0E18"
+  link_variant:       "\U000F0493"
   # Media Transport
   play:               "\U000F040B"
   pause_icon:         "\U000F03E4"

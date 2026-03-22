@@ -2,10 +2,11 @@
 # LVGL UI LAYOUT — Modern card-based dashboard with tabview navigation
 # =============================================================================
 # Display: 1024x600 (7" MIPI DSI)
-# Layout:  Header (40px) + Tabview (560px) with 3 tabs
+# Layout:  Header (40px) + Tabview (560px) with 4 tabs
 #          Tab 1: Lights — toggles + brightness sliders + scenes
 #          Tab 2: Climate — blind arc + fan arc + environment bars
-#          Tab 3: Media — device switches + Sonos controls
+#          Tab 3: Music — device switches + Amp controls
+#          Tab 4: TV — Apple TV, Arc audio, Hue Sync
 # =============================================================================
 
 lvgl:
@@ -93,7 +94,7 @@ lvgl:
                       height: 12
 
   # ===========================================================================
-  # TABVIEW — Main navigation (3 tabs)
+  # TABVIEW — Main navigation (4 tabs)
   # ===========================================================================
   widgets:
     - tabview:
@@ -1208,7 +1209,7 @@ lvgl:
                                       - homeassistant.service:
                                           service: media_player.volume_set
                                           data:
-                                            entity_id: media_player.living_room_sonos
+                                            entity_id: media_player.living_room_amp
                                             volume_level: !lambda return to_string(lv_slider_get_value(id(lr_volume_slider)) / 100.0);
                                 - label:
                                     id: lr_volume_label
@@ -1255,7 +1256,7 @@ lvgl:
                                       - homeassistant.service:
                                           service: number.set_value
                                           data:
-                                            entity_id: number.living_room_sonos_sub_gain
+                                            entity_id: number.living_room_amp_sub_gain
                                             value: !lambda |-
                                               int pct = lv_slider_get_value(id(lr_sub_gain_slider));
                                               return to_string((int)round(pct * 30.0 / 100.0 - 15.0));
@@ -1304,7 +1305,7 @@ lvgl:
                                       - homeassistant.service:
                                           service: number.set_value
                                           data:
-                                            entity_id: number.living_room_sonos_bass
+                                            entity_id: number.living_room_amp_bass
                                             value: !lambda |-
                                               int pct = lv_slider_get_value(id(lr_bass_slider));
                                               return to_string((int)round(pct * 20.0 / 100.0 - 10.0));
@@ -1353,7 +1354,7 @@ lvgl:
                                       - homeassistant.service:
                                           service: number.set_value
                                           data:
-                                            entity_id: number.living_room_sonos_treble
+                                            entity_id: number.living_room_amp_treble
                                             value: !lambda |-
                                               int pct = lv_slider_get_value(id(lr_treble_slider));
                                               return to_string((int)round(pct * 20.0 / 100.0 - 10.0));
@@ -1405,7 +1406,7 @@ lvgl:
                                       - homeassistant.service:
                                           service: switch.toggle
                                           data:
-                                            entity_id: switch.living_room_sonos_loudness
+                                            entity_id: switch.living_room_amp_loudness
 
                           # Night Sound toggle
                           - obj:
@@ -1430,7 +1431,7 @@ lvgl:
                                       - homeassistant.service:
                                           service: switch.toggle
                                           data:
-                                            entity_id: switch.living_room_sonos_night_sound
+                                            entity_id: switch.living_room_amp_night_sound
 
                           # Enhance Speech toggle
                           - obj:
@@ -1455,4 +1456,713 @@ lvgl:
                                       - homeassistant.service:
                                           service: switch.toggle
                                           data:
-                                            entity_id: switch.living_room_sonos_speech_enhancement
+                                            entity_id: switch.living_room_amp_speech_enhancement
+
+          # =================================================================
+          # TAB 4: TV
+          # =================================================================
+          - name: "TV"
+            id: tv_tab
+            bg_color: $page_bg
+            bg_opa: COVER
+            pad_all: 10
+            layout:
+              type: flex
+              flex_flow: row
+              pad_column: 10
+            widgets:
+
+              # ----- Left: Now Playing Card -----
+              - obj:
+                  styles: card_base
+                  scrollbar_mode: "off"
+                  width: 320
+                  height: 380
+                  layout:
+                    type: flex
+                    flex_flow: column
+                    flex_align_cross: center
+                    pad_row: 8
+                  widgets:
+                    - label:
+                        styles: section_title
+                        text: "Now Playing"
+                        align: LEFT_MID
+
+                    # Play/Pause icon + media info
+                    - obj:
+                        width: 296
+                        height: 80
+                        bg_opa: TRANSP
+                        border_width: 0
+                        pad_all: 0
+                        scrollbar_mode: "off"
+                        layout:
+                          type: flex
+                          flex_flow: row
+                          flex_align_cross: center
+                          pad_column: 10
+                        widgets:
+                          - label:
+                              id: lr_tv_play_pause_icon
+                              text_font: icon_font
+                              text: "\U000F040B"
+                              text_color: $blue
+                              width: 50
+                          - obj:
+                              width: 230
+                              height: 70
+                              bg_opa: TRANSP
+                              border_width: 0
+                              pad_all: 0
+                              scrollbar_mode: "off"
+                              layout:
+                                type: flex
+                                flex_flow: column
+                                pad_row: 2
+                              widgets:
+                                - label:
+                                    id: lr_tv_title
+                                    text_font: card_title_font
+                                    text: "No media"
+                                    text_color: $text_primary
+                                    long_mode: DOT
+                                    width: 220
+                                - label:
+                                    id: lr_tv_artist
+                                    text_font: label_font
+                                    text: "--"
+                                    text_color: $text_secondary
+                                    long_mode: DOT
+                                    width: 220
+
+                    # Transport: skip-prev, play/pause, skip-next
+                    - obj:
+                        width: 296
+                        height: 56
+                        bg_opa: TRANSP
+                        border_width: 0
+                        pad_all: 0
+                        scrollbar_mode: "off"
+                        layout:
+                          type: flex
+                          flex_flow: row
+                          flex_align_main: center
+                          flex_align_cross: center
+                          pad_column: 16
+                        widgets:
+                          - button:
+                              width: 48
+                              height: 48
+                              styles: transport_button
+                              widgets:
+                                - label:
+                                    align: center
+                                    text_font: icon_font
+                                    text: "\U000F0409"
+                              on_click:
+                                - homeassistant.service:
+                                    service: media_player.media_previous_track
+                                    data:
+                                      entity_id: media_player.living_room_apple_tv
+                          - button:
+                              width: 56
+                              height: 56
+                              styles: transport_play
+                              widgets:
+                                - label:
+                                    align: center
+                                    text_font: icon_font
+                                    text: "\U000F040C"
+                              on_click:
+                                - homeassistant.service:
+                                    service: media_player.media_play_pause
+                                    data:
+                                      entity_id: media_player.living_room_apple_tv
+                          - button:
+                              width: 48
+                              height: 48
+                              styles: transport_button
+                              widgets:
+                                - label:
+                                    align: center
+                                    text_font: icon_font
+                                    text: "\U000F040A"
+                              on_click:
+                                - homeassistant.service:
+                                    service: media_player.media_next_track
+                                    data:
+                                      entity_id: media_player.living_room_apple_tv
+
+                    # Separator
+                    - obj:
+                        width: 280
+                        height: 1
+                        bg_color: $surface
+                        bg_opa: COVER
+                        border_width: 0
+                        pad_all: 0
+
+                    # Source: HDMI input buttons (mutually exclusive)
+                    - obj:
+                        width: 296
+                        height: 44
+                        bg_opa: TRANSP
+                        border_width: 0
+                        pad_all: 0
+                        scrollbar_mode: "off"
+                        layout:
+                          type: flex
+                          flex_flow: row
+                          flex_align_main: space_evenly
+                          flex_align_cross: center
+                          pad_column: 6
+                        widgets:
+                          - button:
+                              id: lr_tv_src_atv_btn
+                              checkable: true
+                              width: 88
+                              height: 40
+                              styles: action_button
+                              checked:
+                                styles: action_button_checked
+                              widgets:
+                                - label:
+                                    align: center
+                                    text: "ATV"
+                              on_click:
+                                - homeassistant.service:
+                                    service: select.select_option
+                                    data:
+                                      entity_id: select.sync_box_1_hdmi_input
+                                      option: "Apple TV"
+                          - button:
+                              id: lr_tv_src_ps5_btn
+                              checkable: true
+                              width: 88
+                              height: 40
+                              styles: action_button
+                              checked:
+                                styles: action_button_checked
+                              widgets:
+                                - label:
+                                    align: center
+                                    text: "PS5"
+                              on_click:
+                                - homeassistant.service:
+                                    service: select.select_option
+                                    data:
+                                      entity_id: select.sync_box_1_hdmi_input
+                                      option: "PS5"
+                          - button:
+                              id: lr_tv_src_sw2_btn
+                              checkable: true
+                              width: 88
+                              height: 40
+                              styles: action_button
+                              checked:
+                                styles: action_button_checked
+                              widgets:
+                                - label:
+                                    align: center
+                                    text: "SW2"
+                              on_click:
+                                - homeassistant.service:
+                                    service: select.select_option
+                                    data:
+                                      entity_id: select.sync_box_1_hdmi_input
+                                      option: "Switch 2"
+
+                    # TV Power toggle row
+                    - obj:
+                        width: 296
+                        height: 40
+                        bg_opa: TRANSP
+                        border_width: 0
+                        pad_all: 0
+                        scrollbar_mode: "off"
+                        layout:
+                          type: flex
+                          flex_flow: row
+                          flex_align_main: space_between
+                          flex_align_cross: center
+                        widgets:
+                          - label:
+                              text: "TV Power"
+                              text_font: label_font
+                              text_color: $text_primary
+                          - switch:
+                              id: lr_tv_power_switch
+                              width: 50
+                              height: 26
+                              on_click:
+                                - homeassistant.service:
+                                    service: media_player.toggle
+                                    data:
+                                      entity_id: media_player.living_room_tv
+
+              # ----- Center: Audio Card -----
+              - obj:
+                  styles: card_base
+                  scrollbar_mode: "off"
+                  width: 340
+                  height: 380
+                  layout:
+                    type: flex
+                    flex_flow: column
+                    flex_align_cross: center
+                    pad_row: 6
+                  widgets:
+                    - label:
+                        styles: section_title
+                        text: "Audio"
+                        align: LEFT_MID
+
+                    # Volume slider row
+                    - obj:
+                        width: 316
+                        height: 56
+                        bg_opa: TRANSP
+                        border_width: 0
+                        pad_all: 0
+                        scrollbar_mode: "off"
+                        layout:
+                          type: flex
+                          flex_flow: row
+                          flex_align_cross: center
+                          pad_column: 6
+                        widgets:
+                          - label:
+                              text: "Volume"
+                              text_font: small_font
+                              text_color: $text_secondary
+                              width: 70
+                          - slider:
+                              id: lr_tv_volume_slider
+                              width: 170
+                              height: 16
+                              min_value: 0
+                              max_value: 100
+                              value: 0
+                              styles: brightness_slider
+                              indicator:
+                                styles: brightness_slider_indicator
+                              knob:
+                                styles: brightness_slider_knob
+                              on_release:
+                                - homeassistant.service:
+                                    service: media_player.volume_set
+                                    data:
+                                      entity_id: media_player.living_room_arc
+                                      volume_level: !lambda |-
+                                        char buf[8];
+                                        snprintf(buf, sizeof(buf), "%.2f", lv_slider_get_value(id(lr_tv_volume_slider)) / 100.0);
+                                        return std::string(buf);
+                          - label:
+                              id: lr_tv_volume_label
+                              width: 56
+                              text_font: small_font
+                              text: "0%"
+                              text_color: $text_secondary
+                              text_align: right
+
+                    # Bass slider row
+                    - obj:
+                        width: 316
+                        height: 56
+                        bg_opa: TRANSP
+                        border_width: 0
+                        pad_all: 0
+                        scrollbar_mode: "off"
+                        layout:
+                          type: flex
+                          flex_flow: row
+                          flex_align_cross: center
+                          pad_column: 6
+                        widgets:
+                          - label:
+                              text: "Bass"
+                              text_font: small_font
+                              text_color: $text_secondary
+                              width: 70
+                          - slider:
+                              id: lr_tv_bass_slider
+                              width: 170
+                              height: 16
+                              min_value: 0
+                              max_value: 100
+                              value: 0
+                              styles: brightness_slider
+                              indicator:
+                                styles: brightness_slider_indicator
+                              knob:
+                                styles: brightness_slider_knob
+                              on_release:
+                                - homeassistant.service:
+                                    service: number.set_value
+                                    data:
+                                      entity_id: number.living_room_arc_bass
+                                      value: !lambda |-
+                                        int pct = lv_slider_get_value(id(lr_tv_bass_slider));
+                                        return to_string((int)round(pct * 20.0 / 100.0 - 10));
+                          - label:
+                              id: lr_tv_bass_label
+                              width: 56
+                              text_font: small_font
+                              text: "0%"
+                              text_color: $text_secondary
+                              text_align: right
+
+                    # Treble slider row
+                    - obj:
+                        width: 316
+                        height: 56
+                        bg_opa: TRANSP
+                        border_width: 0
+                        pad_all: 0
+                        scrollbar_mode: "off"
+                        layout:
+                          type: flex
+                          flex_flow: row
+                          flex_align_cross: center
+                          pad_column: 6
+                        widgets:
+                          - label:
+                              text: "Treble"
+                              text_font: small_font
+                              text_color: $text_secondary
+                              width: 70
+                          - slider:
+                              id: lr_tv_treble_slider
+                              width: 170
+                              height: 16
+                              min_value: 0
+                              max_value: 100
+                              value: 0
+                              styles: brightness_slider
+                              indicator:
+                                styles: brightness_slider_indicator
+                              knob:
+                                styles: brightness_slider_knob
+                              on_release:
+                                - homeassistant.service:
+                                    service: number.set_value
+                                    data:
+                                      entity_id: number.living_room_arc_treble
+                                      value: !lambda |-
+                                        int pct = lv_slider_get_value(id(lr_tv_treble_slider));
+                                        return to_string((int)round(pct * 20.0 / 100.0 - 10));
+                          - label:
+                              id: lr_tv_treble_label
+                              width: 56
+                              text_font: small_font
+                              text: "0%"
+                              text_color: $text_secondary
+                              text_align: right
+
+                    # Sub Gain slider row
+                    - obj:
+                        width: 316
+                        height: 56
+                        bg_opa: TRANSP
+                        border_width: 0
+                        pad_all: 0
+                        scrollbar_mode: "off"
+                        layout:
+                          type: flex
+                          flex_flow: row
+                          flex_align_cross: center
+                          pad_column: 6
+                        widgets:
+                          - label:
+                              text: "Sub"
+                              text_font: small_font
+                              text_color: $text_secondary
+                              width: 70
+                          - slider:
+                              id: lr_tv_sub_slider
+                              width: 170
+                              height: 16
+                              min_value: 0
+                              max_value: 100
+                              value: 0
+                              styles: brightness_slider
+                              indicator:
+                                styles: brightness_slider_indicator
+                              knob:
+                                styles: brightness_slider_knob
+                              on_release:
+                                - homeassistant.service:
+                                    service: number.set_value
+                                    data:
+                                      entity_id: number.living_room_arc_sub_gain
+                                      value: !lambda |-
+                                        int pct = lv_slider_get_value(id(lr_tv_sub_slider));
+                                        return to_string((int)round(pct * 30.0 / 100.0 - 15));
+                          - label:
+                              id: lr_tv_sub_label
+                              width: 56
+                              text_font: small_font
+                              text: "0%"
+                              text_color: $text_secondary
+                              text_align: right
+
+                    # Surround slider row
+                    - obj:
+                        width: 316
+                        height: 56
+                        bg_opa: TRANSP
+                        border_width: 0
+                        pad_all: 0
+                        scrollbar_mode: "off"
+                        layout:
+                          type: flex
+                          flex_flow: row
+                          flex_align_cross: center
+                          pad_column: 6
+                        widgets:
+                          - label:
+                              text: "Surround"
+                              text_font: small_font
+                              text_color: $text_secondary
+                              width: 70
+                          - slider:
+                              id: lr_tv_surround_slider
+                              width: 170
+                              height: 16
+                              min_value: 0
+                              max_value: 100
+                              value: 0
+                              styles: brightness_slider
+                              indicator:
+                                styles: brightness_slider_indicator
+                              knob:
+                                styles: brightness_slider_knob
+                              on_release:
+                                - homeassistant.service:
+                                    service: number.set_value
+                                    data:
+                                      entity_id: number.living_room_arc_surround_level
+                                      value: !lambda |-
+                                        int pct = lv_slider_get_value(id(lr_tv_surround_slider));
+                                        return to_string((int)round(pct * 30.0 / 100.0 - 15));
+                          - label:
+                              id: lr_tv_surround_label
+                              width: 56
+                              text_font: small_font
+                              text: "0%"
+                              text_color: $text_secondary
+                              text_align: right
+
+              # ----- Right: Settings Card -----
+              - obj:
+                  styles: card_base
+                  scrollbar_mode: "off"
+                  width: 280
+                  height: 380
+                  layout:
+                    type: flex
+                    flex_flow: column
+                    pad_row: 6
+                  widgets:
+                    - label:
+                        styles: section_title
+                        text: "Sound"
+                        align: LEFT_MID
+
+                    # Night Sound toggle row
+                    - obj:
+                        width: 256
+                        height: 40
+                        bg_opa: TRANSP
+                        border_width: 0
+                        pad_all: 0
+                        scrollbar_mode: "off"
+                        layout:
+                          type: flex
+                          flex_flow: row
+                          flex_align_main: space_between
+                          flex_align_cross: center
+                        widgets:
+                          - label:
+                              text: "Night Sound"
+                              text_font: label_font
+                              text_color: $text_primary
+                          - switch:
+                              id: lr_tv_night_sound_switch
+                              width: 50
+                              height: 26
+                              on_click:
+                                - homeassistant.service:
+                                    service: switch.toggle
+                                    data:
+                                      entity_id: switch.living_room_arc_night_sound
+
+                    # Speech Enhancement toggle row
+                    - obj:
+                        width: 256
+                        height: 40
+                        bg_opa: TRANSP
+                        border_width: 0
+                        pad_all: 0
+                        scrollbar_mode: "off"
+                        layout:
+                          type: flex
+                          flex_flow: row
+                          flex_align_main: space_between
+                          flex_align_cross: center
+                        widgets:
+                          - label:
+                              text: "Enhance Speech"
+                              text_font: label_font
+                              text_color: $text_primary
+                          - switch:
+                              id: lr_tv_speech_enhance_switch
+                              width: 50
+                              height: 26
+                              on_click:
+                                - homeassistant.service:
+                                    service: switch.toggle
+                                    data:
+                                      entity_id: switch.living_room_arc_speech_enhancement
+
+                    # Loudness toggle row
+                    - obj:
+                        width: 256
+                        height: 40
+                        bg_opa: TRANSP
+                        border_width: 0
+                        pad_all: 0
+                        scrollbar_mode: "off"
+                        layout:
+                          type: flex
+                          flex_flow: row
+                          flex_align_main: space_between
+                          flex_align_cross: center
+                        widgets:
+                          - label:
+                              text: "Loudness"
+                              text_font: label_font
+                              text_color: $text_primary
+                          - switch:
+                              id: lr_tv_loudness_switch
+                              width: 50
+                              height: 26
+                              on_click:
+                                - homeassistant.service:
+                                    service: switch.toggle
+                                    data:
+                                      entity_id: switch.living_room_arc_loudness
+
+                    # Separator
+                    - obj:
+                        width: 240
+                        height: 1
+                        bg_color: $surface
+                        bg_opa: COVER
+                        border_width: 0
+                        pad_all: 0
+
+                    # Hue Sync section
+                    - label:
+                        styles: section_title
+                        text: "Hue Sync"
+                        align: LEFT_MID
+
+                    # Light Sync toggle row
+                    - obj:
+                        width: 256
+                        height: 40
+                        bg_opa: TRANSP
+                        border_width: 0
+                        pad_all: 0
+                        scrollbar_mode: "off"
+                        layout:
+                          type: flex
+                          flex_flow: row
+                          flex_align_main: space_between
+                          flex_align_cross: center
+                        widgets:
+                          - label:
+                              text: "Light Sync"
+                              text_font: label_font
+                              text_color: $text_primary
+                          - switch:
+                              id: lr_tv_light_sync_switch
+                              width: 50
+                              height: 26
+                              on_click:
+                                - homeassistant.service:
+                                    service: switch.toggle
+                                    data:
+                                      entity_id: switch.sync_box_1_light_sync
+
+                    # Sync Mode buttons (mutually exclusive)
+                    - obj:
+                        width: 256
+                        height: 44
+                        bg_opa: TRANSP
+                        border_width: 0
+                        pad_all: 0
+                        scrollbar_mode: "off"
+                        layout:
+                          type: flex
+                          flex_flow: row
+                          flex_align_main: space_evenly
+                          flex_align_cross: center
+                          pad_column: 6
+                        widgets:
+                          - button:
+                              id: lr_tv_sync_video_btn
+                              checkable: true
+                              width: 76
+                              height: 38
+                              styles: action_button
+                              checked:
+                                styles: action_button_checked
+                              widgets:
+                                - label:
+                                    align: center
+                                    text: "Video"
+                              on_click:
+                                - homeassistant.service:
+                                    service: select.select_option
+                                    data:
+                                      entity_id: select.sync_box_1_sync_mode
+                                      option: "video"
+                          - button:
+                              id: lr_tv_sync_music_btn
+                              checkable: true
+                              width: 76
+                              height: 38
+                              styles: action_button
+                              checked:
+                                styles: action_button_checked
+                              widgets:
+                                - label:
+                                    align: center
+                                    text: "Music"
+                              on_click:
+                                - homeassistant.service:
+                                    service: select.select_option
+                                    data:
+                                      entity_id: select.sync_box_1_sync_mode
+                                      option: "music"
+                          - button:
+                              id: lr_tv_sync_game_btn
+                              checkable: true
+                              width: 76
+                              height: 38
+                              styles: action_button
+                              checked:
+                                styles: action_button_checked
+                              widgets:
+                                - label:
+                                    align: center
+                                    text: "Game"
+                              on_click:
+                                - homeassistant.service:
+                                    service: select.select_option
+                                    data:
+                                      entity_id: select.sync_box_1_sync_mode
+                                      option: "game"
