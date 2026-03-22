@@ -712,15 +712,15 @@ lvgl:
                                           data:
                                             entity_id: scene.living_room_blinds_closed
 
-                          # Right: Vertical position slider (top=open, bottom=closed)
-                          # Swapped min/max so indicator fills from top (100) down to bottom (0)
+                          # Right: Vertical position slider (drag up=open, drag down=close)
+                          # Blue fill = openness. Direct mapping to HA cover position.
                           - slider:
                               id: lr_blind_slider
                               width: 40
                               height: 300
-                              min_value: 100
-                              max_value: 0
-                              value: 100
+                              min_value: 0
+                              max_value: 100
+                              value: 0
                               mode: NORMAL
                               styles: brightness_slider
                               indicator:
