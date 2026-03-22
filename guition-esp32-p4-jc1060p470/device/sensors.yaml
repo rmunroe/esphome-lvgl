@@ -89,24 +89,28 @@ sensor:
           id: lr_blind_slider
           value: !lambda return (int)x;
 
-  # Fan Speed Percentage → arc + label
+  # Fan Speed Percentage → arc + label (only when fan is on)
   - platform: homeassistant
     entity_id: fan.living_room_fans
     id: lr_fan_percentage
     attribute: percentage
     on_value:
-      - lvgl.arc.update:
-          id: lr_fan_arc
-          value: !lambda return (int)x;
-      - lvgl.label.update:
-          id: lr_fan_value_label
-          text: !lambda |-
-            static char buf[8];
-            int val = (int)round(x);
-            if (val == 0) return "Off";
-            if (val <= 33) return "Low";
-            if (val <= 66) return "Med";
-            return "High";
+      - if:
+          condition:
+            lambda: return id(lr_fan_state).state;
+          then:
+            - lvgl.arc.update:
+                id: lr_fan_arc
+                value: !lambda return (int)x;
+            - lvgl.label.update:
+                id: lr_fan_value_label
+                text: !lambda |-
+                  static char buf[8];
+                  int val = (int)round(x);
+                  if (val == 0) return "Off";
+                  if (val <= 33) return "Low";
+                  if (val <= 66) return "Med";
+                  return "High";
 
   # ===========================================================================
   # LIGHT BRIGHTNESS — Slider feedback (4 lights)
