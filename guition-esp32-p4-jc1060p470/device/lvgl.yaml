@@ -722,7 +722,7 @@ lvgl:
                               max_value: 100
                               value: 0
                               mode: NORMAL
-                              transform_angle: 1800
+                              transform_angle: 180
                               styles: brightness_slider
                               indicator:
                                 styles: brightness_slider_indicator
